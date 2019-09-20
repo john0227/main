@@ -1,19 +1,15 @@
-package seedu.address.logic.commands.deletecommand;
+package seedu.address.logic.commands.listcommand;
 
 import static java.util.Objects.requireNonNull;
 
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.model.Model;
 
-public class DeleteMentorCommand extends DeleteCommand {
+public class ListMentorCommand extends ListCommand {
 
     /* Possible Fields */
 
     public static final String ENTITY_TYPE = "mentor";
-
-    public DeleteMentorCommand(Id id) {
-        super(id);
-    }
 
     @Override
     public CommandResult execute(Model model) {

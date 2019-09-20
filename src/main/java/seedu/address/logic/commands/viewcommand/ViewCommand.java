@@ -1,18 +1,17 @@
-package seedu.address.logic.commands.deletecommand;
+package seedu.address.logic.commands.viewcommand;
 
 import static java.util.Objects.requireNonNull;
 
 import seedu.address.logic.commands.Command;
 
-public abstract class DeleteCommand extends Command {
+public abstract class ViewCommand extends Command {
 
     /* Possible Fields */
-
-    public static final String COMMAND_WORD = "delete";
+    public static final String COMMAND_WORD = "view";
 
     protected Id id;
 
-    protected DeleteCommand(Id id) {
+    protected ViewCommand(Id id) {
         requireNonNull(id);
         this.id = id;
     }

@@ -11,11 +11,8 @@ public class DeleteTeamCommand extends DeleteCommand {
 
     public static final String ENTITY_TYPE = "team";
 
-    private Id id;
-
     public DeleteTeamCommand(Id id) {
-        requireNonNull(id);
-        this.id = id;
+        super(id);
     }
 
     @Override

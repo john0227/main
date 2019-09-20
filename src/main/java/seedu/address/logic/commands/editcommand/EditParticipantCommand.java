@@ -1,5 +1,7 @@
 package seedu.address.logic.commands.editcommand;
 
+import static java.util.Objects.requireNonNull;
+
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.model.Model;
 
@@ -9,16 +11,17 @@ public class EditParticipantCommand extends EditCommand {
 
     public static final String ENTITY_TYPE = "participant";
 
-    private Id id;
     private EditParticipantDescriptor editParticipantDescriptor;
 
     public EditParticipantCommand(Id id, EditParticipantDescriptor editParticipantDescriptor) {
-        this.id = id;
+        super(id);
+        requireNonNull(editParticipantDescriptor);
         this.editParticipantDescriptor = editParticipantDescriptor;
     }
 
     @Override
     public CommandResult execute(Model model) {
+        requireNonNull(model);
         return new CommandResult("");
     }
 

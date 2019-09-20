@@ -6,17 +6,14 @@ import seedu.address.commons.core.index.Index;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.model.Model;
 
-public class DeleteParticipantCommand {
+public class DeleteParticipantCommand extends DeleteCommand {
 
     /* Possible Fields */
 
     public static final String ENTITY_TYPE = "participant";
 
-    private Id id;
-
     public DeleteParticipantCommand(Id id) {
-        requireNonNull(id);
-        this.id = id;
+        super(id);
     }
 
     @Override
