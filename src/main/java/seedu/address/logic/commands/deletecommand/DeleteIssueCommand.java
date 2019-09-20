@@ -1,4 +1,4 @@
-package seedu.address.logic.commands.delete;
+package seedu.address.logic.commands.deletecommand;
 
 import static java.util.Objects.requireNonNull;
 
@@ -11,11 +11,11 @@ public class DeleteIssueCommand extends DeleteCommand {
 
     public static final String ENTITY_TYPE = "issue";
 
-    private Issue issue;
+    private Id id;
 
-    public DeleteIssueCommand(Issue issue) {
-        requireNonNull(issue);
-        this.issue = issue;
+    public DeleteIssueCommand(Id id) {
+        requireNonNull(id);
+        this.id = id;
     }
 
     @Override

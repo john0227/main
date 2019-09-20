@@ -1,4 +1,4 @@
-package seedu.address.logic.commands.add;
+package seedu.address.logic.commands.addcommand;
 
 import static java.util.Objects.requireNonNull;
 
@@ -14,7 +14,7 @@ public class AddIssueCommand extends AddCommand {
     private Issue issue;
 
     public AddIssueCommand(Issue issue) {
-        requireNonNull(issue)
+        requireNonNull(issue);
         this.issue = issue;
     }
 

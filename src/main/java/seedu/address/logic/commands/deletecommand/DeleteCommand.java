@@ -1,4 +1,4 @@
-package seedu.address.logic.commands.delete;
+package seedu.address.logic.commands.deletecommand;
 
 import seedu.address.logic.commands.Command;
 

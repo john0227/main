@@ -1,26 +1,26 @@
-package seedu.address.logic.commands.add;
+package seedu.address.logic.commands.deletecommand;
 
 import static java.util.Objects.requireNonNull;
 
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.model.Model;
 
-public class AddMentorCommand extends AddCommand {
+public class DeleteMentorCommand extends DeleteCommand {
 
-    /* Possible Fields: */
+    /* Possible Fields */
 
     public static final String ENTITY_TYPE = "mentor";
 
-    private Mentor mentor;
+    private Id id;
 
-    public AddMentorCommand(Mentor mentor) {
-        requireNonNull(mentor)
-        this.mentor = mentor;
+    public DeleteMentorCommand(Id id) {
+        requireNonNull(id);
+        this.id = id;
     }
 
     @Override
     public CommandResult execute(Model model) {
-        requireNonNull(model)
+        requireNonNull(model);
         return new CommandResult("");
     }
 
