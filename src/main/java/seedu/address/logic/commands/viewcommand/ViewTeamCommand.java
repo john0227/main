@@ -16,7 +16,7 @@ public class ViewTeamCommand extends ViewCommand {
     }
 
     @Override
-    public CommandResult execute(EntityList entityList) {
+    public CommandResult execute(Model model) {
         requireNonNull(model);
 
         // See ViewIssueCommand

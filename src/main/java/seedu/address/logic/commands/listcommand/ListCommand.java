@@ -5,6 +5,7 @@ import static java.util.Objects.requireNonNull;
 import seedu.address.logic.commands.Command;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.exceptions.CommandException;
+import seedu.address.model.Model;
 
 /*
  * This Command is for listing everything (issue, mentor, participant, team).
@@ -16,11 +17,11 @@ public class ListCommand extends Command {
     public static final String COMMAND_TYPE = "list";
 
     @Override
-    public CommandResult execute(EntityList entityList) throws CommandException {
+    public CommandResult execute(Model model) throws CommandException {
         requireNonNull(entityList);
 
         // Possible format
-        // TeamList teamList = entityList.getTeamList();
+        // TeamList teamList = model.getTeamList();
 
         // I think Team should have a method that lists its connections (e.g. Team#showConnection)
         // i.e.
@@ -31,6 +32,8 @@ public class ListCommand extends Command {
         //    <Participant n>
 
         /*
+         * Rethink this part
+         *
          * // List teams and its connections
          * List<Team> teams = teamList.list();
          * for (Team team : teams) {
@@ -39,7 +42,7 @@ public class ListCommand extends Command {
          * // or teamList.list().stream().forEach(Team::showConnection());
          *
          * // List issues
-         * (new ListIssueCommand()).execute(entityList);
+         * (new ListIssueCommand()).execute(model);
          */
 
         return new CommandResult("");

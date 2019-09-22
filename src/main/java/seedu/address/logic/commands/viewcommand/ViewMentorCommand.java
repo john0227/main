@@ -3,6 +3,7 @@ package seedu.address.logic.commands.viewcommand;
 import static java.util.Objects.requireNonNull;
 
 import seedu.address.logic.commands.CommandResult;
+import seedu.address.model.Model;
 
 public class ViewMentorCommand extends ViewCommand {
 
@@ -15,7 +16,7 @@ public class ViewMentorCommand extends ViewCommand {
     }
 
     @Override
-    public CommandResult execute(EntityList entityList) {
+    public CommandResult execute(Model model) {
         requireNonNull(model);
 
         // See ViewIssueCommand

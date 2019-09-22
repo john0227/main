@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.exceptions.CommandException;
+import seedu.address.model.Model;
 
 public class DeleteTeamCommand extends DeleteCommand {
 
@@ -16,8 +17,8 @@ public class DeleteTeamCommand extends DeleteCommand {
     }
 
     @Override
-    public CommandResult execute(EntityList entityList) throws CommandException {
-        requireNonNull(entityList);
+    public CommandResult execute(Model model) throws CommandException {
+        requireNonNull(model);
 
         // See DeleteIssueCommand
 

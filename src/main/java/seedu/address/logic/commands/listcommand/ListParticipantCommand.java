@@ -11,8 +11,8 @@ public class ListParticipantCommand extends ListCommand {
     public static final String ENTITY_TYPE = "participant";
 
     @Override
-    public CommandResult execute(EntityList entityList) {
-        requireNonNull(entityList);
+    public CommandResult execute(Model model) {
+        requireNonNull(model);
 
         // See ListIssueCommand
 

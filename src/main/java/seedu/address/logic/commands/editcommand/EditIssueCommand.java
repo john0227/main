@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.exceptions.CommandException;
+import seedu.address.model.Model;
 
 public class EditIssueCommand extends EditCommand {
 
@@ -23,11 +24,18 @@ public class EditIssueCommand extends EditCommand {
     }
 
     @Override
-    public CommandResult execute(EntityList entityList) throws CommandException {
-        requireNonNull(entityList);
+    public CommandResult execute(Model model) throws CommandException {
+        requireNonNull(model);
 
-        // IssueList issueList = entityList.getIssueList();
-        Issue issueToEdit = issueList.get(this.id);
+        // IssueList issueList = model.getIssueList();
+        Issue issueToEdit;
+        try {
+            issueToEdit = issueList.get(this.id);
+        } catch (Exception e) {
+            // Refine exception later
+            // Invalid ID exception (or smth like that)
+            throw new CommandException("ERROR_MESSAGE to be defined later");
+        }
         Issue editedIssue = this.createEditedIssue(issueToEdit, this.editIssueDescriptor);
 
         /*
@@ -35,7 +43,7 @@ public class EditIssueCommand extends EditCommand {
          *  and should check if editedIssue is already contained in the IssueList
          * TODO: Make EntityListInterface#update() return boolean value?
          */
-        if (entityList.update(issueToEdit.getId(), editedIssue)) {
+        if (model.update(issueToEdit.getId(), editedIssue)) {
 //            return new CommandResult(MESSAGE_SUCCESS);
         }
 

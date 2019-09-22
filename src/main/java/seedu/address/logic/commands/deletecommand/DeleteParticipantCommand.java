@@ -18,8 +18,8 @@ public class DeleteParticipantCommand extends DeleteCommand {
     }
 
     @Override
-    public CommandResult execute(EntityList entityList) throws CommandException {
-        requireNonNull(entityList);
+    public CommandResult execute(Model model) throws CommandException {
+        requireNonNull(model);
 
         // See DeleteIssueCommand
 

@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.exceptions.CommandException;
+import seedu.address.model.Model;
 
 public class AddIssueCommand extends AddCommand {
 
@@ -19,11 +20,15 @@ public class AddIssueCommand extends AddCommand {
     }
 
     @Override
-    public CommandResult execute(EntityList entityList) throws CommandException {
-        requireNonNull(entityList);
+    public CommandResult execute(Model model) throws CommandException {
+        requireNonNull(model);
 
-        // IssueList issueList = entityList.getIssueList();
-        issueList.add(this.issue);
+        try {
+            IssueList issueList = model.getIssueList();
+            issueList.add(this.issue);
+        } catch (Exception e) {
+            // I don't think this Exception will be ever caught
+        }
 
         return new CommandResult("");
     }
