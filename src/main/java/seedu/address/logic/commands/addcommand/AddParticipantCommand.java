@@ -3,7 +3,7 @@ package seedu.address.logic.commands.addcommand;
 import static java.util.Objects.requireNonNull;
 
 import seedu.address.logic.commands.CommandResult;
-import seedu.address.model.Model;
+import seedu.address.logic.commands.exceptions.CommandException;
 
 public class AddParticipantCommand extends AddCommand {
 
@@ -12,13 +12,16 @@ public class AddParticipantCommand extends AddCommand {
      private Participant participant;
 
     public AddParticipantCommand(Participant participant) {
-        requireNonNull(participant)
+        requireNonNull(participant);
         this.participant = participant;
     }
 
     @Override
-    public CommandResult execute(Model model) {
-        requireNonNull(model)
+    public CommandResult execute(EntityList entityList) throws CommandException {
+        requireNonNull(entityList);
+
+        // See AddIssueCommand
+
         return new CommandResult("");
     }
 

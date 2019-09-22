@@ -3,7 +3,6 @@ package seedu.address.logic.commands.listcommand;
 import static java.util.Objects.requireNonNull;
 
 import seedu.address.logic.commands.CommandResult;
-import seedu.address.model.Model;
 
 public class ListIssueCommand extends ListCommand {
 
@@ -12,8 +11,23 @@ public class ListIssueCommand extends ListCommand {
     public static final String ENTITY_TYPE = "issue";
 
     @Override
-    public CommandResult execute(Model model) {
-        requireNonNull(model);
+    public CommandResult execute(EntityList entityList) {
+        requireNonNull(entityList);
+
+        // Possible format
+        /*
+         * IssueList issueList = entityList.getIssueList();
+         * for (Issue issue : issueList) {
+         *     print(issue); // implement toString()
+         * }
+         */
+        /*
+         * entityList.getIssueList()
+         *           .list()
+         *           .stream()
+         *           .forEach(Issue::toString());
+         */
+
         return new CommandResult("");
     }
 

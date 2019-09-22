@@ -3,7 +3,7 @@ package seedu.address.logic.commands.editcommand;
 import static java.util.Objects.requireNonNull;
 
 import seedu.address.logic.commands.CommandResult;
-import seedu.address.model.Model;
+import seedu.address.logic.commands.exceptions.CommandException;
 
 public class EditTeamCommand extends EditCommand {
 
@@ -20,9 +20,19 @@ public class EditTeamCommand extends EditCommand {
     }
 
     @Override
-    public CommandResult execute(Model model) {
-        requireNonNull(model);
+    public CommandResult execute(EntityList entityList) throws CommandException {
+        requireNonNull(entityList);
+
+        // see EditIssueCommand
+
         return new CommandResult("");
+    }
+
+    private Team createEditedTeam(Team teamToEdit, EditTeamDescriptor editTeamDescriptor) {
+        // Set each field to updated value
+        // See EditCommand#EditPersonDescriptor for more context
+
+        return new Team(/* Necessary Fields */);
     }
 
     public static class EditTeamDescriptor extends EditEntityDescriptor {

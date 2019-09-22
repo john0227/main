@@ -3,7 +3,6 @@ package seedu.address.logic.commands.viewcommand;
 import static java.util.Objects.requireNonNull;
 
 import seedu.address.logic.commands.CommandResult;
-import seedu.address.model.Model;
 
 public class ViewParticipantCommand extends ViewCommand {
 
@@ -16,8 +15,11 @@ public class ViewParticipantCommand extends ViewCommand {
     }
 
     @Override
-    public CommandResult execute(Model model) {
-        requireNonNull(model);
+    public CommandResult execute(EntityList entityList) {
+        requireNonNull(entityList);
+
+        // See ViewIssueCommand
+
         return new CommandResult("");
     }
 

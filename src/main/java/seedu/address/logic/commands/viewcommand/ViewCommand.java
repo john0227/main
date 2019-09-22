@@ -11,7 +11,7 @@ public abstract class ViewCommand extends Command {
 
     protected Id id;
 
-    protected ViewCommand(Id id) {
+    ViewCommand(Id id) {
         requireNonNull(id);
         this.id = id;
     }

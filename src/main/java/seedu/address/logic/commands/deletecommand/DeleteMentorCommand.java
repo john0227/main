@@ -3,6 +3,7 @@ package seedu.address.logic.commands.deletecommand;
 import static java.util.Objects.requireNonNull;
 
 import seedu.address.logic.commands.CommandResult;
+import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 
 public class DeleteMentorCommand extends DeleteCommand {
@@ -16,8 +17,11 @@ public class DeleteMentorCommand extends DeleteCommand {
     }
 
     @Override
-    public CommandResult execute(Model model) {
-        requireNonNull(model);
+    public CommandResult execute(EntityList entityList) throws CommandException {
+        requireNonNull(entityList);
+
+        // see DeleteIssueCommand
+
         return new CommandResult("");
     }
 

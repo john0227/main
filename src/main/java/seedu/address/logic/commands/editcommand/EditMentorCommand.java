@@ -3,7 +3,7 @@ package seedu.address.logic.commands.editcommand;
 import static java.util.Objects.requireNonNull;
 
 import seedu.address.logic.commands.CommandResult;
-import seedu.address.model.Model;
+import seedu.address.logic.commands.exceptions.CommandException;
 
 public class EditMentorCommand extends EditCommand {
 
@@ -20,9 +20,19 @@ public class EditMentorCommand extends EditCommand {
     }
 
     @Override
-    public CommandResult execute(Model model) {
-        requireNonNull(model);
+    public CommandResult execute(EntityList entityList) throws CommandException {
+        requireNonNull(entityList);
+
+        // see EditIssueCommand
+
         return new CommandResult("");
+    }
+
+    private Mentor createEditedMentor(Mentor mentorToEdit, EditMentorDescriptor editMentorDescriptor) {
+        // Set each field to updated value
+        // See EditCommand#EditPersonDescriptor for more context
+
+        return new Mentor(/* Necessary Fields */);
     }
 
     public static class EditMentorDescriptor extends EditEntityDescriptor {

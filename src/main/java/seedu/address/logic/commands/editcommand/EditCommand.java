@@ -12,7 +12,7 @@ public abstract class EditCommand extends Command {
 
     protected Id id;
 
-    protected EditCommand(Id id) {
+    EditCommand(Id id) {
         requireNonNull(id);
         this.id = id;
     }
