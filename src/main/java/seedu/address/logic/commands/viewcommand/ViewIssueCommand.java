@@ -21,7 +21,7 @@ public class ViewIssueCommand extends ViewCommand {
         IssueList issueList = model.getIssueList();
         // TODO: Decide on which class updates the GUI
         try {
-            issueList.get(this.id).view();
+            issueList.get(this.id).viewDetailed();
         } catch (Exception e) {
             // Refine exception type later
             // Invalid ID Exception ...

@@ -24,7 +24,7 @@ public class ListIssueCommand extends ListCommand {
          * model.getIssueList()
          *      .list()
          *      .stream()
-         *      .forEach(Entity::toString()); // overriding for correct method call
+         *      .forEach(Entity::viewMinimal()); // overriding for correct method call
          */
 
         return new CommandResult("");
