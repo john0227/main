@@ -9,9 +9,7 @@ import seedu.address.model.Model;
 
 public class DeleteParticipantCommand extends DeleteCommand {
 
-    /* Possible Fields */
-
-    public static final String ENTITY_TYPE = "participant";
+    /* Possible Fields? */
 
     public DeleteParticipantCommand(Id id) {
         super(id);

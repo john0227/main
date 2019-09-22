@@ -9,9 +9,6 @@ import seedu.address.model.Model;
 public class AddTeamCommand extends AddCommand {
 
     /* Possible Fields: */
-
-    public static final String ENTITY_TYPE = "team";
-
     private Team team;
 
     public AddTeamCommand(Team team) {

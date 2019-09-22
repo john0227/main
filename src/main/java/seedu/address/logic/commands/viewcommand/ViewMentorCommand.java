@@ -7,9 +7,7 @@ import seedu.address.model.Model;
 
 public class ViewMentorCommand extends ViewCommand {
 
-    /* Possible Fields */
-
-    public static final String ENTITY_TYPE = "mentor";
+    /* Possible Fields? */
 
     public ViewMentorCommand(Id id) {
         super(id);

@@ -8,9 +8,7 @@ import seedu.address.model.Model;
 
 public class ViewIssueCommand extends ViewCommand {
 
-    /* Possible Fields */
-
-    public static final String ENTITY_TYPE = "issue";
+    /* Possible Fields? */
 
     public ViewIssueCommand(Id id) {
         super(id);

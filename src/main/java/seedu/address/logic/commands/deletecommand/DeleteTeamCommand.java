@@ -8,9 +8,7 @@ import seedu.address.model.Model;
 
 public class DeleteTeamCommand extends DeleteCommand {
 
-    /* Possible Fields */
-
-    public static final String ENTITY_TYPE = "team";
+    /* Possible Fields? */
 
     public DeleteTeamCommand(Id id) {
         super(id);

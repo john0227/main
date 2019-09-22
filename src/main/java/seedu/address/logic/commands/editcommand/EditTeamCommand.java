@@ -9,9 +9,6 @@ import seedu.address.model.Model;
 public class EditTeamCommand extends EditCommand {
 
     /* Possible Fields */
-
-    public static final String ENTITY_TYPE = "team";
-
     private EditTeamDescriptor editTeamDescriptor;
 
     public EditTeamCommand(Id id, EditTeamDescriptor editTeamDescriptor) {

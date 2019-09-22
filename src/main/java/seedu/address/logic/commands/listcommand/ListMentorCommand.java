@@ -7,9 +7,7 @@ import seedu.address.model.Model;
 
 public class ListMentorCommand extends ListCommand {
 
-    /* Possible Fields */
-
-    public static final String ENTITY_TYPE = "mentor";
+    /* Possible Fields? */
 
     @Override
     public CommandResult execute(Model model) {

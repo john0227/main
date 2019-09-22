@@ -7,9 +7,7 @@ import seedu.address.model.Model;
 
 public class ViewTeamCommand extends ViewCommand {
 
-    /* Possible Fields */
-
-    public static final String ENTITY_TYPE = "team";
+    /* Possible Fields? */
 
     public ViewTeamCommand(Id id) {
         super(id);

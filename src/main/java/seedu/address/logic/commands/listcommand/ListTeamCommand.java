@@ -7,8 +7,7 @@ import seedu.address.model.Model;
 
 public class ListTeamCommand extends ListCommand {
 
-    /* Possible Fields */
-    public static final String ENTITY_TYPE = "team";
+    /* Possible Fields? */
 
     @Override
     public CommandResult execute(Model model) {

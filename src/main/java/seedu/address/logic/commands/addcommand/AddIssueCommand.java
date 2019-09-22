@@ -9,9 +9,6 @@ import seedu.address.model.Model;
 public class AddIssueCommand extends AddCommand {
 
     /* Possible Fields: */
-
-    public static final String ENTITY_TYPE = "issue";
-
     private Issue issue;
 
     public AddIssueCommand(Issue issue) {

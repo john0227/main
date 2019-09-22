@@ -4,13 +4,11 @@ import static java.util.Objects.requireNonNull;
 
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.exceptions.CommandException;
+import seedu.address.model.Model;
 
 public class EditMentorCommand extends EditCommand {
 
     /* Possible Fields */
-
-    public static final String ENTITY_TYPE = "mentor";
-
     private EditMentorDescriptor editMentorDescriptor;
 
     public EditMentorCommand(Id id, EditMentorDescriptor editMentorDescriptor) {

@@ -9,7 +9,6 @@ import seedu.address.model.Model;
 public class AddParticipantCommand extends AddCommand {
 
      /* Possible Fields */
-     public static String ENTITY_TYPE = "participant";
      private Participant participant;
 
     public AddParticipantCommand(Participant participant) {

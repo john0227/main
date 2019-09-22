@@ -7,9 +7,7 @@ import seedu.address.model.Model;
 
 public class ViewParticipantCommand extends ViewCommand {
 
-    /* Possible Fields */
-
-    public static final String ENTITY_TYPE = "participant";
+    /* Possible Fields? */
 
     public ViewParticipantCommand(Id id) {
         super(id);

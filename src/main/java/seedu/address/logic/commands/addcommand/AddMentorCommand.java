@@ -9,9 +9,6 @@ import seedu.address.model.Model;
 public class AddMentorCommand extends AddCommand {
 
     /* Possible Fields: */
-
-    public static final String ENTITY_TYPE = "mentor";
-
     private Mentor mentor;
 
     public AddMentorCommand(Mentor mentor) {
