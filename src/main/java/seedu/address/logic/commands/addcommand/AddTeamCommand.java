@@ -12,7 +12,7 @@ public class AddTeamCommand extends AddCommand {
     private Team team;
 
     public AddTeamCommand(Team team) {
-        requireNonNull(team)
+        requireNonNull(team);
         this.team = team;
     }
 

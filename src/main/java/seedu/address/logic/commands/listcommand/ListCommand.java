@@ -32,14 +32,11 @@ public class ListCommand extends Command {
         //    <Participant n>
 
         /*
-         * Rethink this part
-         *
          * // List teams and its connections
-         * List<Team> teams = teamList.list();
-         * for (Team team : teams) {
+         * for (Team team : teamList) {
          *     print(team.showConnection());
          * }
-         * // or teamList.list().stream().forEach(Team::showConnection());
+         * // or teamList.stream().forEach(Team::showConnection());
          *
          * // List issues
          * (new ListIssueCommand()).execute(model);
