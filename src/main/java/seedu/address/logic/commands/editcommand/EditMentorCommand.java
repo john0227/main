@@ -30,7 +30,8 @@ public class EditMentorCommand extends EditCommand {
         // Set each field to updated value
         // See EditCommand#EditPersonDescriptor for more context
 
-        return new Mentor(/* Necessary Fields */);
+//        return new Mentor(/* Necessary Fields */);
+        return null;
     }
 
     public static class EditMentorDescriptor extends EditEntityDescriptor {
