@@ -3,12 +3,12 @@ package seedu.address.storage;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Optional;
+import seedu.address.model.entitylist.ParticipantList;
 
 import seedu.address.commons.exceptions.DataConversionException;
-import seedu.address.model.AddressBook;
 
 /**
- * Represents a storage for {@link seedu.address.model.EntityList.TeamList}
+ * Represents a storage for {@link seedu.address.model.entitylist.TeamList}
  */
 public interface ParticipantListStorage {
     /**
