@@ -14,9 +14,9 @@ ifdef::env-github[]
 endif::[]
 :repoURL: https://github.com/AY1920S1-CS2103T-F11-1/main/tree/master
 
-By: `Team F11-1`      
+By: `Team F11-1`
 
-Since: `August 2019`      
+Since: `August 2019`
 
 Licence: `MIT`
 
@@ -78,6 +78,43 @@ Format: `help`
 === Adding an Entity: `add {participant/mentor/team}`
 
 Use this command to add an entity for Alfred to keep track of. +
+****
+* Creates an Entity as specified by you. Each Entity object will have a unique ID autmatically assigned to it.
+* As of version 1.1, you must provide all the fields. There are no optional fields.
+****
+
+==== Adding a Participant: `add participant [PARAMETERS]`
+Format: `add participant n/NAME p/PHONE_NUMBER e/EMAIL_ADDRESS`
+
+Examples:
+
+* `add participant n/John Doe p/98765432 e/johnd@example.com`
+
+* `add participant n/Betsy Crowe e/betsycrowe@example.com p/1234567`
+
+==== Adding a Mentor: `add mentor [PARAMETERS]`
+Format: `add mentor  n/NAME p/PHONE_NUMBER e/EMAIL_ADDRESS o/ORGANIZATION s/SPECIALISATION`
+
+Examples:
+
+* `add mentor n/Professor Superman p/91236549 e/clarkkent@gmail.com o/Daily Planet s/Artificial Intelligence`
+
+* `add mentor n/Doctor Batman p/91236549 e/bruce@gmail.com o/Google s/Augmented Reality`
+
+==== Adding a Team: `add team [PARAMETERS]`
+Format: `add team n/NAME s/SUBJECT pn/PROJECT_NAME pt/PROJECT_TYPE l/LOCATION`
+
+Examples:
+
+* `add team n/Team01 s/Artificial Intelligence pn/EmotionTrain pt/Public Welfare l/COM1-0210`
+
+* `add team n/HackathonWinners4Sure s/Augmented Reality pn/Path-ify pt/Navigation l/COM2-0102`
+
+Format: `help`
+
+=== Adding an Entity: `add {participant/mentor/team}`
+
+Adds an entity for Alfred to keep track of +
 ****
 * Creates an Entity as specified by you. Each Entity object will have a unique ID autmatically assigned to it.
 * As of version 1.1, you must provide all the fields. There are no optional fields.
