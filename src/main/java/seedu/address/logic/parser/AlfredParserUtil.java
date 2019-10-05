@@ -6,13 +6,14 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import seedu.address.commons.core.index.Index;
 import seedu.address.commons.util.StringUtil;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.entity.Email;
+import seedu.address.model.entity.Id;
 import seedu.address.model.entity.Location;
 import seedu.address.model.entity.Name;
 import seedu.address.model.entity.Phone;
+import seedu.address.model.entity.PrefixType;
 import seedu.address.model.entity.ProjectType;
 import seedu.address.model.entity.SubjectName;
 import seedu.address.model.tag.Tag;
@@ -30,12 +31,15 @@ public class AlfredParserUtil {
      * trimmed.
      * @throws ParseException if the specified index is invalid (not non-zero unsigned integer).
      */
-    public static Index parseIndex(String oneBasedIndex) throws ParseException {
-        String trimmedIndex = oneBasedIndex.trim();
-        if (!StringUtil.isNonZeroUnsignedInteger(trimmedIndex)) {
+    public static Id parseIndex(String oneBasedIndex, PrefixType prefix) throws ParseException {
+        oneBasedIndex = oneBasedIndex.trim().toLowerCase();
+        String trimmedIndex = oneBasedIndex.substring(1);
+        String expectedPrefix = prefix.name();
+        if (!StringUtil.isNonZeroUnsignedInteger(trimmedIndex) || !oneBasedIndex.startsWith(expectedPrefix)) {
             throw new ParseException(MESSAGE_INVALID_INDEX);
         }
-        return Index.fromOneBased(Integer.parseInt(trimmedIndex));
+        int id = Integer.parseInt(trimmedIndex);
+        return new Id(prefix, id);
     }
 
     /**
@@ -98,25 +102,45 @@ public class AlfredParserUtil {
         return new Tag(trimmedTag);
     }
 
+    /**
+     * Parses a {@code String} into a {@code Location}.
+     *
+     * @param location
+     * @return Location
+     * @throws ParseException if the {@code String} is invalid.
+     */
     public static Location parseLocation(String location) throws ParseException {
         requireNonNull(location);
         int trimmedLocation = Integer.parseInt(location.trim());
-        if (!Location.isValidNumber(trimmedLocation)) {
+        if (!Location.isValidLocation(trimmedLocation)) {
             throw new ParseException(Location.MESSAGE_CONSTRAINTS_INVALID_TABLE_NUMBER);
         }
         return new Location(trimmedLocation);
     }
 
+    /**
+     * Parses a {@code String} into a {@code Subject}.
+     *
+     * @param subject
+     * @return SubjectName
+     * @throws ParseException if the {@code String} is invalid.
+     */
     public static SubjectName parseSubject(String subject) throws ParseException {
         requireNonNull(subject);
         String trimmedSubject = subject.trim();
         if (!SubjectName.isValidSubjectName(trimmedSubject)) {
             throw new ParseException(SubjectName.MESSAGE_CONSTRAINTS);
         }
-        return SubjectName.PLACEHOLDER;
+        return SubjectName.SOCIAL;
     }
 
-
+    /**
+     * Parses a {@code String} into a {@code ProjectType}.
+     *
+     * @param type
+     * @return ProjectType
+     * @throws ParseException if the {@code String} is invalid.
+     */
     public static ProjectType parseProjectType(String type) throws ParseException {
         requireNonNull(type);
         String trimmedType = type.trim();

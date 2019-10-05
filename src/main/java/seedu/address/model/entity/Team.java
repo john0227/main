@@ -7,6 +7,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+/**
+ * Team is the main entity of this system.
+ */
 public class Team extends Entity {
     private List<Participant> participants;
     private Optional<Mentor> mentor;
@@ -109,6 +112,7 @@ public class Team extends Entity {
         this.location = location;
     }
 
+    /*
     @Override
     public HashMap<String, String> viewMinimal() {
         HashMap<String, String> result = new HashMap<>();
@@ -120,6 +124,8 @@ public class Team extends Entity {
         result.put("participants", participantsString);
         return result;
     }
+
+     */
 
     @Override
     public HashMap<String, String> viewDetailed() {
@@ -150,16 +156,16 @@ public class Team extends Entity {
 
     @Override
     public boolean equals(Object other) {
-       if (other == this) {
-           return true;
-       }
+        if (other == this) {
+            return true;
+        }
 
-       if (!(other instanceof Team)) {
-           return false;
-       }
+        if (!(other instanceof Team)) {
+            return false;
+        }
 
-       Team otherTeam = ((Team) other);
-       return otherTeam.getName() == this.getName()
+        Team otherTeam = ((Team) other);
+        return otherTeam.getName() == this.getName()
                && otherTeam.getId() == this.getId()
                && otherTeam.getParticipants() == this.getParticipants()
                && otherTeam.getSubject() == this.getSubject()

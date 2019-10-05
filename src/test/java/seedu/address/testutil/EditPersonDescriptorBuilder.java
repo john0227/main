@@ -71,6 +71,9 @@ public class EditPersonDescriptorBuilder {
         return this;
     }
 
+    /**
+     * Constructor.
+     */
     public EditPersonDescriptor build() {
         return descriptor;
     }

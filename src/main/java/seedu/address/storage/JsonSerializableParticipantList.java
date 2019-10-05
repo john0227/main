@@ -8,10 +8,11 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
+import seedu.address.AlfredException;
 import seedu.address.commons.exceptions.IllegalValueException;
+import seedu.address.model.entity.Entity;
 import seedu.address.model.entity.Participant;
 import seedu.address.model.entitylist.ParticipantList;
-
 
 /**
  * An Immutable ParticipantList that is serializable to JSON format.
@@ -49,7 +50,7 @@ class JsonSerializableParticipantList {
      *
      * @throws IllegalValueException if there were any data constraints violated.
      */
-    public ParticipantList toModelType() throws IllegalValueException {
+    public ParticipantList toModelType() throws IllegalValueException, AlfredException {
         ParticipantList participantList = new ParticipantList();
         for (JsonAdaptedParticipant jsonAdaptedParticipant : participants) {
             Participant participant = jsonAdaptedParticipant.toModelType();

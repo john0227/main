@@ -4,17 +4,20 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Optional;
 
+import seedu.address.AlfredException;
 import seedu.address.commons.exceptions.DataConversionException;
 import seedu.address.model.ReadOnlyUserPrefs;
 import seedu.address.model.UserPrefs;
 
-import seedu.address.model.entitylist.TeamList;
-import seedu.address.model.entitylist.IssueList;
-import seedu.address.model.entitylist.ParticipantList;
 import seedu.address.model.entitylist.MentorList;
+import seedu.address.model.entitylist.ParticipantList;
+import seedu.address.model.entitylist.TeamList;
 
+/**
+ * Alfred Storage is the API to the storage of the system.
+ */
 public interface AlfredStorage extends UserPrefsStorage, TeamListStorage,
-        ParticipantListStorage, IssueListStorage, MentorListStorage {
+        ParticipantListStorage, MentorListStorage {
 
     //=========================== UserPrefs ===========================
     @Override
@@ -28,7 +31,7 @@ public interface AlfredStorage extends UserPrefsStorage, TeamListStorage,
     Path getTeamListFilePath();
 
     @Override
-    Optional<TeamList> readTeamList() throws DataConversionException, IOException;
+    Optional<TeamList> readTeamList() throws DataConversionException, IOException, AlfredException;
 
     @Override
     void saveTeamList(TeamList teamList) throws IOException;
@@ -38,27 +41,17 @@ public interface AlfredStorage extends UserPrefsStorage, TeamListStorage,
     Path getParticipantListFilePath();
 
     @Override
-    Optional<ParticipantList> readParticipantList() throws DataConversionException, IOException;
+    Optional<ParticipantList> readParticipantList() throws DataConversionException, IOException, AlfredException;
 
     @Override
     void saveParticipantList(ParticipantList participantList) throws IOException;
-
-    //=========================== IssueList ===========================
-    @Override
-    Path getIssueListFilePath();
-
-    @Override
-    Optional<IssueList> readIssueList() throws DataConversionException, IOException;
-
-    @Override
-    void saveIssueList(IssueList issueList) throws IOException;
 
     //=========================== MentorList ===========================
     @Override
     Path getMentorListFilePath();
 
     @Override
-    Optional<MentorList> readMentorList() throws DataConversionException, IOException;
+    Optional<MentorList> readMentorList() throws DataConversionException, IOException, AlfredException;
 
     @Override
     void saveMentorList(MentorList mentorList) throws IOException;

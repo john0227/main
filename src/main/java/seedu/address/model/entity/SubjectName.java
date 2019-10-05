@@ -3,15 +3,20 @@ package seedu.address.model.entity;
 import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.AppUtil.checkArgument;
 
+/**
+ * Encapsulates possible topics for a Hackathon project.
+ */
 public enum SubjectName {
-    PLACEHOLDER("placeholder");
-
+    ENVIRONMENTAL("Environmental"),
+    SOCIAL("Social"),
+    HEALTH("Health"),
+    EDUCATION("Education");
 
     private static final String SPECIAL_CHARACTERS = "-'";
 
     public static final String MESSAGE_CONSTRAINTS =
             "SubjectName should adhere to the following constraints:\n"
-                    +"1. It should contain alphabets, spaces, and these special characters, excluding"
+                    + "1. It should contain alphabets, spaces, and these special characters, excluding"
                     + "the parentheses, (" + SPECIAL_CHARACTERS + "). \n"
                     + "2.Contain at least one character";
 
@@ -41,7 +46,8 @@ public enum SubjectName {
         return this.subjectNameString;
     }
 
-    public String toStorageValue(){
+    public String toStorageValue() {
         return this.toString();
-}
+    }
+
 }
