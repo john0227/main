@@ -12,7 +12,10 @@ import seedu.address.model.entity.Team;
  */
 public class AddTeamCommand extends AddCommand {
 
-    /* Possible Fields: */
+    public static final String COMMAND_WORD = "addTeam";
+    private static final String MESSAGE_SUCCESS = "New team added: %s";
+    private static final String MESSAGE_DUPLICATE_TEAM = "This team already exists in this Hackathon";
+
     private Team team;
 
     public AddTeamCommand(Team team) {
@@ -24,9 +27,13 @@ public class AddTeamCommand extends AddCommand {
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
 
-        // See AddIssueCommand
+        try {
+            model.addTeam(this.team);
+        } catch (Exception e) {
+            throw new CommandException(MESSAGE_DUPLICATE_TEAM);
+        }
 
-        return new CommandResult("");
+        return new CommandResult(String.format(MESSAGE_SUCCESS, this.team.toString()));
     }
 
 }

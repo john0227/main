@@ -12,7 +12,10 @@ import seedu.address.model.entity.Mentor;
  */
 public class AddMentorCommand extends AddCommand {
 
-    /* Possible Fields: */
+    public static final String COMMAND_WORD = "addMentor";
+    private static final String MESSAGE_SUCCESS = "New mentor added: %s";
+    private static final String MESSAGE_DUPLICATE_MENTOR = "This mentor already exists in this Hackathon";
+
     private Mentor mentor;
 
     public AddMentorCommand(Mentor mentor) {
@@ -24,9 +27,13 @@ public class AddMentorCommand extends AddCommand {
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
 
-        // See AddIssueCommand
+        try {
+            model.addMentor(this.mentor);
+        } catch (Exception e) {
+            throw new CommandException(MESSAGE_DUPLICATE_MENTOR);
+        }
 
-        return new CommandResult("");
+        return new CommandResult(String.format(MESSAGE_SUCCESS, this.mentor.toString()));
     }
 
 }

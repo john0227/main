@@ -12,7 +12,6 @@ import seedu.address.model.entity.Participant;
  */
 public class AddParticipantCommand extends AddCommand {
 
-    /* Possible Fields */
     public static final String COMMAND_WORD = "addParticipant";
     private static final String MESSAGE_SUCCESS = "New participant added: %s";
     private static final String MESSAGE_DUPLICATE_PARTICIPANT = "This participant already exists in this Hackathon";
@@ -31,7 +30,6 @@ public class AddParticipantCommand extends AddCommand {
         try {
             model.addParticipant(this.participant);
         } catch (Exception e) {
-            // Should Model be checking if there are duplicate persons?
             throw new CommandException(MESSAGE_DUPLICATE_PARTICIPANT);
         }
 
