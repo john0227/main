@@ -55,11 +55,11 @@ public class EditParticipantCommand extends EditCommand {
          *     throw new CommandException(MESSAGE_DUPLICATE_PERSON);
          * }
          */
-        if (model.updateParticipant(this.id, editedParticipant)) {
-            // model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
-            return new CommandResult(String.format(MESSAGE_EDIT_PARTICIPANT_SUCCESS, editedParticipant.toString()));
+        if (!model.updateParticipant(this.id, editedParticipant)) {
+            return new CommandResult(MESSAGE_DUPLICATE_PARTICIPANT);
         }
-        return new CommandResult(MESSAGE_DUPLICATE_PARTICIPANT);
+        // model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
+        return new CommandResult(String.format(MESSAGE_EDIT_PARTICIPANT_SUCCESS, editedParticipant.toString()));
     }
 
     /**
@@ -75,12 +75,12 @@ public class EditParticipantCommand extends EditCommand {
         assert participantToEdit != null;
 
         Name updatedName = editParticipantDescriptor.getName().orElse(participantToEdit.getName());
-        Id updatedId = editParticipantDescriptor.getId().orElse(participantToEdit.getId());
+        Id id = participantToEdit.getId();
         Email updatedEmail = editParticipantDescriptor.getEmail().orElse(participantToEdit.getEmail());
         Phone updatedPhone = editParticipantDescriptor.getPhone().orElse(participantToEdit.getPhone());
 
         // Reorder parameters as necessary
-        return new Participant(updatedName, updatedId, updatedEmail, updatedPhone);
+        return new Participant(updatedName, id, updatedEmail, updatedPhone);
     }
 
     /**
@@ -106,7 +106,7 @@ public class EditParticipantCommand extends EditCommand {
         @Override
         public boolean isAnyFieldEdited() {
             return super.isAnyFieldEdited()
-                    && CollectionUtil.isAnyNonNull(this.email, this.phone);
+                    || CollectionUtil.isAnyNonNull(this.email, this.phone);
         }
 
         /* ======== Getters ======== */

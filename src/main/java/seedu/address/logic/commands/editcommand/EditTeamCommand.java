@@ -60,11 +60,11 @@ public class EditTeamCommand extends EditCommand {
          *     throw new CommandException(MESSAGE_DUPLICATE_PERSON);
          * }
          */
-        if (model.updateTeam(this.id, editedTeam)) {
-            // model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
-            return new CommandResult(String.format(MESSAGE_EDIT_TEAM_SUCCESS, editedTeam.toString()));
+        if (!model.updateTeam(this.id, editedTeam)) {
+            return new CommandResult(MESSAGE_DUPLICATE_TEAM);
         }
-        return new CommandResult(MESSAGE_DUPLICATE_TEAM);
+        // model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
+        return new CommandResult(String.format(MESSAGE_EDIT_TEAM_SUCCESS, editedTeam.toString()));
     }
 
     /**
@@ -79,7 +79,7 @@ public class EditTeamCommand extends EditCommand {
         assert teamToEdit != null;
 
         Name updatedName = editTeamDescriptor.getName().orElse(teamToEdit.getName());
-        Id updatedId = editTeamDescriptor.getId().orElse(teamToEdit.getId());
+        Id id = teamToEdit.getId();
         List<Participant> participants = teamToEdit.getParticipants();
         Optional<Mentor> mentor = teamToEdit.getMentor();
         SubjectName updatedSubject = editTeamDescriptor.getSubject().orElse(teamToEdit.getSubject());
@@ -90,7 +90,7 @@ public class EditTeamCommand extends EditCommand {
 
         // ID, NAME, PARTICIPANTS, MENTOR (OPTIONAL), SUBJECT, SCORE, PROJECT_NAME, PROJECT_TYPE, LOCATION
         return new Team(
-                updatedId,
+                id,
                 updatedName,
                 participants,
                 mentor,
@@ -133,7 +133,7 @@ public class EditTeamCommand extends EditCommand {
         @Override
         public boolean isAnyFieldEdited() {
             return super.isAnyFieldEdited()
-                    && CollectionUtil.isAnyNonNull(
+                    || CollectionUtil.isAnyNonNull(
                             this.subject,
                             this.score,
                             this.projectName,

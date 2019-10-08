@@ -2,6 +2,7 @@ package seedu.address.logic.commands.addcommand;
 
 import static java.util.Objects.requireNonNull;
 
+import seedu.address.AlfredException;
 import seedu.address.commons.util.CollectionUtil;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.exceptions.CommandException;
@@ -44,7 +45,7 @@ public class AddMentorCommand extends AddCommand {
 
         try {
             model.addMentor(this.mentor);
-        } catch (Exception e) {
+        } catch (AlfredException e) {
             // Should I return new CommandResult(MESSAGE_DUPLICATE_MENTOR) instead?
             throw new CommandException(MESSAGE_DUPLICATE_MENTOR);
         }

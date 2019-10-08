@@ -2,6 +2,7 @@ package seedu.address.logic.commands.addcommand;
 
 import static java.util.Objects.requireNonNull;
 
+import seedu.address.AlfredException;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
@@ -29,7 +30,7 @@ public class AddTeamCommand extends AddCommand {
 
         try {
             model.addTeam(this.team);
-        } catch (Exception e) {
+        } catch (AlfredException e) {
             throw new CommandException(MESSAGE_DUPLICATE_TEAM);
         }
 

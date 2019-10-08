@@ -56,11 +56,11 @@ public class EditMentorCommand extends EditCommand {
          *     throw new CommandException(MESSAGE_DUPLICATE_PERSON);
          * }
          */
-        if (model.updateMentor(this.id, editedMentor)) {
-            // model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
-            return new CommandResult(String.format(MESSAGE_EDIT_MENTOR_SUCCESS, editedMentor.toString()));
+        if (!model.updateMentor(this.id, editedMentor)) {
+            return new CommandResult(MESSAGE_DUPLICATE_MENTOR);
         }
-        return new CommandResult(MESSAGE_DUPLICATE_MENTOR);
+        // model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
+        return new CommandResult(String.format(MESSAGE_EDIT_MENTOR_SUCCESS, editedMentor.toString()));
     }
 
     /**
@@ -76,13 +76,13 @@ public class EditMentorCommand extends EditCommand {
         assert mentorToEdit != null;
 
         Name updatedName = editMentorDescriptor.getName().orElse(mentorToEdit.getName());
-        Id updatedId = editMentorDescriptor.getId().orElse(mentorToEdit.getId());
+        Id id = mentorToEdit.getId();
         Phone updatedPhone = editMentorDescriptor.getPhone().orElse(mentorToEdit.getPhone());
         Email updatedEmail = editMentorDescriptor.getEmail().orElse(mentorToEdit.getEmail());
         Name updatedOrganization = editMentorDescriptor.getOrganization().orElse(mentorToEdit.getOrganization());
         SubjectName updatedSubject = editMentorDescriptor.getSubject().orElse(mentorToEdit.getSubject());
 
-        return new Mentor(updatedName, updatedId, updatedPhone, updatedEmail, updatedOrganization, updatedSubject);
+        return new Mentor(updatedName, id, updatedPhone, updatedEmail, updatedOrganization, updatedSubject);
     }
 
     /**
@@ -112,7 +112,7 @@ public class EditMentorCommand extends EditCommand {
         @Override
         public boolean isAnyFieldEdited() {
             return super.isAnyFieldEdited()
-                    && CollectionUtil.isAnyNonNull(this.email, this.phone, this.organization, this.subject);
+                    || CollectionUtil.isAnyNonNull(this.email, this.phone, this.organization, this.subject);
         }
 
         /* ======== Getters ======== */
