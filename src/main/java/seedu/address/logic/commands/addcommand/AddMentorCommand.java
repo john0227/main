@@ -41,7 +41,7 @@ public class AddMentorCommand extends AddCommand {
             // add Mentor to team
             // return CommandResult
         }
-        
+
         try {
             model.addMentor(this.mentor);
         } catch (Exception e) {

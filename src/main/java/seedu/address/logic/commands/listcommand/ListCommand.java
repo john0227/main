@@ -47,7 +47,13 @@ public class ListCommand extends Command {
         return new CommandResult(MESSAGE_SUCCESS);
     }
 
-    void listEntity(Map<String, String> fieldMap) {
+    /**
+     * Prints the basic information of given Entity.
+     *
+     * @param entity Entity to list.
+     */
+    void listEntity(Entity entity) {
+        Map<String, String> fieldMap = entity.viewMinimal();
         StringBuilder toPrint = new StringBuilder();
         for (String key : fieldMap.keySet()) {
             toPrint.append(StringUtil.capitalize(key))

@@ -2,10 +2,7 @@ package seedu.address.logic.commands.viewcommand;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.HashMap;
-
 import seedu.address.AlfredException;
-import seedu.address.commons.util.StringUtil;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
@@ -37,7 +34,7 @@ public class ViewParticipantCommand extends ViewCommand {
         } catch (AlfredException e) {
             throw new CommandException(MESSAGE_INVALID_PARTICIPANT_DISPLAYED_INDEX);
         }
-        viewEntity(participantToView.viewDetailed());
+        viewEntity(participantToView);
 
         return new CommandResult(MESSAGE_SUCCESS);
     }

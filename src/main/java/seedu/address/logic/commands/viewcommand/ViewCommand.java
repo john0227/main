@@ -24,13 +24,19 @@ public abstract class ViewCommand extends Command {
         this.id = id;
     }
 
-    void viewEntity(Map<String, String> fieldMap) {
+    /**
+     * Prints detailed information regarding given entity.
+     *
+     * @param entity Entity to view.
+     */
+    void viewEntity(Entity entity) {
+        Map<String, String> fieldMap = entity.viewDetailed();
         StringBuilder toPrint = new StringBuilder();
         for (String key : fieldMap.keySet()) {
             toPrint.append(StringUtil.capitalize(key))
-                   .append(" : ")
+                   .append(": ")
                    .append(fieldMap.get(key))
-                   .append(" ");
+                   .append("   ");
         }
         System.out.println(toPrint.toString().trim());
     }

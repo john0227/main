@@ -31,7 +31,7 @@ public class ViewMentorCommand extends ViewCommand {
         } catch (AlfredException e) {
             throw new CommandException(MESSAGE_INVALID_MENTOR_DISPLAYED_INDEX);
         }
-        viewEntity(mentorToView.viewDetailed());
+        viewEntity(mentorToView);
 
         return new CommandResult(MESSAGE_SUCCESS);
     }

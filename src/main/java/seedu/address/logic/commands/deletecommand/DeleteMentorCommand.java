@@ -19,11 +19,11 @@ public class DeleteMentorCommand extends DeleteCommand {
     private static final String MESSAGE_DELETE_MENTOR_SUCCESS = "Deleted Person: %1$s";
 
     private Name teamName;
-    
+
     public DeleteMentorCommand(Id id) {
         super(id);
     }
-    
+
     public DeleteMentorCommand(Id id, Name teamName) {
         super(id);
         requireNonNull(teamName);
@@ -32,13 +32,13 @@ public class DeleteMentorCommand extends DeleteCommand {
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
-        
+
         if (this.teamName != null) {
             // find team (or throw Exception)
             // delete mentor from team
             // return CommandResult
         }
-        
+
         Mentor mentorToBeDeleted;
         try {
             mentorToBeDeleted = model.deleteMentor(this.id);

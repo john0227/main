@@ -18,7 +18,7 @@ public class ListParticipantCommand extends ListCommand {
     public CommandResult execute(Model model) {
         requireNonNull(model);
 
-        model.getParticipantList().list().forEach(p -> listEntity(p.viewMinimal()));
+        model.getParticipantList().list().forEach(p -> listEntity(p));
 
         return new CommandResult(MESSAGE_SUCCESS);
     }

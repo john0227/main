@@ -18,7 +18,7 @@ public class ListTeamCommand extends ListCommand {
     public CommandResult execute(Model model) {
         requireNonNull(model);
 
-        model.getTeamList().list().forEach(t -> listEntity(t.viewMinimal()));
+        model.getTeamList().list().forEach(t -> listEntity(t));
 
         return new CommandResult(MESSAGE_SUCCESS);
     }

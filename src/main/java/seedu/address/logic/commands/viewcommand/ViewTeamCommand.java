@@ -7,7 +7,6 @@ import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 import seedu.address.model.entity.Id;
-import seedu.address.model.entity.Name;
 import seedu.address.model.entity.Team;
 
 /**
@@ -33,7 +32,7 @@ public class ViewTeamCommand extends ViewCommand {
         } catch (AlfredException e) {
             throw new CommandException(MESSAGE_INVALID_TEAM_DISPLAYED_INDEX);
         }
-        viewEntity(teamToView.viewDetailed());
+        viewEntity(teamToView);
 
         return new CommandResult(MESSAGE_SUCCESS);
     }

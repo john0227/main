@@ -18,7 +18,7 @@ public class ListMentorCommand extends ListCommand {
     public CommandResult execute(Model model) {
         requireNonNull(model);
 
-        model.getMentorList().list().forEach(m -> listEntity(m.viewMinimal()));
+        model.getMentorList().list().forEach(m -> listEntity(m));
 
         return new CommandResult(MESSAGE_SUCCESS);
     }

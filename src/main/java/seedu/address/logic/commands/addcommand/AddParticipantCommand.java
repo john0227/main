@@ -6,8 +6,8 @@ import seedu.address.commons.util.CollectionUtil;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
-import seedu.address.model.entity.Participant;
 import seedu.address.model.entity.Name;
+import seedu.address.model.entity.Participant;
 
 /**
  * Adds a {@link Participant} to Alfred.
