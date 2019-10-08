@@ -37,16 +37,7 @@ public class ViewParticipantCommand extends ViewCommand {
         } catch (AlfredException e) {
             throw new CommandException(MESSAGE_INVALID_PARTICIPANT_DISPLAYED_INDEX);
         }
-
-        HashMap<String, String> fieldMap = participantToView.viewDetailed();
-        StringBuilder toPrint = new StringBuilder();
-        for (String key : fieldMap.keySet()) {
-            toPrint.append(StringUtil.capitalize(key))
-                   .append(" : ")
-                   .append(fieldMap.get(key))
-                   .append(" ");
-        }
-        System.out.println(toPrint.toString().trim());
+        viewEntity(participantToView.viewDetailed());
 
         return new CommandResult(MESSAGE_SUCCESS);
     }

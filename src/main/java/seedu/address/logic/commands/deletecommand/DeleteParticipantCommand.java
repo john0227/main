@@ -7,6 +7,7 @@ import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 import seedu.address.model.entity.Id;
+import seedu.address.model.entity.Name;
 import seedu.address.model.entity.Participant;
 
 /**
@@ -14,19 +15,31 @@ import seedu.address.model.entity.Participant;
  */
 public class DeleteParticipantCommand extends DeleteCommand {
 
-    /* Possible Fields? */
-
     // Later, update this constant to say participant name is invalid
     private static final String MESSAGE_INVALID_PARTICIPANT_DISPLAYED_INDEX = "The participant ID provided is invalid";
     private static final String MESSAGE_DELETE_PARTICIPANT_SUCCESS = "Deleted Person: %1$s";
+
+    private Name teamName;
 
     public DeleteParticipantCommand(Id id) {
         super(id);
     }
 
+    public DeleteParticipantCommand(Id id, Name teamName) {
+        super(id);
+        requireNonNull(teamName);
+        this.teamName = teamName;
+    }
+
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
+
+        if (this.teamName != null) {
+            // find Team (or throw Exception)
+            // delete from team
+            // return CommandResult
+        }
 
         Participant participantToBeDeleted;
         try {

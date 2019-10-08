@@ -147,7 +147,6 @@ public class EditParticipantCommand extends EditCommand {
                     && getPhone().equals(e.getPhone())
                     && getEmail().equals(e.getEmail());
         }
-
     }
 
 }

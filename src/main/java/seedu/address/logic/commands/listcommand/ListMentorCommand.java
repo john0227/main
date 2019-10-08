@@ -12,14 +12,15 @@ import seedu.address.model.entity.Mentor;
 public class ListMentorCommand extends ListCommand {
 
     /* Possible Fields? */
+    public static final String MESSAGE_SUCCESS = "Listed all mentors";
 
     @Override
     public CommandResult execute(Model model) {
         requireNonNull(model);
 
-        // See ListIssueCommand
+        model.getMentorList().list().forEach(m -> listEntity(m.viewMinimal()));
 
-        return new CommandResult("");
+        return new CommandResult(MESSAGE_SUCCESS);
     }
 
 }

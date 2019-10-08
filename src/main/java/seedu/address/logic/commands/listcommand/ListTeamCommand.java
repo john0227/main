@@ -12,14 +12,15 @@ import seedu.address.model.entity.Team;
 public class ListTeamCommand extends ListCommand {
 
     /* Possible Fields? */
+    public static final String MESSAGE_SUCCESS = "Listed all teams";
 
     @Override
     public CommandResult execute(Model model) {
         requireNonNull(model);
 
-        // see ListIssueCommand
+        model.getTeamList().list().forEach(t -> listEntity(t.viewMinimal()));
 
-        return new CommandResult("");
+        return new CommandResult(MESSAGE_SUCCESS);
     }
 
 }
