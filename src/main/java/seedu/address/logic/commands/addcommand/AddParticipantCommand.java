@@ -30,6 +30,7 @@ public class AddParticipantCommand extends AddCommand {
             + CliSyntax.PREFIX_PHONE + "98765432";
 
     private Participant participant;
+    private Name participantName;
     private Name teamName;
 
     public AddParticipantCommand(Participant participant) {
@@ -37,21 +38,24 @@ public class AddParticipantCommand extends AddCommand {
         this.participant = participant;
     }
 
-    public AddParticipantCommand(Participant participant, Name teamName) {
-        CollectionUtil.requireAllNonNull(participant, teamName);
-        this.participant = participant;
-        this.teamName = teamName;
-    }
+    /*
+     * public AddParticipantCommand(Name participantName, Name teamName) {
+     *     CollectionUtil.requireAllNonNull(participantName, teamName);
+     *     this.participantName = participantName;
+     *     this.teamName = teamName;
+     * }
+     */
 
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
 
-        if (this.teamName != null) {
+        // if (this.teamName != null) {
+            // find participant (or throw Exception) and retrieve ID
             // find team (or throw Exception)
             // Add participant to team
             // Return CommandResult
-        }
+        // }
 
         try {
             model.addParticipant(this.participant);

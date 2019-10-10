@@ -32,28 +32,32 @@ public class AddMentorCommand extends AddCommand {
             + CliSyntax.PREFIX_ORGANISATION + "Fill it up for me idk what this is...";
 
     private Mentor mentor;
-    private Name teamName;
+    // private Name mentorName;
+    // private Name teamName;
 
     public AddMentorCommand(Mentor mentor) {
         requireNonNull(mentor);
         this.mentor = mentor;
     }
 
-    public AddMentorCommand(Mentor mentor, Name teamName) {
-        CollectionUtil.requireAllNonNull(mentor, teamName);
-        this.mentor = mentor;
-        this.teamName = teamName;
-    }
+    /*
+     * public AddMentorCommand(Name mentorName, Name teamName) {
+     *     CollectionUtil.requireAllNonNull(mentorName, teamName);
+     *     this.mentorName = mentorName;
+     *     this.teamName = teamName;
+     * }
+     */
 
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
 
-        if (this.teamName != null) {
+        // if (this.teamName != null) {
+            // find mentor (or throw Exception) and retrieve ID
             // find team (or throw Exception)
             // add Mentor to team
             // return CommandResult
-        }
+        // }
 
         try {
             model.addMentor(this.mentor);
