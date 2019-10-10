@@ -6,9 +6,16 @@ import seedu.address.model.entity.Id;
 import seedu.address.model.entity.Participant;
 import seedu.address.model.entitylist.ParticipantList;
 
+/**
+ * Stub for ModelManager in order to avoid saving of Entities created during tests.
+ */
 public class ModelManagerStub extends ModelManager {
 
     private ParticipantList participantList;
+
+    public ModelManagerStub() {
+        participantList = new ParticipantList();
+    }
 
     @Override
     public void addParticipant(Participant participant) throws AlfredException {

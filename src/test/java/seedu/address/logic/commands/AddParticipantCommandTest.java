@@ -39,8 +39,8 @@ public class AddParticipantCommandTest {
         AddParticipantCommand addParticipantCommand = new AddParticipantCommand(validParticipant);
         ModelManagerStub modelStub = new ModelManagerStub();
 
-        Assert.assertThrows(CommandException.class, AddParticipantCommand.MESSAGE_DUPLICATE_PARTICIPANT,
-                () -> addParticipantCommand.execute(modelStub));
+        Assert.assertThrows(CommandException.class,
+                AddParticipantCommand.MESSAGE_DUPLICATE_PARTICIPANT, () -> addParticipantCommand.execute(modelStub));
     }
 
 }
