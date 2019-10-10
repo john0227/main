@@ -3,13 +3,11 @@ package seedu.address.logic.commands.addcommand;
 import static java.util.Objects.requireNonNull;
 
 import seedu.address.AlfredException;
-import seedu.address.commons.util.CollectionUtil;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.CliSyntax;
 import seedu.address.model.Model;
 import seedu.address.model.entity.Mentor;
-import seedu.address.model.entity.Name;
 
 /**
  * Adds a {@link Mentor} to Alfred.
@@ -53,10 +51,10 @@ public class AddMentorCommand extends AddCommand {
         requireNonNull(model);
 
         // if (this.teamName != null) {
-            // find mentor (or throw Exception) and retrieve ID
-            // find team (or throw Exception)
-            // add Mentor to team
-            // return CommandResult
+        //     find mentor (or throw Exception) and retrieve ID
+        //     find team (or throw Exception)
+        //     add Mentor to team
+        //     return CommandResult
         // }
 
         try {
