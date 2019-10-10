@@ -1,22 +1,21 @@
 package seedu.address.testutil;
 
-import java.util.HashSet;
-import java.util.Set;
-
+import seedu.address.model.entity.Email;
 import seedu.address.model.entity.Id;
 import seedu.address.model.entity.Name;
-import seedu.address.model.entity.Email;
 import seedu.address.model.entity.Participant;
 import seedu.address.model.entity.Phone;
 import seedu.address.model.entity.PrefixType;
-import seedu.address.model.util.SampleDataUtil;
 
+/**
+ * Builds a valid {@link Participant} to facilitate testing.
+ */
 public class ParticipantBuilder {
 
     public static final String DEFAULT_NAME = "Alice Pauline";
     public static final String DEFAULT_PHONE = "85355255";
     public static final String DEFAULT_EMAIL = "alice@gmail.com";
-    public static int id = 1;
+    private static int id = 1;
 
     private Name name;
     private Phone phone;
@@ -69,5 +68,5 @@ public class ParticipantBuilder {
     public Participant build() {
         return new Participant(name, new Id(PrefixType.P, id++), email, phone);
     }
-    
+
 }
