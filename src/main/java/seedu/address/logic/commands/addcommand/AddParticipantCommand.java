@@ -3,7 +3,6 @@ package seedu.address.logic.commands.addcommand;
 import static java.util.Objects.requireNonNull;
 
 import seedu.address.AlfredException;
-import seedu.address.commons.util.CollectionUtil;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.CliSyntax;
@@ -51,10 +50,10 @@ public class AddParticipantCommand extends AddCommand {
         requireNonNull(model);
 
         // if (this.teamName != null) {
-            // find participant (or throw Exception) and retrieve ID
-            // find team (or throw Exception)
-            // Add participant to team
-            // Return CommandResult
+        //     find participant (or throw Exception) and retrieve ID
+        //     find team (or throw Exception)
+        //     Add participant to team
+        //     Return CommandResult
         // }
 
         try {
