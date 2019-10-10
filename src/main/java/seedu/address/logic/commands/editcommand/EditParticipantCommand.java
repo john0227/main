@@ -8,6 +8,7 @@ import seedu.address.AlfredException;
 import seedu.address.commons.util.CollectionUtil;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.exceptions.CommandException;
+import seedu.address.logic.parser.CliSyntax;
 import seedu.address.model.Model;
 import seedu.address.model.entity.Email;
 import seedu.address.model.entity.Id;
@@ -20,12 +21,22 @@ import seedu.address.model.entity.Phone;
  */
 public class EditParticipantCommand extends EditCommand {
 
-    /* Possible Fields */
+    public static final String COMMAND_WORD = "edit participant";
     public static final String MESSAGE_EDIT_PARTICIPANT_SUCCESS = "Edited Participant: %1$s";
     public static final String MESSAGE_NOT_EDITED = "At least one field to edit must be provided.";
     public static final String MESSAGE_DUPLICATE_PARTICIPANT = "This person already exists in the address book.";
     public static final String MESSAGE_INVALID_PARTICIPANT_DISPLAYED_INDEX =
             "The participant index provided is invalid";
+    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Edits the details of the participant identified "
+            + "by the index number used in the displayed participant list. "
+            + "Existing values will be overwritten by the input values.\n"
+            + "Parameters: participant ID "
+            + "[" + CliSyntax.PREFIX_NAME + "NAME] "
+            + "[" + CliSyntax.PREFIX_PHONE + "PHONE] "
+            + "[" + CliSyntax.PREFIX_EMAIL + "EMAIL]\n"
+            + "Example: " + COMMAND_WORD + " P-1 "
+            + CliSyntax.PREFIX_PHONE + "91234567 "
+            + CliSyntax.PREFIX_EMAIL + "johndoe@example.com";
 
     private EditParticipantDescriptor editParticipantDescriptor;
 

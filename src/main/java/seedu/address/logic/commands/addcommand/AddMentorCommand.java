@@ -6,6 +6,7 @@ import seedu.address.AlfredException;
 import seedu.address.commons.util.CollectionUtil;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.exceptions.CommandException;
+import seedu.address.logic.parser.CliSyntax;
 import seedu.address.model.Model;
 import seedu.address.model.entity.Mentor;
 import seedu.address.model.entity.Name;
@@ -16,8 +17,19 @@ import seedu.address.model.entity.Name;
 public class AddMentorCommand extends AddCommand {
 
     public static final String COMMAND_WORD = "addMentor";
-    private static final String MESSAGE_SUCCESS = "New mentor added: %s";
-    private static final String MESSAGE_DUPLICATE_MENTOR = "This mentor already exists in this Hackathon";
+    public static final String MESSAGE_SUCCESS = "New mentor added: %s";
+    public static final String MESSAGE_DUPLICATE_MENTOR = "This mentor already exists in this Hackathon";
+    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Adds a mentor to Alfred. "
+            + "Parameters: "
+            + CliSyntax.PREFIX_NAME + "NAME "
+            + CliSyntax.PREFIX_PHONE + "PHONE "
+            + CliSyntax.PREFIX_EMAIL + "EMAIL "
+            + CliSyntax.PREFIX_ORGANISATION + "ORGANIZATION\n"
+            + "Example: " + COMMAND_WORD + " "
+            + CliSyntax.PREFIX_NAME + "John Doe "
+            + CliSyntax.PREFIX_PHONE + "98765432 "
+            + CliSyntax.PREFIX_EMAIL + "johnd@example.com "
+            + CliSyntax.PREFIX_ORGANISATION + "Fill it up for me idk what this is...";
 
     private Mentor mentor;
     private Name teamName;

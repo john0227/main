@@ -14,7 +14,6 @@ import seedu.address.model.entity.Id;
  */
 public abstract class ViewCommand extends Command {
 
-    /* Possible Fields */
     public static final String COMMAND_WORD = "view";
 
     protected Id id;

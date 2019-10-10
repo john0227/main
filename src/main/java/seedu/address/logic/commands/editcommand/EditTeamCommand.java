@@ -9,6 +9,7 @@ import seedu.address.AlfredException;
 import seedu.address.commons.util.CollectionUtil;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.exceptions.CommandException;
+import seedu.address.logic.parser.CliSyntax;
 import seedu.address.model.Model;
 import seedu.address.model.entity.Id;
 import seedu.address.model.entity.Location;
@@ -25,12 +26,25 @@ import seedu.address.model.entity.Team;
  */
 public class EditTeamCommand extends EditCommand {
 
-    /* Possible Fields */
+    public static final String COMMAND_WORD = "edit team";
     public static final String MESSAGE_EDIT_TEAM_SUCCESS = "Edited Team: %1$s";
     public static final String MESSAGE_NOT_EDITED = "At least one field to edit must be provided.";
     public static final String MESSAGE_DUPLICATE_TEAM = "This person already exists in the address book.";
     public static final String MESSAGE_INVALID_TEAM_DISPLAYED_INDEX =
             "The team index provided is invalid";
+    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Edits the details of the team identified "
+            + "by the index number used in the displayed team list. "
+            + "Existing values will be overwritten by the input values.\n"
+            + "Parameters: mentor ID "
+            + "[" + CliSyntax.PREFIX_NAME + "NAME] "
+            + "[" + CliSyntax.PREFIX_SUBJECT_NAME + "SUBJECT NAME] "
+            + "[" + CliSyntax.PREFIX_SCORE + "SCORE] "
+            + "[" + CliSyntax.PREFIX_PROJECT_NAME + "PROJECT NAME] "
+            + "[" + CliSyntax.PREFIX_PROJECT_TYPE + "PROJECT TYPE] "
+            + "[" + CliSyntax.PREFIX_LOCATION + "LOCATION]\n"
+            + "Example: " + COMMAND_WORD + " M-1 "
+            + CliSyntax.PREFIX_PHONE + "91234567 "
+            + CliSyntax.PREFIX_EMAIL + "johndoe@example.com";
 
     private EditTeamDescriptor editTeamDescriptor;
 

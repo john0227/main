@@ -6,6 +6,7 @@ import seedu.address.AlfredException;
 import seedu.address.commons.util.CollectionUtil;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.exceptions.CommandException;
+import seedu.address.logic.parser.CliSyntax;
 import seedu.address.model.Model;
 import seedu.address.model.entity.Name;
 import seedu.address.model.entity.Participant;
@@ -16,8 +17,17 @@ import seedu.address.model.entity.Participant;
 public class AddParticipantCommand extends AddCommand {
 
     public static final String COMMAND_WORD = "addParticipant";
-    private static final String MESSAGE_SUCCESS = "New participant added: %s";
-    private static final String MESSAGE_DUPLICATE_PARTICIPANT = "This participant already exists in this Hackathon";
+    public static final String MESSAGE_SUCCESS = "New participant added: %s";
+    public static final String MESSAGE_DUPLICATE_PARTICIPANT = "This participant already exists in this Hackathon";
+    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Adds a participant to Alfred. "
+            + "Parameters: "
+            + CliSyntax.PREFIX_NAME + "NAME "
+            + CliSyntax.PREFIX_EMAIL + "EMAIL "
+            + CliSyntax.PREFIX_PHONE + "PHONE\n"
+            + "Example: " + COMMAND_WORD + " "
+            + CliSyntax.PREFIX_NAME + "John Doe "
+            + CliSyntax.PREFIX_EMAIL + "johnd@example.com "
+            + CliSyntax.PREFIX_PHONE + "98765432";
 
     private Participant participant;
     private Name teamName;

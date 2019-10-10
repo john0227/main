@@ -8,6 +8,7 @@ import seedu.address.AlfredException;
 import seedu.address.commons.util.CollectionUtil;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.exceptions.CommandException;
+import seedu.address.logic.parser.CliSyntax;
 import seedu.address.model.Model;
 import seedu.address.model.entity.Email;
 import seedu.address.model.entity.Id;
@@ -21,12 +22,24 @@ import seedu.address.model.entity.SubjectName;
  */
 public class EditMentorCommand extends EditCommand {
 
-    /* Possible Fields */
+    public static final String COMMAND_WORD = "edit mentor"; // edit this @Abhiman2211 and the rest of command words
     public static final String MESSAGE_EDIT_MENTOR_SUCCESS = "Edited Mentor: %1$s";
     public static final String MESSAGE_NOT_EDITED = "At least one field to edit must be provided.";
     public static final String MESSAGE_DUPLICATE_MENTOR = "This person already exists in the address book.";
     public static final String MESSAGE_INVALID_MENTOR_DISPLAYED_INDEX =
             "The mentor index provided is invalid";
+    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Edits the details of the mentor identified "
+            + "by the index number used in the displayed mentor list. "
+            + "Existing values will be overwritten by the input values.\n"
+            + "Parameters: mentor ID "
+            + "[" + CliSyntax.PREFIX_NAME + "NAME] "
+            + "[" + CliSyntax.PREFIX_PHONE + "PHONE] "
+            + "[" + CliSyntax.PREFIX_EMAIL + "EMAIL] "
+            + "[" + CliSyntax.PREFIX_ORGANISATION + "ORGANIZATION] "
+            + "[" + CliSyntax.PREFIX_SUBJECT_NAME + "SUBJECT NAME]\n"
+            + "Example: " + COMMAND_WORD + " M-1 "
+            + CliSyntax.PREFIX_PHONE + "91234567 "
+            + CliSyntax.PREFIX_EMAIL + "johndoe@example.com";
 
     private EditMentorDescriptor editMentorDescriptor;
 
