@@ -47,7 +47,7 @@ public class CsvUtil {
         Id mentorId;
         try {
             mentorId = new Id(PrefixType.M, Integer.parseInt(data[1]));
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException nfe) {
             mentorId = MentorList.generateId();
         }
         Name mentorName = new Name(data[2]);
@@ -73,7 +73,7 @@ public class CsvUtil {
         Id participantId;
         try {
             participantId = new Id(PrefixType.P, Integer.parseInt(data[1]));
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException nfe) {
             participantId = ParticipantList.generateId();
         }
         Name participantName = new Name(data[2]);
@@ -100,14 +100,14 @@ public class CsvUtil {
         Id teamId;
         try {
             teamId = new Id(PrefixType.T, Integer.parseInt(data[1]));
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException nfe) {
             teamId = TeamList.generateId();
         }
         Name teamName = new Name(data[2]);
         SubjectName teamSubject = SubjectName.valueOf(data[3].toUpperCase());
         Score teamScore = new Score(Integer.parseInt(data[4])); // NFException subclass of IAException
         Name teamProjectName = new Name(data[5]);
-        ProjectType teamProjectType = ProjectType.valueOf(data[6].toUpperCase());
+        ProjectType teamProjectType = ProjectType.valueOf(data[6]);
         Location teamLocation = new Location(Integer.parseInt(data[7])); // NFException subclass of IAException
         return new Team(
                 teamId,
@@ -125,60 +125,59 @@ public class CsvUtil {
 // =================================== Writer Methods ================================================
 
     public static void writeMentors(BufferedWriter csvWriter, ReadOnlyEntityList mentorList) throws IOException {
-        csvWriter.write(HEADER_MENTOR + "\n");
+        csvWriter.write(HEADER_MENTOR);
         for (Entity e : mentorList.list()) {
             String mentorToCsvString = toCsvString((Mentor) e);
             csvWriter.write(mentorToCsvString + "\n");
         }
     }
 
+    private static String toCsvString(Mentor mentor) {
+        return new StringBuilder("M,")
+                .append(mentor.getId().toString()).append(",")
+                .append(mentor.getName().toString()).append(",")
+                .append(mentor.getPhone().toString()).append(",")
+                .append(mentor.getEmail().toString()).append(",")
+                .append(mentor.getOrganization().toString()).append(",")
+                .append(mentor.getSubject().toString())
+                .toString();
+    }
+
     public static void writeParticipants(BufferedWriter csvWriter, ReadOnlyEntityList participantList)
             throws IOException {
-        csvWriter.write(HEADER_PARTICIPANT + "\n");
+        csvWriter.write(HEADER_PARTICIPANT);
         for (Entity e : participantList.list()) {
             String participantToCsvString = toCsvString((Participant) e);
             csvWriter.write(participantToCsvString + "\n");
         }
     }
 
+    private static String toCsvString(Participant participant) {
+        return new StringBuilder("P,")
+                .append(participant.getId().toString()).append(",")
+                .append(participant.getName().toString()).append(",")
+                .append(participant.getPhone().toString()).append(",")
+                .append(participant.getEmail().toString())
+                .toString();
+    }
+
     public static void writeTeams(BufferedWriter csvWriter, ReadOnlyEntityList teamList) throws IOException {
-        // TODO: move to ExportCommand
-        csvWriter.write(HEADER_TEAM + "\n");
+        csvWriter.write(HEADER_TEAM);
         for (Entity e : teamList.list()) {
             String teamToCsvString = toCsvString((Team) e);
             csvWriter.write(teamToCsvString + "\n");
         }
     }
 
-    private static String toCsvString(Mentor mentor) {
-        return new StringBuilder("M,")
-                .append(mentor.getId().getNumber()).append(",")
-                .append(mentor.getName().toStorageValue()).append(",")
-                .append(mentor.getPhone().toStorageValue()).append(",")
-                .append(mentor.getEmail().toStorageValue()).append(",")
-                .append(mentor.getOrganization().toStorageValue()).append(",")
-                .append(mentor.getSubject().toStorageValue())
-                .toString();
-    }
-
-    private static String toCsvString(Participant participant) {
-        return new StringBuilder("P,")
-                .append(participant.getId().getNumber()).append(",")
-                .append(participant.getName().toStorageValue()).append(",")
-                .append(participant.getPhone().toStorageValue()).append(",")
-                .append(participant.getEmail().toStorageValue())
-                .toString();
-    }
-
     private static String toCsvString(Team team) {
         return new StringBuilder("T,")
-                .append(team.getId().getNumber()).append(",")
-                .append(team.getName().toStorageValue()).append(",")
-                .append(team.getSubject().toStorageValue()).append(",")
-                .append(team.getScore().toStorageValue()).append(",")
-                .append(team.getProjectName().toStorageValue()).append(",")
-                .append(team.getProjectType().toStorageValue()).append(",")
-                .append(team.getLocation().toStorageValue())
+                .append(team.getId().toString()).append(",")
+                .append(team.getName().toString()).append(",")
+                .append(team.getSubject().toString()).append(",")
+                .append(team.getScore().toString()).append(",")
+                .append(team.getProjectName().toString()).append(",")
+                .append(team.getProjectType().toString()).append(",")
+                .append(team.getLocation().toString())
                 .toString();
     }
 
