@@ -3,6 +3,7 @@ package seedu.address.logic.commands.exceptions;
 import seedu.address.commons.exceptions.AlfredException;
 import seedu.address.logic.commands.Command;
 
+// TODO : wrap this into AlfredCommandException
 /**
  * Represents an error which occurs during execution of a {@link Command}.
  * There are 4 main scenario where CommandException is thrown:
