@@ -10,7 +10,7 @@ import seedu.address.model.entity.Id;
 import seedu.address.model.entity.Mentor;
 import seedu.address.model.entity.Participant;
 import seedu.address.model.entity.Team;
-import seedu.address.model.entitylist.ReadableEntityList;
+import seedu.address.model.entitylist.ReadOnlyEntityList;
 import seedu.address.model.person.Person;
 
 /**
@@ -19,6 +19,11 @@ import seedu.address.model.person.Person;
 public interface Model {
     /** {@code Predicate} that always evaluate to true */
     Predicate<Person> PREDICATE_SHOW_ALL_PERSONS = unused -> true;
+
+    /**
+     * Initializes the model.
+     */
+    void initialize();
 
     /**
      * Replaces user prefs data with the data in {@code userPrefs}.
@@ -53,17 +58,17 @@ public interface Model {
     /**
      * Returns the ParticipantList.
      */
-    ReadableEntityList getParticipantList();
+    ReadOnlyEntityList getParticipantList();
 
     /**
      * Returns the TeamList.
      */
-    ReadableEntityList getTeamList();
+    ReadOnlyEntityList getTeamList();
 
     /**
      * Returns the MentorList.
      */
-    ReadableEntityList getMentorList();
+    ReadOnlyEntityList getMentorList();
 
     /* Below is the API exposed for the controllers to call */
 
@@ -73,7 +78,7 @@ public interface Model {
 
     void addParticipant(Participant participant) throws AlfredException;
 
-    boolean updateParticipant(Id id, Participant participant);
+    void updateParticipant(Id id, Participant participant) throws AlfredException;
 
     Participant deleteParticipant(Id id) throws AlfredException;
 
@@ -87,7 +92,11 @@ public interface Model {
 
     void addTeam(Team team) throws AlfredException;
 
-    boolean updateTeam(Id teamId, Team team);
+    void addParticipantToTeam(Id teamId, Participant participant) throws AlfredException;
+
+    void addMentorToTeam(Id teamId, Mentor mentor) throws AlfredException;
+
+    void updateTeam(Id teamId, Team team) throws AlfredException;
 
     Team deleteTeam(Id id) throws AlfredException;
 
@@ -97,7 +106,7 @@ public interface Model {
 
     void addMentor(Mentor mentor) throws AlfredException;
 
-    boolean updateMentor(Id id, Mentor mentor);
+    void updateMentor(Id id, Mentor mentor) throws AlfredException;
 
     Mentor deleteMentor(Id id) throws AlfredException;
 
