@@ -65,7 +65,6 @@ public class Name {
      * @return Name in string format.
      */
     public String toStorageValue() {
-        // Why not just call toString()?
         return this.toString();
     }
 
