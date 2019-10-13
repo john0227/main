@@ -12,16 +12,18 @@ import seedu.address.model.entity.PrefixType;
  */
 public class ParticipantBuilder {
 
+    public static final Id DEFAULT_ID = new Id(PrefixType.P, 1);
     public static final String DEFAULT_NAME = "Alice Pauline";
     public static final String DEFAULT_PHONE = "85355255";
     public static final String DEFAULT_EMAIL = "alice@gmail.com";
-    private static int id = 1;
 
+    private Id id;
     private Name name;
     private Phone phone;
     private Email email;
 
     public ParticipantBuilder() {
+        id = DEFAULT_ID;
         name = new Name(DEFAULT_NAME);
         phone = new Phone(DEFAULT_PHONE);
         email = new Email(DEFAULT_EMAIL);
@@ -31,9 +33,18 @@ public class ParticipantBuilder {
      * Initializes the ParticipantBuilder with the data of {@code participantToCopy}.
      */
     public ParticipantBuilder(Participant participantToCopy) {
+        id = participantToCopy.getId();
         name = participantToCopy.getName();
         phone = participantToCopy.getPhone();
         email = participantToCopy.getEmail();
+    }
+
+    /**
+     * Sets the {@code Id} of the {@code Participant} that we are building.
+     */
+    public ParticipantBuilder withId(int id) {
+        this.id = new Id(PrefixType.P, id);
+        return this;
     }
 
     /**
@@ -66,7 +77,7 @@ public class ParticipantBuilder {
      * @return Participant
      */
     public Participant build() {
-        return new Participant(name, new Id(PrefixType.P, id++), email, phone);
+        return new Participant(name, id, email, phone);
     }
 
 }
