@@ -18,12 +18,12 @@ import seedu.address.testutil.ParticipantBuilder;
 public class AddParticipantCommandTest {
 
     @Test
-    public void constructor_nullPerson_throwsNullPointerException() {
+    public void constructor_nullParticipant_throwsNullPointerException() {
         assertThrows(NullPointerException.class, () -> new AddParticipantCommand(null));
     }
 
     @Test
-    public void execute_personAcceptedByModel_addSuccessful() throws Exception {
+    public void execute_participantAcceptedByModel_addSuccessful() throws Exception {
         ModelManagerStub modelStub = new ModelManagerStub();
         Participant validParticipant = new ParticipantBuilder().build();
 
@@ -35,7 +35,7 @@ public class AddParticipantCommandTest {
     }
 
     @Test
-    public void execute_duplicatePerson_throwsCommandException() throws AlfredException {
+    public void execute_duplicateParticipant_throwsCommandException() throws AlfredException {
         Participant validParticipant = new ParticipantBuilder().build();
         AddParticipantCommand addParticipantCommand = new AddParticipantCommand(validParticipant);
         ModelManagerStub modelStub = new ModelManagerStub();
