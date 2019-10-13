@@ -22,13 +22,14 @@ public class ListCommand extends Command {
     public static final String MESSAGE_SUCCESS = "Listed all entities";
     public static final String MESSAGE_USAGE = COMMAND_WORD + ": Lists all entities in Alfred.\n"
             + "Example: " + COMMAND_WORD;
-
+    private static final String MESSAGE_HEADER = "List of all entities:";
     // TODO: Message Usage
 
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
 
+        System.out.println(MESSAGE_HEADER);
         // Team: <Team Name> (Mentor: <Mentor Name>)
         // Participants:
         //    <Participant 1> (in this team)
@@ -46,7 +47,7 @@ public class ListCommand extends Command {
                         System.out.println("    " + p.getName());
                     }
                 });
-
+        // TODO: Currently, entities with no connection to a Team won't get printed
         return new CommandResult(MESSAGE_SUCCESS);
     }
 
@@ -59,7 +60,8 @@ public class ListCommand extends Command {
         Map<String, String> fieldMap = entity.viewMinimal();
         StringBuilder toPrint = new StringBuilder();
         for (String key : fieldMap.keySet()) {
-            toPrint.append(StringUtil.capitalize(key))
+            toPrint.append("\t")
+                    .append(StringUtil.capitalize(key))
                     .append(": ")
                     .append(fieldMap.get(key))
                     .append("   ");
