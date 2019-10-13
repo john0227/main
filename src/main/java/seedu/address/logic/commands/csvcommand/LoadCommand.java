@@ -59,14 +59,16 @@ public class LoadCommand extends Command {
         BufferedReader csvReader;
         try {
             File csvFile = new File(this.csvFileName);
-            if (FileUtil.isFileExists(csvFile.toPath())) {
+            if (!FileUtil.isFileExists(csvFile.toPath())) {
                 throw new CommandException(String.format(MESSAGE_FILE_NOT_FOUND, this.csvFileName));
             }
             csvReader = new BufferedReader(new FileReader(csvFile));
+            this.parseFile(csvReader, model);
+            csvReader.close();
         } catch (IOException ioe) {
             throw new CommandException(String.format(MESSAGE_IO_EXCEPTION, ioe.toString()));
         }
-        return parseFile(csvReader, model);
+        return new CommandResult(MESSAGE_SUCCESS);
     }
 
     /**
@@ -79,16 +81,21 @@ public class LoadCommand extends Command {
      *                          Exception message contains the line number (of CSV file)
      *                          and the content of the line that failed to be parsed.
      */
-    private CommandResult parseFile(BufferedReader csvReader, Model model) throws CommandException {
+    private void parseFile(BufferedReader csvReader, Model model) throws CommandException {
         List<ErrorTracker> errors = new ArrayList<>();
         int lineNumber = 1;
         String line;
         try {
             while ((line = csvReader.readLine()) != null) {
+                if (line.equals(CsvUtil.HEADER_MENTOR)
+                        || line.equals(CsvUtil.HEADER_PARTICIPANT)
+                        || line.equals(CsvUtil.HEADER_TEAM)) {
+                    continue;
+                }
                 String[] data = line.split(",");
                 try {
                     this.addEntity(data, model);
-                } catch (IllegalArgumentException iae) {
+                } catch (IllegalArgumentException | CommandException e) {
                     errors.add(new ErrorTracker(lineNumber, line, CAUSE_INVALID_DATA));
                 } catch (AlfredException e) {
                     errors.add(new ErrorTracker(lineNumber, line, CAUSE_DUPLICATE_ENTITY));
@@ -102,7 +109,6 @@ public class LoadCommand extends Command {
             String message = errors.stream().map(ErrorTracker::toString).collect(Collectors.joining("\n"));
             throw new CommandException(String.join("\n", MESSAGE_PARTIAL_SUCCESS, message));
         }
-        return new CommandResult(MESSAGE_SUCCESS);
     }
 
     /**

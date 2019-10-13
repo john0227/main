@@ -27,7 +27,7 @@ public class ExportCommand extends Command {
             + "Example 3: " + COMMAND_WORD + " [Valid path] Alfred_CSV" // TODO: fill path in later (with PrefixType)
             + " (Creates a CSV file named Alfred_CSV.csv at specified path)";
 
-    public static final String DEFAULT_FILE_PATH = System.getProperty("user.dir");
+    public static final String DEFAULT_FILE_PATH = System.getProperty("user.dir") + File.separator + "AlfredData";
     public static final String DEFAULT_FILE_NAME = "Alfred_Entity_List";
     private String csvFileName;
 
@@ -40,6 +40,9 @@ public class ExportCommand extends Command {
     }
 
     public ExportCommand(String csvFilePath, String csvFileName) {
+        if (csvFilePath.isEmpty()) {
+            csvFilePath = DEFAULT_FILE_PATH;
+        }
         this.csvFileName = csvFilePath + File.separator + csvFileName;
     }
 
@@ -51,6 +54,7 @@ public class ExportCommand extends Command {
             FileUtil.createIfMissing(csvFile.toPath());
             csvWriter = new BufferedWriter(new FileWriter(csvFile));
             this.writeToCsv(csvWriter, model);
+            csvWriter.close();
         } catch (IOException ioe) {
             throw new CommandException(String.format(MESSAGE_IO_EXCEPTION, ioe.toString()));
         }
