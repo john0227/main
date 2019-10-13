@@ -1,6 +1,6 @@
 package seedu.address.stub;
 
-import seedu.address.AlfredException;
+import seedu.address.commons.exceptions.AlfredException;
 import seedu.address.model.ModelManager;
 import seedu.address.model.entity.Id;
 import seedu.address.model.entity.Participant;
@@ -23,13 +23,18 @@ public class ModelManagerStub extends ModelManager {
     }
 
     @Override
-    public boolean updateParticipant(Id id, Participant participant) {
-        return this.participantList.update(id, participant);
+    public void updateParticipant(Id id, Participant participant) {
+        this.participantList.update(id, participant);
     }
 
     @Override
     public Participant deleteParticipant(Id id) throws AlfredException {
         return this.participantList.delete(id);
+    }
+
+    @Override
+    public Participant getParticipant(Id id) throws AlfredException {
+        return this.participantList.get(id);
     }
 
 }

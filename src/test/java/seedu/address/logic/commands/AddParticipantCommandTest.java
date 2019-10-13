@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
+import seedu.address.commons.exceptions.AlfredException;
 import seedu.address.logic.commands.addcommand.AddParticipantCommand;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.entity.Id;
@@ -34,10 +35,11 @@ public class AddParticipantCommandTest {
     }
 
     @Test
-    public void execute_duplicatePerson_throwsCommandException() {
+    public void execute_duplicatePerson_throwsCommandException() throws AlfredException {
         Participant validParticipant = new ParticipantBuilder().build();
         AddParticipantCommand addParticipantCommand = new AddParticipantCommand(validParticipant);
         ModelManagerStub modelStub = new ModelManagerStub();
+        addParticipantCommand.execute(modelStub);
 
         Assert.assertThrows(CommandException.class,
                 AddParticipantCommand.MESSAGE_DUPLICATE_PARTICIPANT, () -> addParticipantCommand.execute(modelStub));
