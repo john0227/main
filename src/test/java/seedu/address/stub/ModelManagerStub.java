@@ -13,6 +13,8 @@ import seedu.address.model.entity.Team;
  */
 public class ModelManagerStub extends ModelManager {
 
+    // TODO: Update when ModelManager gets updated
+
     public ModelManagerStub() {
         super();
     }
@@ -53,13 +55,19 @@ public class ModelManagerStub extends ModelManager {
      */
     @Override
     public Participant deleteParticipant(Id id) throws AlfredException {
-        Team targetTeam = this.getTeamByParticipantId(id);
-        Participant participantToDelete = this.getParticipant(id);
-        boolean isSuccessful = targetTeam.deleteParticipant(participantToDelete);
-        if (!isSuccessful) {
-            throw new AlfredModelException("Participant does not exist");
+        Participant deletedParticipant;
+        try {
+            Team targetTeam = this.getTeamByParticipantId(id);
+            Participant participantToDelete = this.getParticipant(id);
+            boolean isSuccessful = targetTeam.deleteParticipant(participantToDelete);
+            if (!isSuccessful) {
+                throw new AlfredModelException("Participant does not exist");
+            }
+        } catch (AlfredException e) {
+            // nothing
+        } finally {
+            deletedParticipant = this.participantList.delete(id);
         }
-        Participant deletedParticipant = this.participantList.delete(id);
         return deletedParticipant;
     }
 
