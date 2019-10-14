@@ -145,6 +145,23 @@ public class ParticipantList extends EntityList {
     }
 
     /**
+     * Checks if given {@code Entity} exists.
+     */
+    @Override
+    public boolean contains(Entity entity) {
+        if (!(entity instanceof Participant)) {
+            return false;
+        }
+        Participant participant = (Participant) entity;
+        for (Participant p : this.participants) {
+            if (p.isSameParticipant(participant) || p.getId().equals(participant.getId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Generates the ID for the object.
      *
      * @return ID
