@@ -143,6 +143,14 @@ public class MentorList extends EntityList {
     }
 
     /**
+     * Checks if this {@code MentorList} is empty.
+     */
+    @Override
+    public boolean isEmpty() {
+        return this.mentors.isEmpty();
+    }
+
+    /**
      * Generates the ID for the object.
      *
      * @return ID
