@@ -15,6 +15,7 @@ import seedu.address.stub.ModelManagerStub;
 import seedu.address.testutil.Assert;
 import seedu.address.testutil.ParticipantBuilder;
 
+// TODO: Test adding to Team (later)
 public class AddParticipantCommandTest {
 
     @Test

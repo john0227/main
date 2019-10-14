@@ -53,7 +53,6 @@ public class ListCommand extends Command {
             this.displayMentors(model);
             this.displayParticipants(model);
         }
-        // TODO: Currently, entities with no connection to a Team won't get printed
         return new CommandResult(MESSAGE_SUCCESS);
     }
 
@@ -71,7 +70,7 @@ public class ListCommand extends Command {
      *     </pre>
      * </pre>
      */
-    void showConnection(Model model) {
+    private void showConnection(Model model) {
         model.getTeamList().list()
                 .forEach(t -> {
                     Team team = (Team) t;
@@ -80,6 +79,10 @@ public class ListCommand extends Command {
                             ? "NA"
                             : team.getMentor().get().toString();
                     System.out.println(String.format("Team: %s (Mentor: %s)\nParticipants:", teamName, mentorName));
+                    if (team.getParticipants().isEmpty()) {
+                        System.out.println("    " + MESSAGE_NO_PARTICIPANT);
+                        return;
+                    }
                     for (Participant p : team.getParticipants()) {
                         System.out.println("    " + p.getName());
                     }
@@ -130,7 +133,7 @@ public class ListCommand extends Command {
      *
      * @param entity Entity to list.
      */
-    void listEntity(Entity entity) {
+    private void listEntity(Entity entity) {
         Map<String, String> fieldMap = entity.viewMinimal();
         StringBuilder toPrint = new StringBuilder();
         for (String key : fieldMap.keySet()) {

@@ -13,6 +13,7 @@ import seedu.address.model.entity.PrefixType;
 import seedu.address.stub.ModelManagerStub;
 import seedu.address.testutil.ParticipantBuilder;
 
+// TODO: test deleting from Team (later)
 public class DeleteParticipantCommandTest {
 
     @Test
