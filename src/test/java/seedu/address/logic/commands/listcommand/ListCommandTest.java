@@ -20,6 +20,8 @@ import seedu.address.testutil.TypicalTeams;
 
 public class ListCommandTest {
 
+    private static final String NEW_LINE = System.lineSeparator();
+
     private Model model;
     private Model expectedModel;
     private final ByteArrayOutputStream modelOut = new ByteArrayOutputStream();
@@ -54,7 +56,7 @@ public class ListCommandTest {
         String output = modelOut.toString();
 
         String expectedOutput = String.join(
-                "\r\n",
+                NEW_LINE,
                 ListCommand.MESSAGE_NO_TEAM,
                 ListCommand.MESSAGE_NO_MENTOR,
                 ListCommand.MESSAGE_NO_PARTICIPANT,

@@ -21,6 +21,8 @@ import seedu.address.testutil.ParticipantBuilder;
 
 public class ViewParticipantCommandTest {
 
+    private static final String NEW_LINE = System.lineSeparator();
+
     private Model modelOneParticipant;
     private Model expectedOneParticipant;
     private Participant participantToView;
@@ -69,8 +71,8 @@ public class ViewParticipantCommandTest {
         String output = modelOut.toString();
         // Configure correct output
         String expectedOutput = new StringBuilder()
-                .append(String.format("Viewing %s\r\n", this.participantToView.getName()))
-                .append(String.format("\t%s\r\n", this.participantToView.toString()))
+                .append(String.format("Viewing %s%s", this.participantToView.getName(), NEW_LINE))
+                .append(String.format("\t%s%s", this.participantToView.toString(), NEW_LINE))
                 .toString();
         // Test and reset OutputStream
         assertEquals(expectedOutput, output);

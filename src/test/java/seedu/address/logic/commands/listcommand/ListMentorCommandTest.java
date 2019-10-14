@@ -16,6 +16,8 @@ import seedu.address.testutil.TypicalMentors;
 
 public class ListMentorCommandTest {
 
+    private static final String NEW_LINE = System.lineSeparator();
+
     private Model model;
     private Model expectedModel;
     private final ByteArrayOutputStream modelOut = new ByteArrayOutputStream();
@@ -41,7 +43,7 @@ public class ListMentorCommandTest {
         new ListMentorCommand().execute(emptyModel);
         String output = modelOut.toString();
 
-        String expectedOutput = ListMentorCommand.MESSAGE_NO_MENTOR + "\r\n";
+        String expectedOutput = ListMentorCommand.MESSAGE_NO_MENTOR + NEW_LINE;
 
         // Test and reset OutStream
         assertEquals(expectedOutput, output);

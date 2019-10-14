@@ -16,6 +16,8 @@ import seedu.address.testutil.TypicalParticipants;
 
 public class ListParticipantCommandTest {
 
+    private static final String NEW_LINE = System.lineSeparator();
+
     private Model model;
     private Model expectedModel;
     private final ByteArrayOutputStream modelOut = new ByteArrayOutputStream();
@@ -41,7 +43,7 @@ public class ListParticipantCommandTest {
         new ListParticipantCommand().execute(emptyModel);
         String output = modelOut.toString();
 
-        String expectedOutput = ListParticipantCommand.MESSAGE_NO_PARTICIPANT + "\r\n";
+        String expectedOutput = ListParticipantCommand.MESSAGE_NO_PARTICIPANT + NEW_LINE;
 
         // Test and reset OutStream
         assertEquals(expectedOutput, output);

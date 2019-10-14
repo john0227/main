@@ -21,6 +21,8 @@ import seedu.address.testutil.MentorBuilder;
 
 public class ViewMentorCommandTest {
 
+    private static final String NEW_LINE = System.lineSeparator();
+
     private Model modelOneMentor;
     private Model expectedOneMentor;
     private Mentor mentorToView;
@@ -69,8 +71,8 @@ public class ViewMentorCommandTest {
         String output = modelOut.toString();
         // Configure correct output
         String expectedOutput = new StringBuilder()
-                .append(String.format("Viewing %s\r\n", this.mentorToView.getName()))
-                .append(String.format("\t%s\r\n", this.mentorToView.toString()))
+                .append(String.format("Viewing %s%s", this.mentorToView.getName(), NEW_LINE))
+                .append(String.format("\t%s%s", this.mentorToView.toString(), NEW_LINE))
                 .toString();
         // Test and reset OutputStream
         assertEquals(expectedOutput, output);

@@ -21,6 +21,8 @@ import seedu.address.testutil.TeamBuilder;
 
 public class ViewTeamCommandTest {
 
+    private static final String NEW_LINE = System.lineSeparator();
+
     private Model modelOneTeam;
     private Model expectedOneTeam;
     private Team teamToView;
@@ -68,8 +70,8 @@ public class ViewTeamCommandTest {
         String output = modelOut.toString();
         // Configure correct output
         String expectedOutput = new StringBuilder()
-                .append(String.format("Viewing %s\r\n", this.teamToView.getName()))
-                .append(String.format("\t%s\r\n", this.teamToView.toString()))
+                .append(String.format("Viewing %s%s", this.teamToView.getName(), NEW_LINE))
+                .append(String.format("\t%s%s", this.teamToView.toString(), NEW_LINE))
                 .toString();
         // Test and reset OutputStream
         assertEquals(expectedOutput, output);

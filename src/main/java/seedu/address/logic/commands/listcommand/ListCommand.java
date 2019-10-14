@@ -30,7 +30,6 @@ public class ListCommand extends Command {
     private static final String MESSAGE_PARTICIPANT_HEADER = "List of all participants:";
     private static final String MESSAGE_TEAM_HEADER = "List of all teams:";
 
-
     private boolean shouldShowConnection;
     // TODO: Message Usage
 
@@ -38,6 +37,12 @@ public class ListCommand extends Command {
         this.shouldShowConnection = false;
     }
 
+    /**
+     * Constructs a ListCommand with given boolean value, {@code shouldShowConnection}.
+     * If passed in value is true, Alfred will display the connections between {@code Entity} objects.
+     *
+     * @see #showConnection(Model)
+     */
     public ListCommand(boolean shouldShowConnection) {
         this.shouldShowConnection = shouldShowConnection;
     }

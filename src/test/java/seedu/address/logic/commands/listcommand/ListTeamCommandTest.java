@@ -16,6 +16,8 @@ import seedu.address.testutil.TypicalTeams;
 
 public class ListTeamCommandTest {
 
+    private static final String NEW_LINE = System.lineSeparator();
+
     private Model model;
     private Model expectedModel;
     private final ByteArrayOutputStream modelOut = new ByteArrayOutputStream();
@@ -41,7 +43,7 @@ public class ListTeamCommandTest {
         new ListTeamCommand().execute(emptyModel);
         String output = modelOut.toString();
 
-        String expectedOutput = ListTeamCommand.MESSAGE_NO_TEAM + "\r\n";
+        String expectedOutput = ListTeamCommand.MESSAGE_NO_TEAM + NEW_LINE;
 
         // Test and reset OutStream
         assertEquals(expectedOutput, output);
