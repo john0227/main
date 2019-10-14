@@ -1,10 +1,11 @@
 package seedu.address.model.entitylist;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import seedu.address.commons.exceptions.AlfredException;
 import seedu.address.commons.exceptions.AlfredModelException;
+import seedu.address.commons.exceptions.MissingEntityException;
+import seedu.address.commons.exceptions.ModelValidationException;
 import seedu.address.model.entity.Entity;
 import seedu.address.model.entity.Id;
 import seedu.address.model.entity.Mentor;
@@ -16,15 +17,13 @@ import seedu.address.model.entity.PrefixType;
  */
 public class MentorList extends EntityList {
     private static int lastUsedId = 0;
+    private static final String SIMILAR_MENTOR_MSG = "Mentor with the same name and either one of phone"
+            + "or email already exists.";
 
-    private List<Mentor> mentors;
 
-    /**
-     * Constructor.
-     */
-    public MentorList() {
-        this.mentors = new ArrayList<>();
-    }
+    private final ObservableList<Mentor> mentors = FXCollections.observableArrayList();
+    private final ObservableList<Mentor> unmodifiableMentors =
+            FXCollections.unmodifiableObservableList(mentors);
 
     /**
      * Gets Mentor by ID.
@@ -46,16 +45,25 @@ public class MentorList extends EntityList {
      *
      * @param id
      * @param updatedMentor
-     * @return boolean
+     * @throws ModelValidationException if a similar mentor already exists
+     * @throws MissingEntityException if the id passed does not match
      */
-    public boolean update(Id id, Mentor updatedMentor) {
+    public void update(Id id, Mentor updatedMentor)
+            throws MissingEntityException, ModelValidationException {
+        // First check if the updated mentor already exists
+        for (Mentor m: this.mentors) {
+            if (m.isSameMentor(updatedMentor) && !m.getId().equals(updatedMentor.getId())) {
+                throw new ModelValidationException(SIMILAR_MENTOR_MSG);
+            }
+        }
+
         for (int i = 0; i < this.mentors.size(); i++) {
             if (this.mentors.get(i).getId().equals(id)) {
                 this.mentors.set(i, updatedMentor);
-                return true;
+                return;
             }
         }
-        return false;
+        throw new MissingEntityException("Mentor to update does not exist.");
     }
 
     /**
@@ -66,7 +74,7 @@ public class MentorList extends EntityList {
      */
     public void add(Mentor mentor) throws AlfredException {
         for (Mentor m: this.mentors) {
-            if (m.getId() == mentor.getId()) {
+            if (m.isSameMentor(mentor) || m.getId().equals(mentor.getId())) {
                 throw new AlfredModelException("Item to add already exists!");
             }
         }
@@ -94,7 +102,7 @@ public class MentorList extends EntityList {
      *
      * @return List of Mentors.
      */
-    public List<Mentor> getSpecificTypedList() {
+    public ObservableList<Mentor> getSpecificTypedList() {
         return this.mentors;
     }
 
@@ -104,8 +112,18 @@ public class MentorList extends EntityList {
      * @return List of Mentors.
      */
     @Override
-    public List<? extends Entity> list() {
+    public ObservableList<? extends Entity> list() {
         return this.mentors;
+    }
+
+    /**
+     * Get the unmodifiable list of mentors.
+     *
+     * @return Observable List of Mentors
+     */
+    @Override
+    public ObservableList<? extends Entity> getUnmodifiableList() {
+        return this.unmodifiableMentors;
     }
 
     /**

@@ -112,4 +112,20 @@ public class Participant extends Entity {
 
         return builder.toString();
     }
+
+    /**
+     * This implements a looser definition of equality for Participants.
+     *
+     * @param otherParticipant
+     * @return boolean
+     */
+    public boolean isSameParticipant(Participant otherParticipant) {
+        if (otherParticipant == this) {
+            return true;
+        }
+
+        return this.name.equals(otherParticipant.getName())
+                && (this.phone.equals(otherParticipant.getPhone())
+                    || this.email.equals(otherParticipant.getEmail()));
+    }
 }
