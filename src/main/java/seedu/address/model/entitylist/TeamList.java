@@ -125,6 +125,14 @@ public class TeamList extends EntityList {
     }
 
     /**
+     * Checks if this {@code TeamList} is empty.
+     */
+    @Override
+    public boolean isEmpty() {
+        return this.teams.isEmpty();
+    }
+
+    /**
      * Generates the ID for the object.
      *
      * @return ID

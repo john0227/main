@@ -136,6 +136,14 @@ public class ParticipantList extends EntityList {
     }
 
     /**
+     * Checks if this {@code ParticipantList} is empty.
+     */
+    @Override
+    public boolean isEmpty() {
+        return this.participants.isEmpty();
+    }
+
+    /**
      * Generates the ID for the object.
      *
      * @return ID

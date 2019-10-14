@@ -15,14 +15,12 @@ public class ListTeamCommand extends ListCommand {
     public static final String MESSAGE_SUCCESS = "Listed all teams";
     public static final String MESSAGE_USAGE = COMMAND_WORD + ": Lists all of the mentors.\n"
             + "Example: " + COMMAND_WORD;
-    private static final String MESSAGE_HEADER = "List of all teams:";
 
     @Override
     public CommandResult execute(Model model) {
         requireNonNull(model);
 
-        System.out.println(MESSAGE_HEADER);
-        model.getTeamList().list().forEach(this::listEntity);
+        this.displayTeams(model);
 
         return new CommandResult(MESSAGE_SUCCESS);
     }

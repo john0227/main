@@ -1,10 +1,5 @@
 package seedu.address.model.entitylist;
 
-import java.util.List;
-
-import seedu.address.model.entity.Entity;
-import seedu.address.model.entity.Id;
-
 /**
  * This interface serves as the new API for the model.
  * Each child of {@code EntityList} should behave as a singleton.
@@ -45,8 +40,4 @@ public abstract class EntityList implements ReadOnlyEntityList {
     //     * @throws Exception
     //     */
     // abstract void add(Entity entity) throws AlfredException;
-
-    public abstract boolean contains(Id id);
-
-    public abstract List<? extends Entity> list();
 }

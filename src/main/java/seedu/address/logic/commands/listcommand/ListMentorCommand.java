@@ -15,14 +15,12 @@ public class ListMentorCommand extends ListCommand {
     public static final String MESSAGE_SUCCESS = "Listed all mentors";
     public static final String MESSAGE_USAGE = COMMAND_WORD + ": Lists all of the mentors.\n"
             + "Example: " + COMMAND_WORD;
-    private static final String MESSAGE_HEADER = "List of all mentors:";
 
     @Override
     public CommandResult execute(Model model) {
         requireNonNull(model);
 
-        System.out.println(MESSAGE_HEADER);
-        model.getMentorList().list().forEach(this::listEntity);
+        this.displayMentors(model);
 
         return new CommandResult(MESSAGE_SUCCESS);
     }
