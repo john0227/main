@@ -46,8 +46,8 @@ public class CsvUtil {
         // EntityType (M), ID (may be blank), Name, Phone, Email, Organization, SubjectName
         Id mentorId;
         try {
-            mentorId = new Id(PrefixType.M, Integer.parseInt(data[1].substring(2)));
-        } catch (NumberFormatException | StringIndexOutOfBoundsException e) {
+            mentorId = new Id(PrefixType.M, Integer.parseInt(data[1]));
+        } catch (NumberFormatException e) {
             mentorId = MentorList.generateId();
         }
         Name mentorName = new Name(data[2]);
@@ -72,8 +72,8 @@ public class CsvUtil {
         // EntityType (P), ID, Name, Phone, Email
         Id participantId;
         try {
-            participantId = new Id(PrefixType.P, Integer.parseInt(data[1].substring(2)));
-        } catch (NumberFormatException | StringIndexOutOfBoundsException e) {
+            participantId = new Id(PrefixType.P, Integer.parseInt(data[1]));
+        } catch (NumberFormatException e) {
             participantId = ParticipantList.generateId();
         }
         Name participantName = new Name(data[2]);
@@ -99,8 +99,8 @@ public class CsvUtil {
         //    cannot bulk register list of participants/mentor to Team (-> accomplish via AddToTeam)
         Id teamId;
         try {
-            teamId = new Id(PrefixType.T, Integer.parseInt(data[1].substring(2)));
-        } catch (NumberFormatException | StringIndexOutOfBoundsException e) {
+            teamId = new Id(PrefixType.T, Integer.parseInt(data[1]));
+        } catch (NumberFormatException e) {
             teamId = TeamList.generateId();
         }
         Name teamName = new Name(data[2]);
@@ -132,17 +132,6 @@ public class CsvUtil {
         }
     }
 
-    private static String toCsvString(Mentor mentor) {
-        return new StringBuilder("M,")
-                .append(mentor.getId().toString()).append(",")
-                .append(mentor.getName().toStorageValue()).append(",")
-                .append(mentor.getPhone().toStorageValue()).append(",")
-                .append(mentor.getEmail().toStorageValue()).append(",")
-                .append(mentor.getOrganization().toStorageValue()).append(",")
-                .append(mentor.getSubject().toStorageValue())
-                .toString();
-    }
-
     public static void writeParticipants(BufferedWriter csvWriter, ReadOnlyEntityList participantList)
             throws IOException {
         csvWriter.write(HEADER_PARTICIPANT + "\n");
@@ -150,15 +139,6 @@ public class CsvUtil {
             String participantToCsvString = toCsvString((Participant) e);
             csvWriter.write(participantToCsvString + "\n");
         }
-    }
-
-    private static String toCsvString(Participant participant) {
-        return new StringBuilder("P,")
-                .append(participant.getId().toString()).append(",")
-                .append(participant.getName().toStorageValue()).append(",")
-                .append(participant.getPhone().toStorageValue()).append(",")
-                .append(participant.getEmail().toStorageValue())
-                .toString();
     }
 
     public static void writeTeams(BufferedWriter csvWriter, ReadOnlyEntityList teamList) throws IOException {
@@ -170,9 +150,29 @@ public class CsvUtil {
         }
     }
 
+    private static String toCsvString(Mentor mentor) {
+        return new StringBuilder("M,")
+                .append(mentor.getId().getNumber()).append(",")
+                .append(mentor.getName().toStorageValue()).append(",")
+                .append(mentor.getPhone().toStorageValue()).append(",")
+                .append(mentor.getEmail().toStorageValue()).append(",")
+                .append(mentor.getOrganization().toStorageValue()).append(",")
+                .append(mentor.getSubject().toStorageValue())
+                .toString();
+    }
+
+    private static String toCsvString(Participant participant) {
+        return new StringBuilder("P,")
+                .append(participant.getId().getNumber()).append(",")
+                .append(participant.getName().toStorageValue()).append(",")
+                .append(participant.getPhone().toStorageValue()).append(",")
+                .append(participant.getEmail().toStorageValue())
+                .toString();
+    }
+
     private static String toCsvString(Team team) {
         return new StringBuilder("T,")
-                .append(team.getId().toString()).append(",")
+                .append(team.getId().getNumber()).append(",")
                 .append(team.getName().toStorageValue()).append(",")
                 .append(team.getSubject().toStorageValue()).append(",")
                 .append(team.getScore().toStorageValue()).append(",")

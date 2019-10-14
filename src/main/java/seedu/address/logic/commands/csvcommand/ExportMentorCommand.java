@@ -6,18 +6,16 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import seedu.address.commons.util.FileUtil;
-import seedu.address.logic.commands.Command;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.csvcommand.csvutil.CsvUtil;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 
-public class ExportCommand extends Command {
+public class ExportMentorCommand extends ExportCommand {
 
-    public static final String COMMAND_WORD = "export"; // or any other suggestions
-    public static final String MESSAGE_SUCCESS = "Exported all data to %s"; // %s -> file name
-    public static final String MESSAGE_IO_EXCEPTION = "An IOException was caught: %s"; // %s -> exception message
-    public static final String MESSAGE_USAGE = COMMAND_WORD + ": exports Alfred data to a CSV file. "
+    public static final String COMMAND_WORD = "export mentor";
+    public static final String MESSAGE_SUCCESS = "Exported all mentors to %s"; // %s -> file name
+    public static final String MESSAGE_USAGE = COMMAND_WORD + ": exports all the mentors in Alfred to a CSV file. "
             + "Parameters: "
             + "[FILE_PATH] "   // PrefixType
             + "[FILE_NAME]\n"  // PrefixType
@@ -32,27 +30,16 @@ public class ExportCommand extends Command {
             + "Following \"export\", first parameter will always be treated as the path "
             + "and the second will always be treated as the file name.";
 
-    public static final String DEFAULT_FILE_PATH = System.getProperty("user.dir") + File.separator + "AlfredData";
-    public static final String DEFAULT_FILE_NAME = "Alfred_Entity_List";
-    protected String csvFileName;
-
-    public ExportCommand() {
-        this(DEFAULT_FILE_PATH, DEFAULT_FILE_NAME);
+    public ExportMentorCommand() {
+        super();
     }
 
-    public ExportCommand(String csvFilePath) {
-        this(csvFilePath, DEFAULT_FILE_NAME);
+    public ExportMentorCommand(String csvFilePath) {
+        super(csvFilePath);
     }
 
-    public ExportCommand(String csvFilePath, String csvFileName) {
-        if (csvFilePath.isEmpty()) {
-            csvFilePath = ".";
-        }
-        if (csvFilePath.endsWith(File.separator)) {
-            this.csvFileName = csvFilePath + csvFileName;
-            return;
-        }
-        this.csvFileName = csvFilePath + File.separator + csvFileName;
+    public ExportMentorCommand(String csvFilePath, String csvFileName) {
+        super(csvFilePath, csvFileName);
     }
 
     @Override
@@ -62,7 +49,7 @@ public class ExportCommand extends Command {
             File csvFile = new File(this.csvFileName);
             FileUtil.createIfMissing(csvFile.toPath());
             csvWriter = new BufferedWriter(new FileWriter(csvFile));
-            this.writeToCsv(csvWriter, model);
+            this.writeMentorsToCsv(csvWriter, model);
             csvWriter.close();
         } catch (IOException ioe) {
             throw new CommandException(String.format(MESSAGE_IO_EXCEPTION, ioe.toString()));
@@ -70,11 +57,9 @@ public class ExportCommand extends Command {
         return new CommandResult(String.format(MESSAGE_SUCCESS, this.csvFileName));
     }
 
-    private void writeToCsv(BufferedWriter csvWriter, Model model) throws CommandException {
+    private void writeMentorsToCsv(BufferedWriter csvWriter, Model model) throws CommandException {
         try {
             CsvUtil.writeMentors(csvWriter, model.getMentorList());
-            CsvUtil.writeParticipants(csvWriter, model.getParticipantList());
-            CsvUtil.writeTeams(csvWriter, model.getTeamList());
         } catch (IOException ioe) {
             throw new CommandException(String.format(MESSAGE_IO_EXCEPTION, ioe.toString()));
         }

@@ -155,6 +155,23 @@ public class MentorList extends EntityList {
     }
 
     /**
+     * Checks if given {@code Entity} exists.
+     */
+    @Override
+    public boolean contains(Entity entity) {
+        if (!(entity instanceof Mentor)) {
+            return false;
+        }
+        Mentor mentor = (Mentor) entity;
+        for (Mentor m : this.mentors) {
+            if (m.isSameMentor(mentor) || m.getId().equals(mentor.getId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Checks if this {@code MentorList} is empty.
      */
     @Override

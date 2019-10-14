@@ -158,6 +158,23 @@ public class TeamList extends EntityList {
     }
 
     /**
+     * Checks if given {@code Entity} exists.
+     */
+    @Override
+    public boolean contains(Entity entity) {
+        if (!(entity instanceof Team)) {
+            return false;
+        }
+        Team team = (Team) entity;
+        for (Team t : this.teams) {
+            if (t.isSameTeam(team) || t.getId().equals(team.getId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Checks if this {@code TeamList} is empty.
      */
     @Override
