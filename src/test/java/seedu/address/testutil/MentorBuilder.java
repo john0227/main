@@ -1,5 +1,7 @@
 package seedu.address.testutil;
 
+import static seedu.address.testutil.TypicalIds.ID_FIRST_MENTOR;
+
 import seedu.address.model.entity.Email;
 import seedu.address.model.entity.Id;
 import seedu.address.model.entity.Mentor;
@@ -13,7 +15,7 @@ import seedu.address.model.entity.SubjectName;
  */
 public class MentorBuilder {
 
-    public static final Id DEFAULT_ID = new Id(PrefixType.M, 1);
+    public static final Id DEFAULT_ID = ID_FIRST_MENTOR;
     public static final String DEFAULT_NAME = "Alice Pauline";
     public static final String DEFAULT_PHONE = "85355255";
     public static final String DEFAULT_EMAIL = "alice@gmail.com";

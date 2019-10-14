@@ -2,14 +2,13 @@ package seedu.address.logic.commands.addcommand;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static seedu.address.testutil.TypicalIds.ID_FIRST_TEAM;
 
 import org.junit.jupiter.api.Test;
 
 import seedu.address.commons.exceptions.AlfredException;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.exceptions.CommandException;
-import seedu.address.model.entity.Id;
-import seedu.address.model.entity.PrefixType;
 import seedu.address.model.entity.Team;
 import seedu.address.stub.ModelManagerStub;
 import seedu.address.testutil.Assert;
@@ -31,7 +30,7 @@ public class AddTeamCommandTest {
 
         assertEquals(String.format(AddTeamCommand.MESSAGE_SUCCESS, validTeam),
                 commandResult.getFeedbackToUser());
-        assertEquals(validTeam, modelStub.getTeam(new Id(PrefixType.T, 1)));
+        assertEquals(validTeam, modelStub.getTeam(ID_FIRST_TEAM));
     }
 
     @Test

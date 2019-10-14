@@ -2,6 +2,7 @@ package seedu.address.logic.commands.deletecommand;
 
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandFailure;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandSuccess;
+import static seedu.address.testutil.TypicalIds.ID_FIRST_MENTOR;
 
 import org.junit.jupiter.api.Test;
 
@@ -9,7 +10,6 @@ import seedu.address.commons.exceptions.AlfredException;
 import seedu.address.model.Model;
 import seedu.address.model.entity.Id;
 import seedu.address.model.entity.Mentor;
-import seedu.address.model.entity.PrefixType;
 import seedu.address.stub.ModelManagerStub;
 import seedu.address.testutil.MentorBuilder;
 
@@ -37,7 +37,7 @@ public class DeleteMentorCommandTest {
     @Test
     public void execute_invalidIndexMentorList_throwsCommandException() {
         Model model = new ModelManagerStub(); // empty model
-        Id outOfBoundId = new Id(PrefixType.P, 1);
+        Id outOfBoundId = ID_FIRST_MENTOR;
         DeleteMentorCommand deleteCommand = new DeleteMentorCommand(outOfBoundId);
 
         assertCommandFailure(

@@ -38,10 +38,14 @@ public class ModelManager implements Model {
     private static final Logger logger = LogsCenter.getLogger(ModelManager.class);
 
     // EntityLists
-    // Made it protected so I could access it in ModelManagerStub if that's okay
+    // Made these protected so I could access it in ModelManagerStub if that's okay
     protected ParticipantList participantList = new ParticipantList();
     protected TeamList teamList = new TeamList();
     protected MentorList mentorList = new MentorList();
+
+    protected FilteredList<Participant> filteredParticipantList = null;
+    protected FilteredList<Team> filteredTeamList = null;
+    protected FilteredList<Mentor> filteredMentorList = null;
 
     // TODO: Remove the null values which are a placeholder due to the multiple constructors.
     // Also will have to change the relevant attributes to final.
@@ -49,10 +53,6 @@ public class ModelManager implements Model {
     private AddressBook addressBook = null;
     private final UserPrefs userPrefs;
     private FilteredList<Person> filteredPersons = null;
-
-    private FilteredList<Participant> filteredParticipantList = null;
-    private FilteredList<Team> filteredTeamList = null;
-    private FilteredList<Mentor> filteredMentorList = null;
 
     /**
      * Initializes a ModelManager with the given addressBook and userPrefs.

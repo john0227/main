@@ -2,6 +2,8 @@ package seedu.address.logic.commands.viewcommand;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static seedu.address.testutil.TypicalIds.ID_FIRST_TEAM;
+import static seedu.address.testutil.TypicalIds.ID_SECOND_TEAM;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -13,8 +15,6 @@ import org.junit.jupiter.api.function.Executable;
 import seedu.address.commons.exceptions.AlfredException;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
-import seedu.address.model.entity.Id;
-import seedu.address.model.entity.PrefixType;
 import seedu.address.model.entity.Team;
 import seedu.address.stub.ModelManagerStub;
 import seedu.address.testutil.TeamBuilder;
@@ -41,8 +41,7 @@ public class ViewTeamCommandTest {
     @Test
     public void execute_emptyModel_throwCommandException() {
         Model emptyModel = new ModelManagerStub();
-        Executable viewTeamCommand = () ->
-                new ViewTeamCommand(new Id(PrefixType.T, 1)).execute(emptyModel);
+        Executable viewTeamCommand = () -> new ViewTeamCommand(ID_FIRST_TEAM).execute(emptyModel);
         assertThrows(
                 CommandException.class,
                 viewTeamCommand,
@@ -53,7 +52,7 @@ public class ViewTeamCommandTest {
     @Test
     public void execute_invalidId_throwCommandException() {
         Executable viewTeamCommand = () ->
-                new ViewTeamCommand(new Id(PrefixType.T, 2)).execute(modelOneTeam);
+                new ViewTeamCommand(ID_SECOND_TEAM).execute(modelOneTeam);
         assertThrows(
                 CommandException.class,
                 viewTeamCommand,

@@ -1,7 +1,12 @@
 package seedu.address.stub;
 
+import java.util.List;
+import java.util.Optional;
+
 import seedu.address.commons.exceptions.AlfredException;
 import seedu.address.commons.exceptions.AlfredModelException;
+import seedu.address.commons.exceptions.MissingEntityException;
+import seedu.address.commons.exceptions.ModelValidationException;
 import seedu.address.model.ModelManager;
 import seedu.address.model.entity.Id;
 import seedu.address.model.entity.Mentor;
@@ -16,6 +21,7 @@ public class ModelManagerStub extends ModelManager {
     // TODO: Update when ModelManager gets updated
 
     public ModelManagerStub() {
+        // TODO: user constructor for Alfred later
         super();
     }
 
@@ -36,16 +42,18 @@ public class ModelManagerStub extends ModelManager {
      */
     @Override
     public void updateParticipant(Id id, Participant participant) throws AlfredException {
+        Team targetTeam;
         try {
-            // Update the participant in the team list as well
-            Team targetTeam = this.getTeamByParticipantId(id);
-            boolean isSuccessful = targetTeam.updateParticipant(participant);
-            if (!isSuccessful) {
-                return;
-            }
+            targetTeam = this.getTeamByParticipantId(id);
+        } catch (MissingEntityException e) {
             this.participantList.update(id, participant);
-        } catch (AlfredException e) {
             return;
+        }
+        this.participantList.update(id, participant);
+
+        boolean isSuccessful = targetTeam.updateParticipant(participant);
+        if (!isSuccessful) {
+            throw new ModelValidationException("Participant is not in the team provided");
         }
     }
 
@@ -55,20 +63,18 @@ public class ModelManagerStub extends ModelManager {
      */
     @Override
     public Participant deleteParticipant(Id id) throws AlfredException {
-        Participant deletedParticipant;
+        Team targetTeam;
         try {
-            Team targetTeam = this.getTeamByParticipantId(id);
-            Participant participantToDelete = this.getParticipant(id);
-            boolean isSuccessful = targetTeam.deleteParticipant(participantToDelete);
-            if (!isSuccessful) {
-                throw new AlfredModelException("Participant does not exist");
-            }
-        } catch (AlfredException e) {
-            // nothing
-        } finally {
-            deletedParticipant = this.participantList.delete(id);
+            targetTeam = this.getTeamByParticipantId(id);
+        } catch (MissingEntityException e) {
+            return this.participantList.delete(id);
         }
-        return deletedParticipant;
+        Participant participantToDelete = this.participantList.delete(id);
+        boolean isSuccessful = targetTeam.deleteParticipant(participantToDelete);
+        if (!isSuccessful) {
+            throw new ModelValidationException("Participant does not exist");
+        }
+        return participantToDelete;
     }
 
     /* Team Methods*/
@@ -90,11 +96,50 @@ public class ModelManagerStub extends ModelManager {
     }
 
     /**
+     * Gets the team by participant id.
+     */
+    public Team getTeamByParticipantId(Id participantId) throws MissingEntityException {
+        List<Team> teams = this.teamList.getSpecificTypedList();
+        for (Team t: teams) {
+            for (Participant p: t.getParticipants()) {
+                if (p.getId().equals(participantId)) {
+                    return t;
+                }
+            }
+        }
+        throw new MissingEntityException("Team with said participant cannot be found.");
+    }
+
+    /**
+     * Gets the team by mentor id.
+     */
+    public Team getTeamByMentorId(Id mentorId) throws MissingEntityException {
+        List<Team> teams = this.teamList.getSpecificTypedList();
+        for (Team t: teams) {
+            Optional<Mentor> mentor = t.getMentor();
+            if (mentor.isPresent()) {
+                if (mentor.get().getId().equals(mentorId)) {
+                    return t;
+                }
+            }
+        }
+        throw new MissingEntityException("Team with said mentor cannot be found.");
+    }
+
+    /**
      * Adds the participant to the given team.
      */
     @Override
     public void addParticipantToTeam(Id teamId, Participant participant) throws AlfredException {
-        Team targetTeam = this.getTeam(teamId);
+        if (!this.participantList.contains(participant.getId())) {
+            throw new ModelValidationException("Participant does not exist in participantList");
+        }
+        Team targetTeam;
+        try {
+            targetTeam = this.getTeam(teamId);
+        } catch (MissingEntityException e) {
+            throw e;
+        }
         boolean isSuccessful = targetTeam.addParticipant(participant);
         if (!isSuccessful) {
             throw new AlfredModelException("Participant is already present in team");
@@ -110,8 +155,15 @@ public class ModelManagerStub extends ModelManager {
      */
     @Override
     public void addMentorToTeam(Id teamId, Mentor mentor) throws AlfredException {
-        // TODO: Change when ModelManager is updated
-        Team targetTeam = this.getTeam(teamId);
+        if (!this.mentorList.contains(mentor.getId())) {
+            throw new ModelValidationException("Mentor does not exist in mentorList.");
+        }
+        Team targetTeam;
+        try {
+            targetTeam = this.getTeam(teamId);
+        } catch (MissingEntityException e) {
+            throw e;
+        }
         boolean isSuccessful = targetTeam.addMentor(mentor);
         if (!isSuccessful) {
             throw new AlfredModelException("Team already has a mentor");
@@ -123,7 +175,11 @@ public class ModelManagerStub extends ModelManager {
      */
     @Override
     public Team deleteTeam(Id id) throws AlfredException {
+        // First delete the Participant objects
         Team teamToDelete = this.teamList.delete(id);
+        for (Participant p : teamToDelete.getParticipants()) {
+            this.participantList.delete(p.getId());
+        }
         return teamToDelete;
     }
 
@@ -142,15 +198,20 @@ public class ModelManagerStub extends ModelManager {
      */
     @Override
     public void updateMentor(Id id, Mentor updatedMentor) throws AlfredException {
-        // TODO: Update if ModelManager updates.
+        Team targetTeam;
         try {
-            Team targetTeam = this.getTeamByMentorId(id);
-            targetTeam.updateMentor(updatedMentor);
+            targetTeam = this.getTeamByMentorId(id);
+        } catch (MissingEntityException e) {
             this.mentorList.update(id, updatedMentor);
-        } catch (AlfredException e) {
             return;
         }
+
         this.mentorList.update(id, updatedMentor);
+        boolean isSuccessful = targetTeam.updateMentor(updatedMentor);
+        if (!isSuccessful) {
+            throw new ModelValidationException("Unable to update the mentor in team as it is not the "
+                    + "same id");
+        }
     }
 
     /**
@@ -158,7 +219,19 @@ public class ModelManagerStub extends ModelManager {
      */
     @Override
     public Mentor deleteMentor(Id id) throws AlfredException {
-        Mentor mentorToDelete = this.mentorList.delete(id);
+        Team targetTeam;
+        try {
+            targetTeam = this.getTeamByMentorId(id);
+        } catch (MissingEntityException e) {
+            return this.mentorList.delete(id);
+        }
+
+        Mentor mentorToDelete = this.getMentor(id);
+        boolean isSuccessful = targetTeam.deleteMentor(mentorToDelete);
+        if (!isSuccessful) {
+            throw new AlfredModelException("Update to delete the mentor from the team");
+        }
+
         return mentorToDelete;
     }
 

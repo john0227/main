@@ -2,15 +2,14 @@ package seedu.address.logic.commands.addcommand;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static seedu.address.testutil.TypicalIds.ID_FIRST_MENTOR;
 
 import org.junit.jupiter.api.Test;
 
 import seedu.address.commons.exceptions.AlfredException;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.exceptions.CommandException;
-import seedu.address.model.entity.Id;
 import seedu.address.model.entity.Mentor;
-import seedu.address.model.entity.PrefixType;
 import seedu.address.stub.ModelManagerStub;
 import seedu.address.testutil.Assert;
 import seedu.address.testutil.MentorBuilder;
@@ -31,7 +30,7 @@ public class AddMentorCommandTest {
 
         assertEquals(String.format(AddMentorCommand.MESSAGE_SUCCESS, validMentor),
                 commandResult.getFeedbackToUser());
-        assertEquals(validMentor, modelStub.getMentor(new Id(PrefixType.M, 1)));
+        assertEquals(validMentor, modelStub.getMentor(ID_FIRST_MENTOR));
     }
 
     @Test

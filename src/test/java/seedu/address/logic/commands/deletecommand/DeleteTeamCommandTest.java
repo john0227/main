@@ -2,13 +2,13 @@ package seedu.address.logic.commands.deletecommand;
 
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandFailure;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandSuccess;
+import static seedu.address.testutil.TypicalIds.ID_FIRST_TEAM;
 
 import org.junit.jupiter.api.Test;
 
 import seedu.address.commons.exceptions.AlfredException;
 import seedu.address.model.Model;
 import seedu.address.model.entity.Id;
-import seedu.address.model.entity.PrefixType;
 import seedu.address.model.entity.Team;
 import seedu.address.stub.ModelManagerStub;
 import seedu.address.testutil.TeamBuilder;
@@ -37,7 +37,7 @@ public class DeleteTeamCommandTest {
     @Test
     public void execute_invalidIndexTeamList_throwsCommandException() {
         Model model = new ModelManagerStub(); // empty model
-        Id outOfBoundId = new Id(PrefixType.P, 1);
+        Id outOfBoundId = ID_FIRST_TEAM;
         DeleteTeamCommand deleteCommand = new DeleteTeamCommand(outOfBoundId);
 
         assertCommandFailure(

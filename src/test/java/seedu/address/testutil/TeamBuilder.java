@@ -1,5 +1,7 @@
 package seedu.address.testutil;
 
+import static seedu.address.testutil.TypicalIds.ID_FIRST_TEAM;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -14,13 +16,12 @@ import seedu.address.model.entity.ProjectType;
 import seedu.address.model.entity.Score;
 import seedu.address.model.entity.SubjectName;
 import seedu.address.model.entity.Team;
-
 /**
  * Builds a valid {@link Team} to facilitate testing.
  */
 public class TeamBuilder {
 
-    public static final Id DEFAULT_ID = new Id(PrefixType.T, 1);
+    public static final Id DEFAULT_ID = ID_FIRST_TEAM;
     public static final String DEFAULT_NAME = "Alice Pauline";
     public static final List<Participant> DEFAULT_PARTICIPANTS = new ArrayList<>();
     public static final Optional<Mentor> DEFAULT_MENTOR = Optional.empty();

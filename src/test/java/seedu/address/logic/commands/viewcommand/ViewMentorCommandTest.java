@@ -2,6 +2,8 @@ package seedu.address.logic.commands.viewcommand;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static seedu.address.testutil.TypicalIds.ID_FIRST_MENTOR;
+import static seedu.address.testutil.TypicalIds.ID_SECOND_MENTOR;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -13,9 +15,7 @@ import org.junit.jupiter.api.function.Executable;
 import seedu.address.commons.exceptions.AlfredException;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
-import seedu.address.model.entity.Id;
 import seedu.address.model.entity.Mentor;
-import seedu.address.model.entity.PrefixType;
 import seedu.address.stub.ModelManagerStub;
 import seedu.address.testutil.MentorBuilder;
 
@@ -42,7 +42,7 @@ public class ViewMentorCommandTest {
     public void execute_emptyModel_throwCommandException() {
         Model emptyModel = new ModelManagerStub();
         Executable viewMentorCommand = () ->
-                new ViewMentorCommand(new Id(PrefixType.M, 1)).execute(emptyModel);
+                new ViewMentorCommand(ID_FIRST_MENTOR).execute(emptyModel);
         assertThrows(
                 CommandException.class,
                 viewMentorCommand,
@@ -53,7 +53,7 @@ public class ViewMentorCommandTest {
     @Test
     public void execute_invalidId_throwCommandException() {
         Executable viewMentorCommand = () ->
-                new ViewMentorCommand(new Id(PrefixType.M, 2)).execute(modelOneMentor);
+                new ViewMentorCommand(ID_SECOND_MENTOR).execute(modelOneMentor);
         assertThrows(
                 CommandException.class,
                 viewMentorCommand,
