@@ -38,7 +38,6 @@ public class ModelManager implements Model {
     private static final Logger logger = LogsCenter.getLogger(ModelManager.class);
 
     // EntityLists
-    // Made these protected so I could access it in ModelManagerStub if that's okay
     protected ParticipantList participantList = new ParticipantList();
     protected TeamList teamList = new TeamList();
     protected MentorList mentorList = new MentorList();
