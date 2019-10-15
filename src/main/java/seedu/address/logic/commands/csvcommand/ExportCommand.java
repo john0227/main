@@ -21,6 +21,7 @@ public class ExportCommand extends Command {
     public static final String COMMAND_WORD = "export"; // or any other suggestions
     public static final String MESSAGE_SUCCESS = "Exported all data to %s"; // %s -> file name
     public static final String MESSAGE_IO_EXCEPTION = "An IOException was caught: %s"; // %s -> exception message
+    public static final String MESSAGE_EMPTY_DATA = "No data to export. File was not created.";
     public static final String MESSAGE_USAGE = COMMAND_WORD + ": exports Alfred data to a CSV file. "
             + "Parameters: "
             + "[ENTITY] "
@@ -60,6 +61,9 @@ public class ExportCommand extends Command {
 
     @Override
     public CommandResult execute(Model model) throws CommandException {
+        if (model.isEmpty()) {
+            return new CommandResult(MESSAGE_EMPTY_DATA);
+        }
         try {
             File csvFile = new File(this.csvFileName);
             FileUtil.createIfMissing(csvFile.toPath());
