@@ -1,5 +1,7 @@
 package seedu.address.logic.commands.csvcommand;
 
+import static seedu.address.logic.parser.CliSyntax.PREFIX_FILE_NAME;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -27,28 +29,32 @@ import seedu.address.model.entity.Team;
 public class LoadCommand extends Command {
 
     public static final String COMMAND_WORD = "load";
-    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Loads data in CSV file into Alfred"
-            + " Parameters "
-            + "CSV_FILE_NAME\n"
-            + "Example..."; // TODO: instantiate and show header order (see CsvUtil fields)
+
     public static final String MESSAGE_SUCCESS = "Successfully loaded CSV file into Alfred";
     public static final String MESSAGE_PARTIAL_SUCCESS = "Following line(s) were unable to be loaded into Alfred\n"
              + "Possible reasons include incorrect formatting or adding of duplicate Entity:";
     public static final String MESSAGE_FILE_NOT_FOUND = "File not found at %s"; // %s -> this.csvFileName
     public static final String MESSAGE_IO_EXCEPTION = "An IOException was caught: %s"; // %s -> exception message
     public static final String MESSAGE_INVALID_DATA = "CSV file contains invalid data";
+    public static final String MESSAGE_INVALID_FORMAT = "CSV file must contain Entity data in the following format:\n"
+            + "\tMentors: " + CsvUtil.HEADER_MENTOR + "\n"
+            + "\tParticipants: " + CsvUtil.HEADER_PARTICIPANT + "\n"
+            + "\tTeams: " + CsvUtil.HEADER_TEAM;
     public static final String CAUSE_INVALID_DATA = "Invalid data format";
     public static final String CAUSE_DUPLICATE_ENTITY = "This entity already exists in Alfred";
     public static final String ASSERTION_FAILED_NOT_CSV = "File given is not a CSV file.";
+
+    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Loads data in CSV file into Alfred"
+            + " Parameters: "
+            + PREFIX_FILE_NAME + "CSV_FILE_NAME\n"
+            + "\tExample (Windows): " + COMMAND_WORD
+            + " C:/Users/USER/AlfredData/Alfred.csv\n"
+            + "Note the path does not have to be absolute (i.e. can be relative). "
+            + "Hence, if a drive is not specified, Alfred will search for the file in current working directory.";
+
     private String csvFileName;
 
     public LoadCommand(String csvFileName) {
-        // Should Command or Parser check if file extension is valid (i.e. is a CSV file)?
-        /*
-         * if (!csvFileName.toLowerCase().endsWith(".csv")) {
-         *     throw exception
-         * }
-         */
         assert csvFileName.toLowerCase().endsWith(".csv") : ASSERTION_FAILED_NOT_CSV;
         this.csvFileName = csvFileName;
     }
@@ -95,7 +101,7 @@ public class LoadCommand extends Command {
                 String[] data = line.split(",");
                 try {
                     this.addEntity(data, model);
-                } catch (IllegalArgumentException | CommandException e) {
+                } catch (IllegalArgumentException | ArrayIndexOutOfBoundsException | CommandException e) {
                     errors.add(new ErrorTracker(lineNumber, line, CAUSE_INVALID_DATA));
                 } catch (AlfredException e) {
                     errors.add(new ErrorTracker(lineNumber, line, CAUSE_DUPLICATE_ENTITY));
@@ -107,7 +113,12 @@ public class LoadCommand extends Command {
         }
         if (!errors.isEmpty()) {
             String message = errors.stream().map(ErrorTracker::toString).collect(Collectors.joining("\n"));
-            throw new CommandException(String.join("\n", MESSAGE_PARTIAL_SUCCESS, message));
+            throw new CommandException(String.join(
+                    "\n",
+                    MESSAGE_PARTIAL_SUCCESS,
+                    message,
+                    MESSAGE_INVALID_FORMAT
+            ));
         }
     }
 

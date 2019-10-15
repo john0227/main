@@ -1,11 +1,14 @@
 package seedu.address.logic.commands.csvcommand.csvutil;
 
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
 
 import seedu.address.commons.util.AppUtil;
+import seedu.address.model.Model;
 import seedu.address.model.entity.Email;
 import seedu.address.model.entity.Entity;
 import seedu.address.model.entity.Id;
@@ -29,6 +32,10 @@ public class CsvUtil {
     public static final String HEADER_MENTOR = "EntityType,ID,Name,Phone,Email,Organization,SubjectName";
     public static final String HEADER_PARTICIPANT = "EntityType,ID,Name,Phone,Email";
     public static final String HEADER_TEAM = "EntityType,ID,Name,SubjectName,Score,ProjectName,ProjectType,Location";
+
+    public static final String ASSERTION_FAILED_NOT_CSV = "File given is not a CSV file.";
+    public static final String MESSAGE_INVALID_LIST = "List given is invalid";
+    public static final String MESSAGE_INVALID_ENTITY = "Entity given is invalid";
 
 // =================================== Parser Methods ================================================
 
@@ -124,29 +131,59 @@ public class CsvUtil {
 
 // =================================== Writer Methods ================================================
 
-    public static void writeMentors(BufferedWriter csvWriter, ReadOnlyEntityList mentorList) throws IOException {
-        csvWriter.write(HEADER_MENTOR + "\n");
-        for (Entity e : mentorList.list()) {
-            String mentorToCsvString = toCsvString((Mentor) e);
-            csvWriter.write(mentorToCsvString + "\n");
+    /**
+     * Converts each {@code Entity} in the given {@code Model}
+     * into a {@code CSV String} and writes it into a CSV file provided.
+     *
+     * @param csvFile CSV file to write each {@code Entity} to.
+     * @param model {@code Model} which contains {@code Entity} data.
+     * @throws IOException If something goes wrong while writing to the {@code csvFile}.
+     */
+    public static void writeToCsv(File csvFile, Model model) throws IOException {
+        assert csvFile.toString().toLowerCase().endsWith(".csv") : ASSERTION_FAILED_NOT_CSV;
+        writeToCsv(csvFile, model.getMentorList(), false);
+        writeToCsv(csvFile, model.getParticipantList(), true);
+        writeToCsv(csvFile, model.getTeamList(), true);
+    }
+
+    public static void writeToCsv(File csvFile, ReadOnlyEntityList entityList) throws IOException {
+        writeToCsv(csvFile, entityList, false);
+    }
+
+    public static void writeToCsv(File csvFile,
+            ReadOnlyEntityList entityList, boolean shouldAppend) throws IOException {
+        assert csvFile.toString().toLowerCase().endsWith(".csv") : ASSERTION_FAILED_NOT_CSV;
+        BufferedWriter csvWriter = new BufferedWriter(new FileWriter(csvFile, shouldAppend));
+        csvWriter.write(getHeader(entityList) + "\n");
+        for (Entity e : entityList.list()) {
+            String entityToCsvString = toCsvString(e);
+            csvWriter.write(entityToCsvString + "\n");
         }
     }
 
-    public static void writeParticipants(BufferedWriter csvWriter, ReadOnlyEntityList participantList)
-            throws IOException {
-        csvWriter.write(HEADER_PARTICIPANT + "\n");
-        for (Entity e : participantList.list()) {
-            String participantToCsvString = toCsvString((Participant) e);
-            csvWriter.write(participantToCsvString + "\n");
+    private static String getHeader(ReadOnlyEntityList entityList) {
+        if (entityList instanceof ParticipantList) {
+            return HEADER_PARTICIPANT;
+        } else if (entityList instanceof MentorList) {
+            return HEADER_MENTOR;
+        } else if (entityList instanceof TeamList) {
+            return HEADER_TEAM;
+        } else {
+            // Should never reach here
+            throw new RuntimeException(MESSAGE_INVALID_LIST);
         }
     }
 
-    public static void writeTeams(BufferedWriter csvWriter, ReadOnlyEntityList teamList) throws IOException {
-        // TODO: move to ExportCommand
-        csvWriter.write(HEADER_TEAM + "\n");
-        for (Entity e : teamList.list()) {
-            String teamToCsvString = toCsvString((Team) e);
-            csvWriter.write(teamToCsvString + "\n");
+    private static String toCsvString(Entity entity) {
+        if (entity instanceof Mentor) {
+            return toCsvString((Mentor) entity);
+        } else if (entity instanceof Participant) {
+            return toCsvString((Participant) entity);
+        } else if (entity instanceof Team) {
+            return toCsvString((Team) entity);
+        } else {
+            // Should never reach here
+            throw new RuntimeException(MESSAGE_INVALID_ENTITY);
         }
     }
 
