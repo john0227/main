@@ -175,14 +175,6 @@ public class TeamList extends EntityList {
     }
 
     /**
-     * Checks if this {@code TeamList} is empty.
-     */
-    @Override
-    public boolean isEmpty() {
-        return this.teams.isEmpty();
-    }
-
-    /**
      * Checks if given {@code Entity} exists.
      */
     @Override
@@ -197,6 +189,14 @@ public class TeamList extends EntityList {
             }
         }
         return false;
+    }
+
+    /**
+     * Checks if this {@code TeamList} is empty.
+     */
+    @Override
+    public boolean isEmpty() {
+        return this.teams.isEmpty();
     }
 
     /**

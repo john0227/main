@@ -6,18 +6,17 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import seedu.address.commons.exceptions.AlfredException;
-import seedu.address.commons.util.AppUtil;
 import seedu.address.commons.util.FileUtil;
 import seedu.address.logic.commands.Command;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.csvcommand.csvutil.CsvUtil;
+import seedu.address.logic.commands.csvcommand.csvutil.ErrorTracker;
+import seedu.address.logic.commands.csvcommand.csvutil.ErrorTracker.Error;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
+import seedu.address.model.entity.Entity;
 import seedu.address.model.entity.Mentor;
 import seedu.address.model.entity.Participant;
 import seedu.address.model.entity.Team;
@@ -62,17 +61,19 @@ public class LoadCommand extends Command {
     @Override
     public CommandResult execute(Model model) throws CommandException {
         // Details must not be empty (except for ID)
-        BufferedReader csvReader;
+        File csvFile = new File(this.csvFileName);
+        if (!FileUtil.isFileExists(csvFile.toPath())) {
+            throw new CommandException(String.format(MESSAGE_FILE_NOT_FOUND, this.csvFileName));
+        }
+        ErrorTracker errors = new ErrorTracker();
         try {
-            File csvFile = new File(this.csvFileName);
-            if (!FileUtil.isFileExists(csvFile.toPath())) {
-                throw new CommandException(String.format(MESSAGE_FILE_NOT_FOUND, this.csvFileName));
-            }
-            csvReader = new BufferedReader(new FileReader(csvFile));
-            this.parseFile(csvReader, model);
-            csvReader.close();
+            this.parseFile(csvFile, errors, model);
         } catch (IOException ioe) {
             throw new CommandException(String.format(MESSAGE_IO_EXCEPTION, ioe.toString()));
+        }
+        if (!errors.isEmpty()) {
+            String message = String.join("\n", MESSAGE_PARTIAL_SUCCESS, errors.toString(), MESSAGE_INVALID_FORMAT);
+            throw new CommandException(message);
         }
         return new CommandResult(MESSAGE_SUCCESS);
     }
@@ -80,98 +81,75 @@ public class LoadCommand extends Command {
     /**
      * Parses a CSV file located at given {@link #csvFileName} to {@code Entity} objects.
      *
-     * @param csvReader Reader to read the CSV file.
+     * @param csvFile The CSV file to parse.
+     * @param errors {@link ErrorTracker} to store potential errors that may arise while parsing the CSV file.
      * @param model {@code Model} to add the {@code Entity} objects.
-     * @return A {@code CommandResult} indicating success if everything went well.
-     * @throws CommandException If all or some lines in the CSV file failed to be parsed into an {@code Entity}.
-     *                          Exception message contains the line number (of CSV file)
-     *                          and the content of the line that failed to be parsed.
      */
-    private void parseFile(BufferedReader csvReader, Model model) throws CommandException {
-        List<ErrorTracker> errors = new ArrayList<>();
+    private void parseFile(File csvFile, ErrorTracker errors, Model model) throws IOException {
+        BufferedReader csvReader = new BufferedReader(new FileReader(csvFile));
         int lineNumber = 1;
         String line;
-        try {
-            while ((line = csvReader.readLine()) != null) {
-                if (line.equals(CsvUtil.HEADER_MENTOR)
-                        || line.equals(CsvUtil.HEADER_PARTICIPANT)
-                        || line.equals(CsvUtil.HEADER_TEAM)) {
-                    continue;
-                }
-                String[] data = line.split(",");
-                try {
-                    this.addEntity(data, model);
-                } catch (IllegalArgumentException | ArrayIndexOutOfBoundsException | CommandException e) {
-                    errors.add(new ErrorTracker(lineNumber, line, CAUSE_INVALID_DATA));
-                } catch (AlfredException e) {
-                    errors.add(new ErrorTracker(lineNumber, line, CAUSE_DUPLICATE_ENTITY));
-                }
-                lineNumber++;
+        while ((line = csvReader.readLine()) != null) {
+            Entity entityToAdd = this.parseLineToEntity(lineNumber, line, errors);
+            try {
+                this.addEntity(entityToAdd, model);
+            } catch (AlfredException e) {
+                errors.add(new Error(lineNumber, line, CAUSE_DUPLICATE_ENTITY));
             }
-        } catch (IOException ioe) {
-            throw new CommandException(String.format(MESSAGE_IO_EXCEPTION, ioe.toString()));
+            lineNumber++;
         }
-        if (!errors.isEmpty()) {
-            String message = errors.stream().map(ErrorTracker::toString).collect(Collectors.joining("\n"));
-            throw new CommandException(String.join(
-                    "\n",
-                    MESSAGE_PARTIAL_SUCCESS,
-                    message,
-                    MESSAGE_INVALID_FORMAT
-            ));
+        csvReader.close();
+    }
+
+    /**
+     * Parses given line into the corresponding {@code Entity}.
+     *
+     * @param lineNumber Line number of given line in the CSV file.
+     * @param line Line in the CSV file.
+     * @param errors {@code ErrorTracker} to keep track of potential errors while parsing.
+     * @return Corresponding {@code Entity}.
+     */
+    private Entity parseLineToEntity(int lineNumber, String line, ErrorTracker errors) {
+        if (line.equals(CsvUtil.HEADER_MENTOR)
+                || line.equals(CsvUtil.HEADER_PARTICIPANT)
+                || line.equals(CsvUtil.HEADER_TEAM)) {
+            return null;
         }
+        String[] data = line.split(",");
+        try {
+            switch (data[0]) {
+            case "M":
+                return CsvUtil.parseToMentor(data);
+            case "P":
+                return CsvUtil.parseToParticipant(data);
+            case "T":
+                return CsvUtil.parseToTeam(data);
+            default:
+                // If Entity Type is incorrect
+                errors.add(new Error(lineNumber, line, CAUSE_INVALID_DATA));
+            }
+        } catch (IllegalArgumentException | ArrayIndexOutOfBoundsException e) {
+            errors.add(new Error(lineNumber, line, CAUSE_INVALID_DATA));
+        }
+        return null;
     }
 
     /**
      * Adds an {@code Entity} corresponding to given {@code data}.
      *
-     * @param data Array containing {@code Entity} attribute data as {@code String}s.
+     * @param entityToAdd Entity to add into {@code model}.
      * @param model {@code Model} to add {@code Entity} to.
      * @throws AlfredException If the parsed Entity is already contained in {@code Model} (i.e. duplicate Entity).
-     * @throws IllegalArgumentException If any field does not pass {@link AppUtil#checkArgument(Boolean, String)}
-     *                                  or if enum constant is invalid
      */
-    private void addEntity(String[] data, Model model) throws AlfredException {
-        // can throw IllegalArgumentException, CommandException
-        switch (data[0]) {
-        case "M":
-            Mentor mentor = CsvUtil.parseToMentor(data);
-            model.addMentor(mentor);
-            break;
-        case "P":
-            Participant participant = CsvUtil.parseToParticipant(data);
-            model.addParticipant(participant);
-            break;
-        case "T":
-            Team team = CsvUtil.parseToTeam(data);
-            model.addTeam(team);
-            break;
-        default:
-            // If Entity Type is incorrect
-            throw new CommandException(MESSAGE_INVALID_DATA);
+    private void addEntity(Entity entityToAdd, Model model) throws AlfredException {
+        // instanceof takes care of null value
+        if (entityToAdd instanceof Mentor) {
+            model.addMentor((Mentor) entityToAdd);
+        } else if (entityToAdd instanceof Participant) {
+            model.addParticipant((Participant) entityToAdd);
+        } else if (entityToAdd instanceof Team) {
+            model.addTeam((Team) entityToAdd);
         }
-    }
-
-    /**
-     * A tracker to show user which line in the CSV file was not able to be loaded.
-     */
-    static class ErrorTracker {
-
-        private int lineNumber;
-        private String csvLine;
-        private String cause;
-
-        ErrorTracker(int lineNumber, String csvLine, String cause) {
-            this.lineNumber = lineNumber;
-            this.csvLine = csvLine;
-            this.cause = cause;
-        }
-
-        @Override
-        public String toString() {
-            return String.format("    Line %d: %s (Cause: %s)", this.lineNumber, this.csvLine, this.cause);
-        }
-
     }
 
 }

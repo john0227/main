@@ -9,6 +9,9 @@ import seedu.address.logic.commands.csvcommand.csvutil.CsvUtil;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 
+/**
+ * Exports every {@code Mentor} stored inside {@code Alfred} into an external CSV file.
+ */
 public class ExportMentorCommand extends ExportCommand {
 
     public static final String MESSAGE_SUCCESS = "Exported all mentors to %s"; // %s -> file name
