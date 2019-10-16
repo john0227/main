@@ -1,8 +1,6 @@
 package seedu.address.logic.commands.csvcommand;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 
 import seedu.address.commons.util.FileUtil;
@@ -11,6 +9,9 @@ import seedu.address.logic.commands.csvcommand.csvutil.CsvUtil;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 
+/**
+ * Exports every {@code Participant} stored inside {@code Alfred} into an external CSV file.
+ */
 public class ExportParticipantCommand extends ExportCommand {
 
     public static final String MESSAGE_SUCCESS = "Exported all participants to %s"; // %s -> file name

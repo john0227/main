@@ -11,14 +11,11 @@ import seedu.address.logic.parser.ArgumentTokenizer;
 import seedu.address.logic.parser.Parser;
 import seedu.address.logic.parser.exceptions.ParseException;
 
+/**
+ * Parses {@code userInput} into a LoadCommand.
+ */
 public class LoadCommandParser implements Parser<LoadCommand> {
 
-    /**
-     * Parses {@code userInput} into a LoadCommand and returns it.
-     *
-     * @param args Keyboard input.
-     * @throws ParseException if {@code userInput} does not conform the expected format.
-     */
     @Override
     public LoadCommand parse(String args) throws ParseException {
         requireNonNull(args);

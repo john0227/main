@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import seedu.address.commons.util.AppUtil;
+import seedu.address.commons.util.PrefixUtil;
 import seedu.address.model.Model;
 import seedu.address.model.entity.Email;
 import seedu.address.model.entity.Entity;
@@ -27,17 +28,24 @@ import seedu.address.model.entitylist.ParticipantList;
 import seedu.address.model.entitylist.ReadOnlyEntityList;
 import seedu.address.model.entitylist.TeamList;
 
+/**
+ * Helper functions to facilitate interactions between {@code Alfred} and a CSV file.
+ * Converts {@code Entity} objects to a {@code CSV String} and parses a {@code CSV String}
+ * into an {@code Entity} object.
+ */
 public class CsvUtil {
 
+    /*
+     * Headers to show user which column corresponds to which value.
+     */
     public static final String HEADER_MENTOR = "EntityType,ID,Name,Phone,Email,Organization,SubjectName";
     public static final String HEADER_PARTICIPANT = "EntityType,ID,Name,Phone,Email";
     public static final String HEADER_TEAM = "EntityType,ID,Name,SubjectName,Score,ProjectName,ProjectType,Location";
 
     public static final String ASSERTION_FAILED_NOT_CSV = "File given is not a CSV file.";
-    public static final String MESSAGE_INVALID_LIST = "List given is invalid";
     public static final String MESSAGE_INVALID_ENTITY = "Entity given is invalid";
 
-// =================================== Parser Methods ================================================
+    // =================================== Parser Methods ================================================
 
     /**
      * Parses given line of data (split by commas) into relevant fields of a {@code Mentor}.
@@ -119,8 +127,8 @@ public class CsvUtil {
         return new Team(
                 teamId,
                 teamName,
-                new ArrayList<>(), // should I pass in null?
-                Optional.empty(),  // should I pass in null?
+                new ArrayList<>(),
+                Optional.empty(),
                 teamSubject,
                 teamScore,
                 teamProjectName,
@@ -129,14 +137,14 @@ public class CsvUtil {
         );
     }
 
-// =================================== Writer Methods ================================================
+    // =================================== Writer Methods ================================================
 
     /**
-     * Converts each {@code Entity} in the given {@code Model}
-     * into a {@code CSV String} and writes it into a CSV file provided.
+     * Converts each {@code Entity} in the given {@code model}
+     * into a {@code CSV String} and writes it into the CSV file provided.
      *
      * @param csvFile CSV file to write each {@code Entity} to.
-     * @param model {@code Model} which contains {@code Entity} data.
+     * @param model {@code Model} containing {@code Entity} data to export.
      * @throws IOException If something goes wrong while writing to the {@code csvFile}.
      */
     public static void writeToCsv(File csvFile, Model model) throws IOException {
@@ -146,34 +154,58 @@ public class CsvUtil {
         writeToCsv(csvFile, model.getTeamList(), true);
     }
 
+    /**
+     * Converts each {@code Entity} in the given {@code entityList}
+     * into a {@code CSV String} and writes it into the CSV file provided.
+     *
+     * @param csvFile CSV file to write each {@code Entity} to.
+     * @param entityList A {@code ReadOnlyEntityList} containing {@code Entity} data to export.
+     * @throws IOException If something goes wrong while writing to the {@code csvFile}.
+     */
     public static void writeToCsv(File csvFile, ReadOnlyEntityList entityList) throws IOException {
         writeToCsv(csvFile, entityList, false);
     }
 
+    /**
+     * Converts each {@code Entity} in the given {@code entityList}
+     * into a {@code CSV String} and writes it into the CSV file provided.
+     *
+     * @param csvFile CSV file to write each {@code Entity} to.
+     * @param entityList A {@code ReadOnlyEntityList} containing {@code Entity} data to export.
+     * @param shouldAppend A {@code boolean} value indicating whether to append to the given file or not.
+     * @throws IOException If something goes wrong while writing to the {@code csvFile}.
+     */
     public static void writeToCsv(File csvFile,
             ReadOnlyEntityList entityList, boolean shouldAppend) throws IOException {
         assert csvFile.toString().toLowerCase().endsWith(".csv") : ASSERTION_FAILED_NOT_CSV;
         BufferedWriter csvWriter = new BufferedWriter(new FileWriter(csvFile, shouldAppend));
-        csvWriter.write(getHeader(entityList) + "\n");
+        csvWriter.write(getHeader(PrefixUtil.getPrefixOf(entityList)) + "\n");
         for (Entity e : entityList.list()) {
             String entityToCsvString = toCsvString(e);
             csvWriter.write(entityToCsvString + "\n");
         }
     }
 
-    private static String getHeader(ReadOnlyEntityList entityList) {
-        if (entityList instanceof ParticipantList) {
-            return HEADER_PARTICIPANT;
-        } else if (entityList instanceof MentorList) {
+    private static String getHeader(PrefixType prefixType) {
+        switch (prefixType) {
+        case M:
             return HEADER_MENTOR;
-        } else if (entityList instanceof TeamList) {
+        case P:
+            return HEADER_PARTICIPANT;
+        case T:
             return HEADER_TEAM;
-        } else {
+        default:
             // Should never reach here
-            throw new RuntimeException(MESSAGE_INVALID_LIST);
+            throw new RuntimeException(MESSAGE_INVALID_ENTITY);
         }
     }
 
+    /**
+     * Converts the given {@code entity} into a {CSV String}.
+     *
+     * @param entity {@code Entity} to convert.
+     * @return A {@code CSV String} corresponding to {@code entity}.
+     */
     private static String toCsvString(Entity entity) {
         if (entity instanceof Mentor) {
             return toCsvString((Mentor) entity);
@@ -187,6 +219,12 @@ public class CsvUtil {
         }
     }
 
+    /**
+     * Converts the given {@code mentor} into a {@code CSV String}.
+     *
+     * @param mentor {@code Mentor} to convert.
+     * @return A {@code CSV String} corresponding to {@code mentor}.
+     */
     private static String toCsvString(Mentor mentor) {
         return new StringBuilder("M,")
                 .append(mentor.getId().getNumber()).append(",")
@@ -198,6 +236,12 @@ public class CsvUtil {
                 .toString();
     }
 
+    /**
+     * Converts the given {@code participant} into a {@code CSV String}.
+     *
+     * @param participant {@code Participant} to convert.
+     * @return A {@code CSV String} corresponding to {@code participant}.
+     */
     private static String toCsvString(Participant participant) {
         return new StringBuilder("P,")
                 .append(participant.getId().getNumber()).append(",")
@@ -207,6 +251,12 @@ public class CsvUtil {
                 .toString();
     }
 
+    /**
+     * Converts the given {@code team} into a {@code CSV String}.
+     *
+     * @param team {@code Team} to convert.
+     * @return A {@code CSV String} corresponding to {@code team}.
+     */
     private static String toCsvString(Team team) {
         return new StringBuilder("T,")
                 .append(team.getId().getNumber()).append(",")

@@ -15,16 +15,13 @@ import seedu.address.logic.parser.CliSyntax;
 import seedu.address.logic.parser.Parser;
 import seedu.address.logic.parser.exceptions.ParseException;
 
+/**
+ * Parses {@code userInput} into an ExportCommand.
+ */
 public class ExportCommandParser implements Parser<ExportCommand> {
 
     private static final String ENTITY_NOT_SPECIFIED = "";
 
-    /**
-     * Parses {@code userInput} into an ExportCommand and returns it.
-     *
-     * @param args Keyboard input.
-     * @throws ParseException if {@code userInput} does not conform the expected format.
-     */
     @Override
     public ExportCommand parse(String args) throws ParseException {
         requireNonNull(args);
