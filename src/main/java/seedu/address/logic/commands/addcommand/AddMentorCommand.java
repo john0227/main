@@ -27,7 +27,7 @@ public class AddMentorCommand extends AddCommand {
             + CliSyntax.PREFIX_NAME + "John Doe "
             + CliSyntax.PREFIX_PHONE + "98765432 "
             + CliSyntax.PREFIX_EMAIL + "johnd@example.com "
-            + CliSyntax.PREFIX_ORGANISATION + "Fill it up for me idk what this is...";
+            + CliSyntax.PREFIX_ORGANISATION + "Google";
 
     private Mentor mentor;
     // private Name mentorName;
@@ -59,6 +59,7 @@ public class AddMentorCommand extends AddCommand {
 
         try {
             model.addMentor(this.mentor);
+            model.updateHistory();
         } catch (AlfredException e) {
             // Should I return new CommandResult(MESSAGE_DUPLICATE_MENTOR) instead?
             throw new CommandException(MESSAGE_DUPLICATE_MENTOR);

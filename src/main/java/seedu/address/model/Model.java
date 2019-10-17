@@ -1,6 +1,7 @@
 package seedu.address.model;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.function.Predicate;
 
 import javafx.collections.ObservableList;
@@ -8,6 +9,7 @@ import javafx.collections.transformation.FilteredList;
 
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.exceptions.AlfredException;
+import seedu.address.commons.exceptions.AlfredModelHistoryException;
 import seedu.address.model.entity.Id;
 import seedu.address.model.entity.Mentor;
 import seedu.address.model.entity.Participant;
@@ -120,6 +122,14 @@ public interface Model {
 
     Mentor deleteMentor(Id id) throws AlfredException;
 
+    /* Find commands */
+
+    List<Participant> findParticipantByName(String name);
+
+    List<Team> findTeamByName(String name);
+
+    List<Mentor> findMentorByName(String name);
+
     /**
      * Replaces address book data with the data in {@code addressBook}.
      */
@@ -160,4 +170,15 @@ public interface Model {
      * @throws NullPointerException if {@code predicate} is null.
      */
     void updateFilteredPersonList(Predicate<Person> predicate);
+
+    /**
+     * Updates the history of entity states with the current state (after execution of a command)
+     */
+    void updateHistory();
+
+    /**
+     * Undoes the effects of the previous command and returns the model to the state
+     * prior to the execution of the command.
+     */
+    void undo() throws AlfredModelHistoryException;
 }

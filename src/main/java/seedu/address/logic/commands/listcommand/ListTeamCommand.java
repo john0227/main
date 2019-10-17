@@ -11,7 +11,6 @@ import seedu.address.model.entity.Team;
  */
 public class ListTeamCommand extends ListCommand {
 
-    public static final String COMMAND_WORD = "list team";
     public static final String MESSAGE_SUCCESS = "Listed all teams";
     public static final String MESSAGE_USAGE = COMMAND_WORD + ": Lists all of the mentors.\n"
             + "Example: " + COMMAND_WORD;
@@ -22,6 +21,7 @@ public class ListTeamCommand extends ListCommand {
 
         this.displayTeams(model);
 
+        model.updateHistory();
         return new CommandResult(MESSAGE_SUCCESS);
     }
 

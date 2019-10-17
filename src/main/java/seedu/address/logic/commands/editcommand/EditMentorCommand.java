@@ -22,9 +22,7 @@ import seedu.address.model.entity.SubjectName;
  */
 public class EditMentorCommand extends EditCommand {
 
-    public static final String COMMAND_WORD = "edit mentor"; // edit this @Abhiman2211 and the rest of command words
     public static final String MESSAGE_EDIT_MENTOR_SUCCESS = "Edited Mentor: %1$s";
-    public static final String MESSAGE_NOT_EDITED = "At least one field to edit must be provided.";
     public static final String MESSAGE_DUPLICATE_MENTOR = "This person already exists in the address book.";
     public static final String MESSAGE_INVALID_MENTOR_DISPLAYED_INDEX =
             "The mentor index provided is invalid";
@@ -64,6 +62,7 @@ public class EditMentorCommand extends EditCommand {
 
         try {
             model.updateMentor(this.id, editedMentor);
+            model.updateHistory();
             return new CommandResult(String.format(MESSAGE_EDIT_MENTOR_SUCCESS, editedMentor.toString()));
         } catch (AlfredException e) {
             throw new CommandException(e.getMessage());
