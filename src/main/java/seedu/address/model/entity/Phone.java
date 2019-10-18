@@ -19,7 +19,7 @@ public class Phone {
             "Phone numbers be of the format (optional)country-code + phone-number "
                     + "and should adhere to the following constraints:\n"
                     + "1. The country code, if it is not existent in constructor, "
-                    + "the country code '+65' will be added. "
+                    + "the country code '+65' will be added.\n"
                     + "2. The phone number should be at least three digit long.\n "
                     + "The phone number must:\n"
                     + "    -contain numbers\n"

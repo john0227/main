@@ -117,7 +117,7 @@ public class LoadCommand extends Command {
         }
         String[] data = line.split(",");
         try {
-            switch (data[0]) {
+            switch (data[0].toUpperCase()) {
             case "M":
                 return CsvUtil.parseToMentor(data);
             case "P":

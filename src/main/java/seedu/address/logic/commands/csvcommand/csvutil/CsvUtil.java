@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.commons.util.AppUtil;
 import seedu.address.commons.util.PrefixUtil;
 import seedu.address.model.Model;
@@ -59,12 +60,10 @@ public class CsvUtil {
      */
     public static Mentor parseToMentor(String[] data) {
         // EntityType (M), ID (may be blank), Name, Phone, Email, Organization, SubjectName
-        Id mentorId;
-        try {
-            mentorId = new Id(PrefixType.M, Integer.parseInt(data[1]));
-        } catch (NumberFormatException e) {
-            mentorId = MentorList.generateId();
+        if (!data[0].toUpperCase().equals("M")) {
+            throw new IllegalArgumentException();
         }
+        Id mentorId = retrieveId(data[1], PrefixType.M);
         Name mentorName = new Name(data[2]);
         Phone mentorPhone = new Phone(data[3]);
         Email mentorEmail = new Email(data[4]);
@@ -85,12 +84,10 @@ public class CsvUtil {
      */
     public static Participant parseToParticipant(String[] data) {
         // EntityType (P), ID, Name, Phone, Email
-        Id participantId;
-        try {
-            participantId = new Id(PrefixType.P, Integer.parseInt(data[1]));
-        } catch (NumberFormatException e) {
-            participantId = ParticipantList.generateId();
+        if (!data[0].toUpperCase().equals("P")) {
+            throw new IllegalArgumentException();
         }
+        Id participantId = retrieveId(data[1], PrefixType.P);
         Name participantName = new Name(data[2]);
         Phone participantPhone = new Phone(data[3]);
         Email participantEmail = new Email(data[4]);
@@ -112,12 +109,10 @@ public class CsvUtil {
     public static Team parseToTeam(String[] data) {
         // EntityType (T), ID, Name, SubjectName, Score, ProjectName, ProjectType, Location
         //    cannot bulk register list of participants/mentor to Team (-> accomplish via AddToTeam)
-        Id teamId;
-        try {
-            teamId = new Id(PrefixType.T, Integer.parseInt(data[1]));
-        } catch (NumberFormatException e) {
-            teamId = TeamList.generateId();
+        if (!data[0].toUpperCase().equals("T")) {
+            throw new IllegalArgumentException();
         }
+        Id teamId = retrieveId(data[1], PrefixType.T);
         Name teamName = new Name(data[2]);
         SubjectName teamSubject = SubjectName.valueOf(data[3].toUpperCase());
         Score teamScore = new Score(Integer.parseInt(data[4])); // NFException subclass of IAException
@@ -137,6 +132,38 @@ public class CsvUtil {
         );
     }
 
+    /**
+     * Retrieves the {@code Id} from give {@code strId}.
+     * If {@code strId} is invalid, generate a valid {@code Id} from respective {@code EntityList}.
+     *
+     * @param strId {@code String Id} to parse into {@code Id}.
+     * @param prefixType {@code PrefixType} to indicate the {@code Entity} type of the {@code Id} to be generated.
+     * @return Generated {@code Id}.
+     */
+    private static Id retrieveId(String strId, PrefixType prefixType) {
+        // A valid Id can be just a number (i.e. 1, 2, 3) or a String form of an Id (i.e. M-1, P-1, T-1)
+        Id entityId;
+        try {
+            entityId = Id.toId(strId);
+        } catch (IllegalValueException ive) {
+            switch (prefixType) {
+            case M:
+                entityId = MentorList.generateId();
+                break;
+            case P:
+                entityId = ParticipantList.generateId();
+                break;
+            case T:
+                entityId = TeamList.generateId();
+                break;
+            default:
+                // Should never reach here
+                throw new RuntimeException();
+            }
+        }
+        return entityId;
+    }
+
     // =================================== Writer Methods ================================================
 
     /**
@@ -148,7 +175,6 @@ public class CsvUtil {
      * @throws IOException If something goes wrong while writing to the {@code csvFile}.
      */
     public static void writeToCsv(File csvFile, Model model) throws IOException {
-        assert csvFile.toString().toLowerCase().endsWith(".csv") : ASSERTION_FAILED_NOT_CSV;
         writeToCsv(csvFile, model.getMentorList(), false);
         writeToCsv(csvFile, model.getParticipantList(), true);
         writeToCsv(csvFile, model.getTeamList(), true);
@@ -184,6 +210,7 @@ public class CsvUtil {
             String entityToCsvString = toCsvString(e);
             csvWriter.write(entityToCsvString + "\n");
         }
+        csvWriter.close();
     }
 
     private static String getHeader(PrefixType prefixType) {

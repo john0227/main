@@ -1,0 +1,4 @@
+EntityType,ID,Name,SubjectName,Score,ProjectName,ProjectType,Location
+T,1,Team A,ENVIRONMENTAL,1,Project Alpha,PLACEHOLDER,1
+T,2,Team B,EDUCATION,2,Project Beta,PLACEHOLDER,2
+T,3,Team C,HEALTH,3,Project Gamma,PLACEHOLDER,3
