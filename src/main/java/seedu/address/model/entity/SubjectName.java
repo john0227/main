@@ -1,7 +1,6 @@
 package seedu.address.model.entity;
 
 import static java.util.Objects.requireNonNull;
-import static seedu.address.commons.util.AppUtil.checkArgument;
 
 /**
  * Encapsulates possible topics for a Hackathon project.
