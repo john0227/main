@@ -6,8 +6,14 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
 
+/**
+ * Utility class for dealing with {@code File}s.
+ */
 public class FileUtil {
 
+    /**
+     * Checks if given files have the same content.
+     */
     public static boolean hasEqualContents(File file1, File file2) throws IOException {
         BufferedReader reader1 = new BufferedReader(new FileReader(file1));
         BufferedReader reader2 = new BufferedReader(new FileReader(file2));

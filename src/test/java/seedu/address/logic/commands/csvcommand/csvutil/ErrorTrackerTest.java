@@ -9,14 +9,14 @@ import seedu.address.logic.commands.csvcommand.csvutil.ErrorTracker.Error;
 public class ErrorTrackerTest {
 
     @Test
-    public void Error_toString_convertErrorToString_correctStringReturned() {
+    public void toString_convertErrorToString_correctStringReturned() {
         Error error = new Error(1, "What's wrong?", "Alfred is sick");
         String expected = "\tLine 1: What's wrong? (Cause: Alfred is sick)";
         assertEquals(expected, error.toString());
     }
 
     @Test
-    public void ErrorTracker_toString_convertErrorTrackerToString_correctStringReturned() {
+    public void toString_convertErrorTrackerToString_correctStringReturned() {
         Error error1 = new Error(1, "What's wrong?", "Alfred is sick");
         Error error2 = new Error(2, "What's wrong?", "Batman is sick");
         Error error3 = new Error(3, "What's wrong?", "Joker is here");

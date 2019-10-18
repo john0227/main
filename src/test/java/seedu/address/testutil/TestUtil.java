@@ -18,7 +18,7 @@ public class TestUtil {
      * Folder used for temp files created during testing. Ignored by Git.
      */
     private static final Path SANDBOX_FOLDER = Paths.get("src", "test", "data", "sandbox");
-    private static final Path CSV_UTIL_TEST_FOLDER = Paths.get("src","test","data","CsvUtilTest");
+    private static final Path CSV_UTIL_TEST_FOLDER = Paths.get("src", "test", "data", "CsvUtilTest");
 
     /**
      * Appends {@code fileName} to the sandbox folder path and returns the resulting path.

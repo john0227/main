@@ -46,7 +46,7 @@ public class LoadCommandTest {
         participantList.add(TypicalParticipants.B);
         participantList.add(TypicalParticipants.C);
         TeamList teamList = new TeamList();
-        Team A = new Team(new Id(PrefixType.T, 1),
+        Team teamA = new Team(new Id(PrefixType.T, 1),
                 new Name("Team A"),
                 new ArrayList<>(),
                 Optional.empty(),
@@ -55,7 +55,7 @@ public class LoadCommandTest {
                 new Name("Project Alpha"),
                 ProjectType.PLACEHOLDER,
                 new Location(1));
-        teamList.add(A);
+        teamList.add(teamA);
 
         new LoadCommand(entityCsv.getAbsolutePath()).execute(model);
         assertEquals(mentorList, model.getMentorList());
@@ -64,7 +64,7 @@ public class LoadCommandTest {
     }
 
     @Test
-    public void execute_nonCsvFilePassedIn_AssertionErrorThrown() {
+    public void execute_nonCsvFilePassedIn_assertionErrorThrown() {
         File tempFile = TestUtil.getFilePathInSandboxFolder("temp.txt").toFile();
         tempFile.deleteOnExit();
         assertThrows(AssertionError.class, () -> new LoadCommand(tempFile.getAbsolutePath()),
@@ -72,7 +72,7 @@ public class LoadCommandTest {
     }
 
     @Test
-    public void execute_nonexistentFilePassedIn_CommandExceptionThrown() {
+    public void execute_nonexistentFilePassedIn_commandExceptionThrown() {
         File tempFile = TestUtil.getFilePathInSandboxFolder("nonexistent.csv").toFile();
         tempFile.deleteOnExit();
         assertThrows(CommandException.class, () -> new LoadCommand(tempFile.getAbsolutePath()).execute(model),
@@ -80,7 +80,7 @@ public class LoadCommandTest {
     }
 
     @Test
-    public void execute_invalidFormattingOfFile_CommandExceptionThrown_errorTrackerMessageShown() {
+    public void execute_invalidFormattingOfFile_commandExceptionThrownWithErrorTrackerMessage() {
         File tempFile = TestUtil.getFilePathInCsvUtilTestFolder("InvalidFormat.csv").toFile();
         String expected = String.join(
                 "\n",
@@ -92,7 +92,7 @@ public class LoadCommandTest {
                 new Error(7, "IN,,,,,,", LoadCommand.CAUSE_INVALID_DATA).toString(),
                 LoadCommand.MESSAGE_INVALID_FORMAT
         );
-        assertThrows(CommandException.class,  () -> new LoadCommand(tempFile.getAbsolutePath()).execute(model),
+        assertThrows(CommandException.class, () -> new LoadCommand(tempFile.getAbsolutePath()).execute(model),
                 expected);
     }
 
