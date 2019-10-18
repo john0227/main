@@ -61,16 +61,13 @@ public class Id {
         return strId.matches(ID_REGEX);
     }
 
-
     public PrefixType getPrefix() {
         return prefix;
     }
 
-
     public int getNumber() {
         return number;
     }
-
 
     public void setPrefix(PrefixType prefix) {
         this.prefix = prefix;
@@ -123,6 +120,7 @@ public class Id {
     public Id copy() {
         return new Id(this.prefix, this.number);
     }
+
     /**
      * Converts given {@code strId} into an {@code Id}.
      *
@@ -136,7 +134,6 @@ public class Id {
         PrefixType prefixType = PrefixType.valueOf(strId.substring(0, 1).toUpperCase());
         Id toReturn;
         try {
-
             toReturn = new Id(prefixType, Integer.parseInt(strId));
         } catch (NumberFormatException nfe) {
             toReturn = new Id(prefixType, Integer.parseInt(strId.substring(2)));
