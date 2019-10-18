@@ -53,7 +53,7 @@ public class ErrorTracker {
 
         @Override
         public String toString() {
-            return String.format("    Line %d: %s (Cause: %s)", this.lineNumber, this.csvLine, this.cause);
+            return String.format("\tLine %d: %s (Cause: %s)", this.lineNumber, this.csvLine, this.cause);
         }
     }
 
