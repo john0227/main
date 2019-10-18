@@ -220,4 +220,17 @@ public class TeamList extends EntityList {
         }
         return newTList;
     }
+
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof TeamList)) {
+            return false;
+        }
+        if (this == other) {
+            return true;
+        }
+        TeamList teamList = (TeamList) other;
+        return this.getSpecificTypedList().stream().allMatch(teamList::contains)
+                && teamList.getSpecificTypedList().stream().allMatch(this::contains);
+    }
 }

@@ -60,6 +60,9 @@ public class CsvUtil {
      */
     public static Mentor parseToMentor(String[] data) {
         // EntityType (M), ID (may be blank), Name, Phone, Email, Organization, SubjectName
+        if (data.length != 7) {
+            throw new IllegalArgumentException();
+        }
         if (!data[0].toUpperCase().equals("M")) {
             throw new IllegalArgumentException();
         }
@@ -84,6 +87,9 @@ public class CsvUtil {
      */
     public static Participant parseToParticipant(String[] data) {
         // EntityType (P), ID, Name, Phone, Email
+        if (data.length != 5) {
+            throw new IllegalArgumentException();
+        }
         if (!data[0].toUpperCase().equals("P")) {
             throw new IllegalArgumentException();
         }
@@ -109,6 +115,9 @@ public class CsvUtil {
     public static Team parseToTeam(String[] data) {
         // EntityType (T), ID, Name, SubjectName, Score, ProjectName, ProjectType, Location
         //    cannot bulk register list of participants/mentor to Team (-> accomplish via AddToTeam)
+        if (data.length != 8) {
+            throw new IllegalArgumentException();
+        }
         if (!data[0].toUpperCase().equals("T")) {
             throw new IllegalArgumentException();
         }
@@ -144,7 +153,7 @@ public class CsvUtil {
         // A valid Id can be just a number (i.e. 1, 2, 3) or a String form of an Id (i.e. M-1, P-1, T-1)
         Id entityId;
         try {
-            entityId = Id.toId(strId);
+            entityId = Id.toId(prefixType.toString() + "-" + strId);
         } catch (IllegalValueException ive) {
             switch (prefixType) {
             case M:

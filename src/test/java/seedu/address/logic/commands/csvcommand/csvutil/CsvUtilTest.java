@@ -273,17 +273,17 @@ public class CsvUtilTest {
 
         // Test Mentors
         CsvUtil.writeToCsv(csvFile, this.mentorList, false);
-        File expectedFile = new File(TestUtil.getFilePathInCsvUtilTestFolder("ExpectedMentors.csv"));
+        File expectedFile = TestUtil.getFilePathInCsvUtilTestFolder("ExpectedMentors.csv").toFile();
         assertTrue(FileUtil.hasEqualContents(csvFile, expectedFile));
 
         // Test Participants
         CsvUtil.writeToCsv(csvFile, this.participantList, false);
-        expectedFile = new File(TestUtil.getFilePathInCsvUtilTestFolder("ExpectedParticipants.csv"));
+        expectedFile = TestUtil.getFilePathInCsvUtilTestFolder("ExpectedParticipants.csv").toFile();
         assertTrue(FileUtil.hasEqualContents(csvFile, expectedFile));
 
         // Test Teams
         CsvUtil.writeToCsv(csvFile, this.teamList, false);
-        expectedFile = new File(TestUtil.getFilePathInCsvUtilTestFolder("ExpectedTeams.csv"));
+        expectedFile = TestUtil.getFilePathInCsvUtilTestFolder("ExpectedTeams.csv").toFile();
         assertTrue(FileUtil.hasEqualContents(csvFile, expectedFile));
     }
 
@@ -299,19 +299,19 @@ public class CsvUtilTest {
         // Test Mentors
         CsvUtil.writeToCsv(csvFile, this.mentorList, false);
         CsvUtil.writeToCsv(csvFile, this.mentorList, true);
-        File expectedFile = new File(TestUtil.getFilePathInCsvUtilTestFolder("ExpectedMentorsAppended.csv"));
+        File expectedFile = TestUtil.getFilePathInCsvUtilTestFolder("ExpectedMentorsAppended.csv").toFile();
         assertTrue(FileUtil.hasEqualContents(csvFile, expectedFile));
 
         // Test Participants
         CsvUtil.writeToCsv(csvFile, this.participantList, false);
         CsvUtil.writeToCsv(csvFile, this.participantList, true);
-        expectedFile = new File(TestUtil.getFilePathInCsvUtilTestFolder("ExpectedParticipantsAppended.csv"));
+        expectedFile = TestUtil.getFilePathInCsvUtilTestFolder("ExpectedParticipantsAppended.csv").toFile();
         assertTrue(FileUtil.hasEqualContents(csvFile, expectedFile));
 
         // Test Teams
         CsvUtil.writeToCsv(csvFile, this.teamList, false);
         CsvUtil.writeToCsv(csvFile, this.teamList, true);
-        expectedFile = new File(TestUtil.getFilePathInCsvUtilTestFolder("ExpectedTeamsAppended.csv"));
+        expectedFile = TestUtil.getFilePathInCsvUtilTestFolder("ExpectedTeamsAppended.csv").toFile();
         assertTrue(FileUtil.hasEqualContents(csvFile, expectedFile));
     }
 

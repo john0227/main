@@ -127,18 +127,12 @@ public class Id {
      * @throws IllegalValueException If given {@code strId} does not match a valid {@code Id} format.
      */
     public static Id toId(String strId) throws IllegalValueException {
-        if (!strId.matches(ID_REGEX) && !strId.matches(NUMBER_REGEX)) {
+        if (!strId.matches(ID_REGEX)) {
             throw new IllegalValueException(MESSAGE_CONSTRAINTS_INVALID_ID);
         }
         // Can use valueOf() because given strId already matches ID_REGEX
         PrefixType prefixType = PrefixType.valueOf(strId.substring(0, 1).toUpperCase());
-        Id toReturn;
-        try {
-            toReturn = new Id(prefixType, Integer.parseInt(strId));
-        } catch (NumberFormatException nfe) {
-            toReturn = new Id(prefixType, Integer.parseInt(strId.substring(2)));
-        }
-        return toReturn;
+        return new Id(prefixType, Integer.parseInt(strId.substring(2)));
     }
 
 }

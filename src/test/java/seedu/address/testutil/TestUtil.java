@@ -37,13 +37,13 @@ public class TestUtil {
      * Appends {@code fileName} to the CsvUtilTest folder path and returns the resulting path.
      * Creates the CsvUtilTest folder if it doesn't exist.
      */
-    public static String getFilePathInCsvUtilTestFolder(String fileName) {
+    public static Path getFilePathInCsvUtilTestFolder(String fileName) {
         try {
             Files.createDirectories(CSV_UTIL_TEST_FOLDER);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return CSV_UTIL_TEST_FOLDER.resolve(fileName).toString();
+        return CSV_UTIL_TEST_FOLDER.resolve(fileName);
     }
 
     /**

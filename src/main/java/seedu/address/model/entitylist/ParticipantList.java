@@ -218,4 +218,17 @@ public class ParticipantList extends EntityList {
         }
         return newPList;
     }
+
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof ParticipantList)) {
+            return false;
+        }
+        if (this == other) {
+            return true;
+        }
+        ParticipantList participantList = (ParticipantList) other;
+        return this.getSpecificTypedList().stream().allMatch(participantList::contains)
+                && participantList.getSpecificTypedList().stream().allMatch(this::contains);
+    }
 }

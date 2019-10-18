@@ -91,6 +91,9 @@ public class LoadCommand extends Command {
         String line;
         while ((line = csvReader.readLine()) != null) {
             Entity entityToAdd = this.parseLineToEntity(lineNumber, line, errors);
+            if (entityToAdd == null) {
+                continue;
+            }
             try {
                 this.addEntity(entityToAdd, model);
             } catch (AlfredException e) {
@@ -128,7 +131,7 @@ public class LoadCommand extends Command {
                 // If Entity Type is incorrect
                 errors.add(new Error(lineNumber, line, CAUSE_INVALID_DATA));
             }
-        } catch (IllegalArgumentException | ArrayIndexOutOfBoundsException e) {
+        } catch (IllegalArgumentException e) {
             errors.add(new Error(lineNumber, line, CAUSE_INVALID_DATA));
         }
         return null;
