@@ -47,7 +47,7 @@ public class LoadCommand extends Command {
             + " Parameters: "
             + PREFIX_FILE_NAME + "CSV_FILE_NAME\n"
             + "\tExample (Windows): " + COMMAND_WORD
-            + " C:/Users/USER/AlfredData/Alfred.csv\n"
+            + " " + PREFIX_FILE_NAME + "C:/Users/USER/AlfredData/Alfred.csv\n"
             + "Note the path does not have to be absolute (i.e. can be relative). "
             + "Hence, if a drive is not specified, Alfred will search for the file in current working directory.";
 
@@ -153,6 +153,17 @@ public class LoadCommand extends Command {
         } else if (entityToAdd instanceof Team) {
             model.addTeam((Team) entityToAdd);
         }
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof LoadCommand)) {
+            return false;
+        }
+        if (this == other) {
+            return true;
+        }
+        return this.csvFileName.equalsIgnoreCase(((LoadCommand) other).csvFileName);
     }
 
 }

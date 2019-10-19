@@ -27,7 +27,7 @@ public class LoadCommandParser implements Parser<LoadCommand> {
         }
 
         String fileName = argMultimap.getValue(PREFIX_FILE_NAME).orElse("");
-        if (!fileName.isEmpty() && !fileName.toLowerCase().endsWith(".csv")) {
+        if (fileName.isEmpty() || !fileName.toLowerCase().endsWith(".csv")) {
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, LoadCommand.MESSAGE_USAGE));
         }
 
