@@ -91,7 +91,9 @@ public class ParticipantList extends EntityList {
             }
         }
         this.participants.add(participant);
-        lastUsedId++;
+        if (participant.getId().getNumber() > lastUsedId) {
+            lastUsedId = participant.getId().getNumber();
+        }
     }
 
     /**

@@ -90,8 +90,9 @@ public class LoadCommand extends Command {
         int lineNumber = 1;
         String line;
         while ((line = csvReader.readLine()) != null) {
-            Entity entityToAdd = this.parseLineToEntity(lineNumber, line, errors);
+            Entity entityToAdd = this.parseLineToEntity(model, lineNumber, line, errors);
             if (entityToAdd == null) {
+                lineNumber++;
                 continue;
             }
             try {
@@ -107,12 +108,13 @@ public class LoadCommand extends Command {
     /**
      * Parses given line into the corresponding {@code Entity}.
      *
+     * @param model {@code Model} to operate on.
      * @param lineNumber Line number of given line in the CSV file.
      * @param line Line in the CSV file.
      * @param errors {@code ErrorTracker} to keep track of potential errors while parsing.
      * @return Corresponding {@code Entity}.
      */
-    private Entity parseLineToEntity(int lineNumber, String line, ErrorTracker errors) {
+    private Entity parseLineToEntity(Model model, int lineNumber, String line, ErrorTracker errors) {
         if (line.equals(CsvUtil.HEADER_MENTOR)
                 || line.equals(CsvUtil.HEADER_PARTICIPANT)
                 || line.equals(CsvUtil.HEADER_TEAM)) {
@@ -126,7 +128,8 @@ public class LoadCommand extends Command {
             case "P":
                 return CsvUtil.parseToParticipant(data);
             case "T":
-                return CsvUtil.parseToTeam(data);
+                // Model is passed to verify Participant's and Mentor's existence
+                return CsvUtil.parseToTeam(data, model);
             default:
                 // If Entity Type is incorrect
                 errors.add(new Error(lineNumber, line, CAUSE_INVALID_DATA));

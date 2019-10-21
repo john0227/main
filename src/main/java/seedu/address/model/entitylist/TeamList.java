@@ -94,7 +94,9 @@ public class TeamList extends EntityList {
             }
         }
         this.teams.add(team);
-        this.lastUsedId++;
+        if (team.getId().getNumber() > lastUsedId) {
+            lastUsedId = team.getId().getNumber();
+        }
     }
 
     /**

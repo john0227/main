@@ -5,8 +5,11 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import seedu.address.commons.exceptions.AlfredException;
 import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.commons.util.AppUtil;
 import seedu.address.commons.util.PrefixUtil;
@@ -41,17 +44,20 @@ public class CsvUtil {
      */
     public static final String HEADER_MENTOR = "EntityType,ID,Name,Phone,Email,Organization,SubjectName";
     public static final String HEADER_PARTICIPANT = "EntityType,ID,Name,Phone,Email";
-    public static final String HEADER_TEAM = "EntityType,ID,Name,SubjectName,Score,ProjectName,ProjectType,Location";
+    public static final String HEADER_TEAM =
+            "EntityType,ID,Name,Participants,Mentor,SubjectName,Score,ProjectName,ProjectType,Location";
 
     public static final String ASSERTION_FAILED_NOT_CSV = "File given is not a CSV file.";
     public static final String MESSAGE_INVALID_ENTITY = "Entity given is invalid";
+    public static final String CSV_SEPARATOR = ",";
 
     // =================================== Parser Methods ================================================
 
     /**
      * Parses given line of data (split by commas) into relevant fields of a {@code Mentor}.
      * <b>Precondition: </b> {@code data} contains attribute data as {@code String}s in the order of
-     * {@code EntityType(T), ID, Name, Phone, Email, Organization, SubjectName}.
+     * {@code EntityType(T), ID, Name, Phone, Email, Organization, SubjectName}. {@code ID} may be left
+     * empty, in which Alfred will generate a valid ID for the mentor.
      *
      * @param data Array containing {@code Mentor} attribute data as {@code String}s.
      * @return A valid {@code Mentor} with attributes set corresponding to {@code data}.
@@ -78,7 +84,8 @@ public class CsvUtil {
     /**
      * Parses given line of data (split by commas) into relevant fields of a {@code Participant}.
      * <b>Precondition: </b> {@code data} contains attribute data as {@code String}s in the order of
-     * {@code EntityType(T), ID, Name, Phone, Email}.
+     * {@code EntityType(T), ID, Name, Phone, Email}. {@code ID} may be left empty, in which
+     * Alfred will generate a valid ID for the participant.
      *
      * @param data Array containing {@code Participant} attribute data as {@code String}s.
      * @return A valid {@code Participant} with attributes set corresponding to {@code data}.
@@ -103,19 +110,21 @@ public class CsvUtil {
     /**
      * Parses given line of data (split by commas) into relevant fields of a {@code Team}.
      * <b>Precondition: </b> {@code data} contains attribute data as {@code String}s in the order of
-     * {@code EntityType(T), ID, Name, SubjectName, Score, ProjectName, ProjectType, Location}.
-     * {@code Participant}s and {@code Mentor} cannot be added to {@code Team} via CSV file and should
-     * be added via {@code AddCommand}.
+     * {@code EntityType(T), ID, Name, Participants, Mentor, SubjectName, Score, ProjectName, ProjectType, Location}.
+     * {@code ID, Participants} and {@code Mentor} may be left empty. If {@code ID} is left empty, Alfred will
+     * generate a valid ID for the team. If {@code Participants} and {@code Mentor} are left empty, the team
+     * will not have connections to any {@code Participants} and {@code Mentor}.
      *
      * @param data Array containing {@code Team} attribute data as {@code String}s.
+     * @param model {@code Model} to operate on.
      * @return A valid {@code Team} with attributes set corresponding to {@code data}.
      * @throws IllegalArgumentException If any field does not pass {@link AppUtil#checkArgument(Boolean, String)}
      *                                  or if enum constant is invalid
      */
-    public static Team parseToTeam(String[] data) {
-        // EntityType (T), ID, Name, SubjectName, Score, ProjectName, ProjectType, Location
+    public static Team parseToTeam(String[] data, Model model) {
+        // EntityType (T), ID, Name, Participants, Mentor, SubjectName, Score, ProjectName, ProjectType, Location
         //    cannot bulk register list of participants/mentor to Team (-> accomplish via AddToTeam)
-        if (data.length != 8) {
+        if (data.length != 10) {
             throw new IllegalArgumentException();
         }
         if (!data[0].toUpperCase().equals("T")) {
@@ -123,22 +132,60 @@ public class CsvUtil {
         }
         Id teamId = retrieveId(data[1], PrefixType.T);
         Name teamName = new Name(data[2]);
-        SubjectName teamSubject = SubjectName.valueOf(data[3].toUpperCase());
-        Score teamScore = new Score(Integer.parseInt(data[4])); // NFException subclass of IAException
-        Name teamProjectName = new Name(data[5]);
-        ProjectType teamProjectType = ProjectType.valueOf(data[6].toUpperCase());
-        Location teamLocation = new Location(Integer.parseInt(data[7])); // NFException subclass of IAException
+        List<Participant> participants = parseToParticipants(data[3], model);
+        Optional<Mentor> mentor = parseToMentor(data[4], model);
+        SubjectName teamSubject = SubjectName.valueOf(data[5].toUpperCase());
+        Score teamScore = new Score(Integer.parseInt(data[6])); // NFException subclass of IAException
+        Name teamProjectName = new Name(data[7]);
+        ProjectType teamProjectType = ProjectType.valueOf(data[8].toUpperCase());
+        Location teamLocation = new Location(Integer.parseInt(data[9])); // NFException subclass of IAException
         return new Team(
                 teamId,
                 teamName,
-                new ArrayList<>(),
-                Optional.empty(),
+                participants,
+                mentor,
                 teamSubject,
                 teamScore,
                 teamProjectName,
                 teamProjectType,
                 teamLocation
         );
+    }
+
+    private static List<Participant> parseToParticipants(String data, Model model) {
+        List<Participant> participants = new ArrayList<>();
+        if (data.isBlank()) {
+            return participants;
+        }
+        data = data.replace("[", "").replace("]", "").trim();
+        for (String strId : data.split("\\s*\\|\\s*")) {
+            try {
+                if (!Id.isValidString(strId)) {
+                    strId = "P-" + strId;
+                }
+                Id id = Id.toId(strId);
+                participants.add(model.getParticipant(id));
+            } catch (AlfredException e) {
+                throw new IllegalArgumentException();
+            }
+        }
+        return participants;
+    }
+
+    private static Optional<Mentor> parseToMentor(String data, Model model) {
+        if (data.isBlank()) {
+            return Optional.empty();
+        }
+        data = data.replace("[", "").replace("]", "").trim();
+        try {
+            if (!Id.isValidString(data)) {
+                data = "M-" + data;
+            }
+            Id id = Id.toId(data);
+            return Optional.of(model.getMentor(id));
+        } catch (AlfredException e) {
+            throw new IllegalArgumentException();
+        }
     }
 
     /**
@@ -153,7 +200,10 @@ public class CsvUtil {
         // A valid Id can be just a number (i.e. 1, 2, 3) or a String form of an Id (i.e. M-1, P-1, T-1)
         Id entityId;
         try {
-            entityId = Id.toId(prefixType.toString() + "-" + strId);
+            if (!Id.isValidString(strId)) {
+                strId = prefixType.toString() + "-" + strId;
+            }
+            entityId = Id.toId(strId);
         } catch (IllegalValueException ive) {
             switch (prefixType) {
             case M:
@@ -262,12 +312,12 @@ public class CsvUtil {
      * @return A {@code CSV String} corresponding to {@code mentor}.
      */
     private static String toCsvString(Mentor mentor) {
-        return new StringBuilder("M,")
-                .append(mentor.getId().getNumber()).append(",")
-                .append(mentor.getName().toStorageValue()).append(",")
-                .append(mentor.getPhone().toStorageValue()).append(",")
-                .append(mentor.getEmail().toStorageValue()).append(",")
-                .append(mentor.getOrganization().toStorageValue()).append(",")
+        return new StringBuilder("M").append(CSV_SEPARATOR)
+                .append(mentor.getId().getNumber()).append(CSV_SEPARATOR)
+                .append(mentor.getName().toStorageValue()).append(CSV_SEPARATOR)
+                .append(mentor.getPhone().toStorageValue()).append(CSV_SEPARATOR)
+                .append(mentor.getEmail().toStorageValue()).append(CSV_SEPARATOR)
+                .append(mentor.getOrganization().toStorageValue()).append(CSV_SEPARATOR)
                 .append(mentor.getSubject().toStorageValue())
                 .toString();
     }
@@ -279,10 +329,10 @@ public class CsvUtil {
      * @return A {@code CSV String} corresponding to {@code participant}.
      */
     private static String toCsvString(Participant participant) {
-        return new StringBuilder("P,")
-                .append(participant.getId().getNumber()).append(",")
-                .append(participant.getName().toStorageValue()).append(",")
-                .append(participant.getPhone().toStorageValue()).append(",")
+        return new StringBuilder("P").append(CSV_SEPARATOR)
+                .append(participant.getId().getNumber()).append(CSV_SEPARATOR)
+                .append(participant.getName().toStorageValue()).append(CSV_SEPARATOR)
+                .append(participant.getPhone().toStorageValue()).append(CSV_SEPARATOR)
                 .append(participant.getEmail().toStorageValue())
                 .toString();
     }
@@ -294,15 +344,28 @@ public class CsvUtil {
      * @return A {@code CSV String} corresponding to {@code team}.
      */
     private static String toCsvString(Team team) {
-        return new StringBuilder("T,")
-                .append(team.getId().getNumber()).append(",")
-                .append(team.getName().toStorageValue()).append(",")
-                .append(team.getSubject().toStorageValue()).append(",")
-                .append(team.getScore().toStorageValue()).append(",")
-                .append(team.getProjectName().toStorageValue()).append(",")
-                .append(team.getProjectType().toStorageValue()).append(",")
+        return new StringBuilder("T").append(CSV_SEPARATOR)
+                .append(team.getId().getNumber()).append(CSV_SEPARATOR)
+                .append(team.getName().toStorageValue()).append(CSV_SEPARATOR)
+                .append(toCsvString(team.getParticipants())).append(CSV_SEPARATOR)
+                .append(toCsvString(team.getMentor())).append(CSV_SEPARATOR)
+                .append(team.getSubject().toStorageValue()).append(CSV_SEPARATOR)
+                .append(team.getScore().toStorageValue()).append(CSV_SEPARATOR)
+                .append(team.getProjectName().toStorageValue()).append(CSV_SEPARATOR)
+                .append(team.getProjectType().toStorageValue()).append(CSV_SEPARATOR)
                 .append(team.getLocation().toStorageValue())
                 .toString();
+    }
+
+    private static String toCsvString(List<Participant> participants) {
+        return "[" + participants.stream().map(p -> p.getId().toString()).collect(Collectors.joining("|")) + "]";
+    }
+
+    private static String toCsvString(Optional<Mentor> mentor) {
+        if (mentor.isEmpty()) {
+            return "";
+        }
+        return mentor.get().getId().toString();
     }
 
 }
