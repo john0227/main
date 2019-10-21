@@ -25,7 +25,7 @@ public class Phone {
                     + "    -contain numbers\n"
                     + "    -contain these special characters only, excluding parentheses,"
                     + "(" + SPECIAL_CHARACTERS + ").";
-    public static final String COUNTRY_CODE_REGEX = "\\+" + DIGITS;
+    public static final String COUNTRY_CODE_REGEX = "(\\+" + DIGITS + ")?";
     public static final String PHONE_NUMBER_PART_REGEX = "[" + SPECIAL_CHARACTERS + "]" + "?" + DIGITS;
     public static final String PHONE_NUMBER_REGEX = "(" + PHONE_NUMBER_PART_REGEX + ")" + "*";
     public static final String VALIDATION_REGEX = COUNTRY_CODE_REGEX + PHONE_NUMBER_REGEX;

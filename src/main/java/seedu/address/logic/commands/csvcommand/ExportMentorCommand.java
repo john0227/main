@@ -6,7 +6,6 @@ import java.io.IOException;
 import seedu.address.commons.util.FileUtil;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.csvcommand.csvutil.CsvUtil;
-import seedu.address.logic.commands.editcommand.EditMentorCommand;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 
@@ -17,7 +16,7 @@ public class ExportMentorCommand extends ExportCommand {
 
     public static final String MESSAGE_SUCCESS = "Exported all mentors to %s"; // %s -> file name
 
-    public ExportMentorCommand(String csvFilePath, String csvFileName) {
+    public ExportMentorCommand(String csvFilePath, String csvFileName) throws CommandException {
         super(csvFilePath, csvFileName);
     }
 
@@ -27,13 +26,13 @@ public class ExportMentorCommand extends ExportCommand {
             return new CommandResult(MESSAGE_EMPTY_DATA);
         }
         try {
-            File csvFile = new File(this.csvFileName);
-            FileUtil.createIfMissing(csvFile.toPath());
+            File csvFile = this.csvFileName.toFile();
+            FileUtil.createIfMissing(this.csvFileName);
             CsvUtil.writeToCsv(csvFile, model.getMentorList());
         } catch (IOException ioe) {
             throw new CommandException(String.format(MESSAGE_IO_EXCEPTION, ioe.toString()));
         }
-        return new CommandResult(String.format(MESSAGE_SUCCESS, this.csvFileName));
+        return new CommandResult(String.format(MESSAGE_SUCCESS, this.csvFileName.toString()));
     }
 
     @Override

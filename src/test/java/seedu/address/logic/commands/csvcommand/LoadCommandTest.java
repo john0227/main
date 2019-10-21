@@ -46,7 +46,8 @@ public class LoadCommandTest {
         participantList.add(TypicalParticipants.B);
         participantList.add(TypicalParticipants.C);
         TeamList teamList = new TeamList();
-        Team teamA = new Team(new Id(PrefixType.T, 1),
+        Team teamA = new Team(
+                new Id(PrefixType.T, 1),
                 new Name("Team A"),
                 new ArrayList<>(),
                 Optional.empty(),
@@ -54,7 +55,8 @@ public class LoadCommandTest {
                 new Score(1),
                 new Name("Project Alpha"),
                 ProjectType.PLACEHOLDER,
-                new Location(1));
+                new Location(1)
+        );
         teamList.add(teamA);
 
         new LoadCommand(entityCsv.getAbsolutePath()).execute(model);

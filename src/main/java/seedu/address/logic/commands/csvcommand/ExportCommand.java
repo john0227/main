@@ -5,6 +5,8 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_FILE_PATH;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
 
 import seedu.address.commons.util.FileUtil;
 import seedu.address.logic.commands.Command;
@@ -21,6 +23,8 @@ public class ExportCommand extends Command {
     public static final String COMMAND_WORD = "export"; // or any other suggestions
     public static final String MESSAGE_SUCCESS = "Exported all data to %s"; // %s -> file name
     public static final String MESSAGE_IO_EXCEPTION = "An IOException was caught: %s"; // %s -> exception message
+    public static final String MESSAGE_INVALID_PATH_EXCEPTION =
+            "Given file path, %s, is invalid"; // %s -> this.csvFileName
     public static final String MESSAGE_EMPTY_DATA = "No data to export. File was not created.";
     public static final String MESSAGE_USAGE = COMMAND_WORD + ": exports Alfred data to a CSV file. "
             + "Parameters: "
@@ -38,12 +42,11 @@ public class ExportCommand extends Command {
     public static final String ASSERTION_FAILED_NOT_CSV = "File given is not a CSV file.";
 
     public static final String DEFAULT_FILE_PATH = System.getProperty("user.dir") + File.separator + "AlfredData";
-    public static final String DEFAULT_FILE_NAME = "Alfred_Entity_List";
+    public static final String DEFAULT_FILE_NAME = "Alfred_Data.csv";
 
-    protected String csvFileName;
+    protected Path csvFileName;
 
-
-    public ExportCommand(String csvFilePath, String csvFileName) {
+    public ExportCommand(String csvFilePath, String csvFileName) throws CommandException {
         assert csvFileName.isBlank() || csvFileName.toLowerCase().endsWith(".csv") : ASSERTION_FAILED_NOT_CSV;
         // If either one of filePath or fileName was not specified, go with default values
         if (csvFilePath.isBlank()) {
@@ -52,11 +55,14 @@ public class ExportCommand extends Command {
         if (csvFileName.isBlank()) {
             csvFileName = DEFAULT_FILE_NAME;
         }
-        if (csvFilePath.endsWith(File.separator)) {
-            this.csvFileName = csvFilePath + csvFileName;
-            return;
+        try {
+            this.csvFileName = Path.of(csvFilePath, csvFileName);
+        } catch (InvalidPathException ipe) {
+            throw new CommandException(String.format(
+                    MESSAGE_INVALID_PATH_EXCEPTION,
+                    String.join(File.separator, csvFilePath, csvFileName)
+            ));
         }
-        this.csvFileName = csvFilePath + File.separator + csvFileName;
     }
 
     @Override
@@ -65,13 +71,13 @@ public class ExportCommand extends Command {
             return new CommandResult(MESSAGE_EMPTY_DATA);
         }
         try {
-            File csvFile = new File(this.csvFileName);
-            FileUtil.createIfMissing(csvFile.toPath());
+            File csvFile = this.csvFileName.toFile();
+            FileUtil.createIfMissing(this.csvFileName);
             CsvUtil.writeToCsv(csvFile, model);
         } catch (IOException ioe) {
             throw new CommandException(String.format(MESSAGE_IO_EXCEPTION, ioe.toString()));
         }
-        return new CommandResult(String.format(MESSAGE_SUCCESS, this.csvFileName));
+        return new CommandResult(String.format(MESSAGE_SUCCESS, this.csvFileName.toString()));
     }
 
     @Override
@@ -83,7 +89,7 @@ public class ExportCommand extends Command {
             return true;
         }
         ExportCommand command = (ExportCommand) other;
-        return this.csvFileName.equalsIgnoreCase(command.csvFileName);
+        return this.csvFileName.equals(command.csvFileName);
     }
 
 }

@@ -10,6 +10,7 @@ import seedu.address.logic.commands.csvcommand.ExportCommand;
 import seedu.address.logic.commands.csvcommand.ExportMentorCommand;
 import seedu.address.logic.commands.csvcommand.ExportParticipantCommand;
 import seedu.address.logic.commands.csvcommand.ExportTeamCommand;
+import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.CliSyntax;
 import seedu.address.logic.parser.Parser;
 import seedu.address.logic.parser.csvcommandparser.ExportCommandParser;
@@ -24,7 +25,7 @@ public class ExportCommandParserTest {
     private final String PREAMBLE_TEAM = "team";
 
     @Test
-    public void parse_validParametersPassedIn_exportCommandReturned() {
+    public void parse_validParametersPassedIn_exportCommandReturned() throws CommandException {
         String filePath = "";
         String fileName = "";
         // Empty file path and file name -> default file path and file name
@@ -61,7 +62,7 @@ public class ExportCommandParserTest {
     }
 
     @Test
-    public void parse_validParametersPassedIn_exportMentorCommandReturned() {
+    public void parse_validParametersPassedIn_exportMentorCommandReturned() throws CommandException {
         String filePath = "";
         String fileName = "";
         // Empty file path and file name -> default file path and file name
@@ -98,7 +99,7 @@ public class ExportCommandParserTest {
     }
 
     @Test
-    public void parse_validParametersPassedIn_exportParticipantCommandReturned() {
+    public void parse_validParametersPassedIn_exportParticipantCommandReturned() throws CommandException {
         String filePath = "";
         String fileName = "";
         // Empty file path and file name -> default file path and file name
@@ -135,7 +136,7 @@ public class ExportCommandParserTest {
     }
 
     @Test
-    public void parse_validParametersPassedIn_exportTeamCommandReturned() {
+    public void parse_validParametersPassedIn_exportTeamCommandReturned() throws CommandException {
         String filePath = "";
         String fileName = "";
         // Empty file path and file name -> default file path and file name
