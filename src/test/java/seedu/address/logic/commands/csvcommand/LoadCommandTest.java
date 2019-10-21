@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
@@ -13,14 +11,6 @@ import seedu.address.commons.exceptions.AlfredException;
 import seedu.address.logic.commands.csvcommand.csvutil.ErrorTracker.Error;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
-import seedu.address.model.entity.Id;
-import seedu.address.model.entity.Location;
-import seedu.address.model.entity.Name;
-import seedu.address.model.entity.PrefixType;
-import seedu.address.model.entity.ProjectType;
-import seedu.address.model.entity.Score;
-import seedu.address.model.entity.SubjectName;
-import seedu.address.model.entity.Team;
 import seedu.address.model.entitylist.MentorList;
 import seedu.address.model.entitylist.ParticipantList;
 import seedu.address.model.entitylist.TeamList;
@@ -28,10 +18,11 @@ import seedu.address.stub.ModelManagerStub;
 import seedu.address.testutil.TestUtil;
 import seedu.address.testutil.TypicalMentors;
 import seedu.address.testutil.TypicalParticipants;
+import seedu.address.testutil.TypicalTeams;
 
 public class LoadCommandTest {
 
-    private final File entityCsv = TestUtil.getFilePathInCsvUtilTestFolder("ExpectedEntities.csv").toFile();
+    private final File entityCsv = TestUtil.getFilePathInCsvUtilTestFolder("LoadEntities.csv").toFile();
     private Model model = new ModelManagerStub();
 
     @Test
@@ -46,18 +37,9 @@ public class LoadCommandTest {
         participantList.add(TypicalParticipants.B);
         participantList.add(TypicalParticipants.C);
         TeamList teamList = new TeamList();
-        Team teamA = new Team(
-                new Id(PrefixType.T, 1),
-                new Name("Team A"),
-                new ArrayList<>(),
-                Optional.empty(),
-                SubjectName.ENVIRONMENTAL,
-                new Score(1),
-                new Name("Project Alpha"),
-                ProjectType.PLACEHOLDER,
-                new Location(1)
-        );
-        teamList.add(teamA);
+        teamList.add(TypicalTeams.A);
+        teamList.add(TypicalTeams.B);
+        teamList.add(TypicalTeams.C);
 
         new LoadCommand(entityCsv.getAbsolutePath()).execute(model);
         assertEquals(mentorList, model.getMentorList());

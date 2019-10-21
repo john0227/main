@@ -120,7 +120,7 @@ public class LoadCommand extends Command {
                 || line.equals(CsvUtil.HEADER_TEAM)) {
             return null;
         }
-        String[] data = line.split(",");
+        String[] data = line.split(CsvUtil.CSV_SEPARATOR_REGEX);
         try {
             switch (data[0].toUpperCase()) {
             case "M":

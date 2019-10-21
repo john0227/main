@@ -10,9 +10,11 @@ import java.io.IOException;
 import org.junit.jupiter.api.Test;
 
 import seedu.address.commons.exceptions.AlfredException;
+import seedu.address.model.Model;
 import seedu.address.model.entitylist.MentorList;
 import seedu.address.model.entitylist.ParticipantList;
 import seedu.address.model.entitylist.TeamList;
+import seedu.address.stub.ModelManagerStub;
 import seedu.address.testutil.FileUtil;
 import seedu.address.testutil.TestUtil;
 import seedu.address.testutil.TypicalMentors;
@@ -190,34 +192,40 @@ public class CsvUtilTest {
 
     @Test
     public void parseToTeam_validParameters_noExceptionThrown() {
-        // EntityType (T), ID, Name, SubjectName, Score, ProjectName, ProjectType, Location
+        // EntityType (T), ID, Name, Participants, Mentor, SubjectName, Score, ProjectName, ProjectType, Location
+        Model model = new ModelManagerStub();
         String[] teamData = new String[] {
             "T",
             "",
             "Team Batman",
+            "",
+            "",
             "Social",
             "100",
             "Project Cleanup Gotham",
             "Placeholder",
             "1"
         };
-        assertDoesNotThrow(() -> CsvUtil.parseToTeam(teamData));
+        assertDoesNotThrow(() -> CsvUtil.parseToTeam(teamData, model));
     }
 
     @Test
     public void parseToTeam_invalidParameters_illegalArgumentExceptionThrown() {
-        // EntityType (T), ID, Name, SubjectName, Score, ProjectName, ProjectType, Location
+        // EntityType (T), ID, Name, Participants, Mentor, SubjectName, Score, ProjectName, ProjectType, Location
+        Model model = new ModelManagerStub();
         String[] invalidEntityType = new String[] {
             "M", // Should be "T"
             "",
             "Team Batman",
+            "",
+            "",
             "Social",
             "100",
             "Project Cleanup Gotham",
             "Placeholder",
             "1"
         };
-        assertThrows(IllegalArgumentException.class, () -> CsvUtil.parseToTeam(invalidEntityType));
+        assertThrows(IllegalArgumentException.class, () -> CsvUtil.parseToTeam(invalidEntityType, model));
 
         // If ID is invalid, CsvUtil will generate a valid one
 
@@ -225,37 +233,70 @@ public class CsvUtilTest {
             "T",
             "",
             "Team Batman^^", // Name cannot contain special characters other than ",.-'"
+            "",
+            "",
             "Social",
             "100",
             "Project Cleanup Gotham",
             "Placeholder",
             "1"
         };
-        assertThrows(IllegalArgumentException.class, () -> CsvUtil.parseToTeam(invalidName));
+        assertThrows(IllegalArgumentException.class, () -> CsvUtil.parseToTeam(invalidName, model));
+
+        String[] invalidParticipants = new String[] {
+                "T",
+                "",
+                "Team Batman^^",
+                "[P-1]", // Participant with ID P-1 does not exist in model
+                "",
+                "Social",
+                "100",
+                "Project Cleanup Gotham",
+                "Placeholder",
+                "1"
+        };
+        assertThrows(IllegalArgumentException.class, () -> CsvUtil.parseToTeam(invalidParticipants, model));
+
+        String[] invalidMentor = new String[] {
+                "T",
+                "",
+                "Team Batman^^",
+                "",
+                "M-1", // Mentor with ID M-1 does not exist in model
+                "Social",
+                "100",
+                "Project Cleanup Gotham",
+                "Placeholder",
+                "1"
+        };
 
         String[] invalidSubject = new String[] {
             "T",
             "",
             "Team Batman",
+            "",
+            "",
             "Socially", // Should be one of the enum values
             "100",
             "Project Cleanup Gotham",
             "Placeholder",
             "1"
         };
-        assertThrows(IllegalArgumentException.class, () -> CsvUtil.parseToTeam(invalidSubject));
+        assertThrows(IllegalArgumentException.class, () -> CsvUtil.parseToTeam(invalidSubject, model));
 
         String[] invalidScore = new String[] {
             "T",
             "",
             "Team Batman",
+            "",
+            "",
             "Social",
             "1000", // Should be an integer between 0 and 100
             "Project Cleanup Gotham",
             "Placeholder",
             "1"
         };
-        assertThrows(IllegalArgumentException.class, () -> CsvUtil.parseToTeam(invalidScore));
+        assertThrows(IllegalArgumentException.class, () -> CsvUtil.parseToTeam(invalidScore, model));
 
         // ProjectName is skipped because it is a Name object
         // ProjectType is skipped because it will be deprecated later
@@ -264,13 +305,15 @@ public class CsvUtilTest {
             "T",
             "",
             "Team Batman",
+            "",
+            "",
             "Social",
             "100",
             "Project Cleanup Gotham",
             "Placeholder",
             "10000" // Should be an integer between 0 and 1000
         };
-        assertThrows(IllegalArgumentException.class, () -> CsvUtil.parseToTeam(invalidLocation));
+        assertThrows(IllegalArgumentException.class, () -> CsvUtil.parseToTeam(invalidLocation, model));
     }
 
     @Test

@@ -47,6 +47,8 @@ public class ExportCommandTest {
      */
     private void initializeTeams(Model model) throws AlfredException {
         model.addTeam(TypicalTeams.A);
+        model.addTeam(TypicalTeams.B);
+        model.addTeam(TypicalTeams.C);
     }
 
     @Test

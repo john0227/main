@@ -50,6 +50,7 @@ public class CsvUtil {
     public static final String ASSERTION_FAILED_NOT_CSV = "File given is not a CSV file.";
     public static final String MESSAGE_INVALID_ENTITY = "Entity given is invalid";
     public static final String CSV_SEPARATOR = ",";
+    public static final String CSV_SEPARATOR_REGEX = "\\s*,\\s*"; // comma surrounded by arbitrary number of spaces
 
     // =================================== Parser Methods ================================================
 
