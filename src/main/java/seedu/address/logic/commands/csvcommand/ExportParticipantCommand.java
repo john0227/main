@@ -35,4 +35,10 @@ public class ExportParticipantCommand extends ExportCommand {
         return new CommandResult(String.format(MESSAGE_SUCCESS, this.csvFileName));
     }
 
+    @Override
+    public boolean equals(Object other) {
+        return other instanceof ExportParticipantCommand
+                && super.equals(other);
+    }
+
 }

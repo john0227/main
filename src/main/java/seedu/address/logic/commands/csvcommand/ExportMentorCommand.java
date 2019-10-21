@@ -6,6 +6,7 @@ import java.io.IOException;
 import seedu.address.commons.util.FileUtil;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.csvcommand.csvutil.CsvUtil;
+import seedu.address.logic.commands.editcommand.EditMentorCommand;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 
@@ -33,6 +34,11 @@ public class ExportMentorCommand extends ExportCommand {
             throw new CommandException(String.format(MESSAGE_IO_EXCEPTION, ioe.toString()));
         }
         return new CommandResult(String.format(MESSAGE_SUCCESS, this.csvFileName));
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return other instanceof ExportMentorCommand && super.equals(other);
     }
 
 }

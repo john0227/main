@@ -74,4 +74,16 @@ public class ExportCommand extends Command {
         return new CommandResult(String.format(MESSAGE_SUCCESS, this.csvFileName));
     }
 
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof ExportCommand)) {
+            return false;
+        }
+        if (this == other) {
+            return true;
+        }
+        ExportCommand command = (ExportCommand) other;
+        return this.csvFileName.equalsIgnoreCase(command.csvFileName);
+    }
+
 }

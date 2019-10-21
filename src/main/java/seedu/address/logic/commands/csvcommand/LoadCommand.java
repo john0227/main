@@ -163,7 +163,8 @@ public class LoadCommand extends Command {
         if (this == other) {
             return true;
         }
-        return this.csvFileName.equalsIgnoreCase(((LoadCommand) other).csvFileName);
+        LoadCommand command = (LoadCommand) other;
+        return this.csvFileName.equalsIgnoreCase(command.csvFileName);
     }
 
 }
