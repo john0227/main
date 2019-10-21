@@ -106,7 +106,10 @@ public class ExportMentorCommandTest {
         File expectedFile = TestUtil.getFilePathInCsvUtilTestFolder("ExpectedMentors.csv").toFile();
         String filePath = TestUtil.getFilePathInSandboxFolder("").toString();
         String fileName = "Alfred.csv";
-        String expectedMessage = String.format(ExportMentorCommand.MESSAGE_SUCCESS, filePath + File.separator + fileName);
+        String expectedMessage = String.format(
+                ExportMentorCommand.MESSAGE_SUCCESS,
+                filePath + File.separator + fileName
+        );
 
         assertEquals(expectedMessage, new ExportMentorCommand(filePath, fileName).execute(model).getFeedbackToUser());
 

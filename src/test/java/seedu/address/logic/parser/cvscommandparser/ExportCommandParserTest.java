@@ -17,12 +17,12 @@ import seedu.address.logic.parser.csvcommandparser.ExportCommandParser;
 
 public class ExportCommandParserTest {
 
+    private static final String PREFIX_FILE_PATH = " " + CliSyntax.PREFIX_FILE_PATH;
+    private static final String PREFIX_FILE_NAME = " " + CliSyntax.PREFIX_FILE_NAME;
+    private static final String PREAMBLE_MENTOR = "mentor";
+    private static final String PREAMBLE_PARTICIPANT = "participant";
+    private static final String PREAMBLE_TEAM = "team";
     private final Parser parser = new ExportCommandParser();
-    private final String PREFIX_FILE_PATH = " " + CliSyntax.PREFIX_FILE_PATH;
-    private final String PREFIX_FILE_NAME = " " + CliSyntax.PREFIX_FILE_NAME;
-    private final String PREAMBLE_MENTOR = "mentor";
-    private final String PREAMBLE_PARTICIPANT = "participant";
-    private final String PREAMBLE_TEAM = "team";
 
     @Test
     public void parse_validParametersPassedIn_exportCommandReturned() throws CommandException {
