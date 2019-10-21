@@ -83,6 +83,31 @@ public class CsvUtil {
     }
 
     /**
+     * Retrieves a {@code Mentor} with given {@code strId} from {@code model}.
+     *
+     * @param strId An {@code Id} in a {@code String} form.
+     * @param model {@code Model} to retrieve {@code Mentor} from.
+     * @return Retrieved {@code Mentor}.
+     * @throws IllegalArgumentException If given {@code strId} cannot be converted into an {@link Id}
+     *                                  or if a {@code Mentor} with given {@code Id} does not exist in {@code model}.
+     */
+    private static Optional<Mentor> parseToMentor(String strId, Model model) {
+        if (strId.isBlank()) {
+            return Optional.empty();
+        }
+        strId = strId.replace("[", "").replace("]", "").trim();
+        try {
+            if (!Id.isValidString(strId)) {
+                strId = "M-" + strId;
+            }
+            Id id = Id.toId(strId);
+            return Optional.of(model.getMentor(id));
+        } catch (AlfredException e) {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    /**
      * Parses given line of data (split by commas) into relevant fields of a {@code Participant}.
      * <b>Precondition: </b> {@code data} contains attribute data as {@code String}s in the order of
      * {@code EntityType(T), ID, Name, Phone, Email}. {@code ID} may be left empty, in which
@@ -153,6 +178,16 @@ public class CsvUtil {
         );
     }
 
+    /**
+     * Parses the given line of data into a {@code List} of {@code Participant}s.
+     *
+     * @param data A list of {@code Participant Id}s.
+     * @param model {@code Model} to retrieve {@code Participant}s with specified {@code Id}s.
+     * @return A list of retrieved {@code Participant}s.
+     * @throws IllegalArgumentException If the {@code String Id} in {@code data} cannot be converted into an
+     *                                  {@code Id} or if a {@code Participant} with stated {@code Id} does not
+     *                                  exist within {@code model}.
+     */
     private static List<Participant> parseToParticipants(String data, Model model) {
         List<Participant> participants = new ArrayList<>();
         if (data.isBlank()) {
@@ -173,21 +208,6 @@ public class CsvUtil {
         return participants;
     }
 
-    private static Optional<Mentor> parseToMentor(String data, Model model) {
-        if (data.isBlank()) {
-            return Optional.empty();
-        }
-        data = data.replace("[", "").replace("]", "").trim();
-        try {
-            if (!Id.isValidString(data)) {
-                data = "M-" + data;
-            }
-            Id id = Id.toId(data);
-            return Optional.of(model.getMentor(id));
-        } catch (AlfredException e) {
-            throw new IllegalArgumentException();
-        }
-    }
 
     /**
      * Retrieves the {@code Id} from give {@code strId}.
@@ -358,10 +378,16 @@ public class CsvUtil {
                 .toString();
     }
 
+    /**
+     * Converts given {@code participants} into a {@code CSV String}.
+     */
     private static String toCsvString(List<Participant> participants) {
         return "[" + participants.stream().map(p -> p.getId().toString()).collect(Collectors.joining("|")) + "]";
     }
 
+    /**
+     * Converts given {@code mentor} into a {@code CSV String}.
+     */
     private static String toCsvString(Optional<Mentor> mentor) {
         if (mentor.isEmpty()) {
             return "";

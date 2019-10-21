@@ -244,30 +244,30 @@ public class CsvUtilTest {
         assertThrows(IllegalArgumentException.class, () -> CsvUtil.parseToTeam(invalidName, model));
 
         String[] invalidParticipants = new String[] {
-                "T",
-                "",
-                "Team Batman^^",
-                "[P-1]", // Participant with ID P-1 does not exist in model
-                "",
-                "Social",
-                "100",
-                "Project Cleanup Gotham",
-                "Placeholder",
-                "1"
+            "T",
+            "",
+            "Team Batman^^",
+            "[P-1]", // Participant with ID P-1 does not exist in model
+            "",
+            "Social",
+            "100",
+            "Project Cleanup Gotham",
+            "Placeholder",
+            "1"
         };
         assertThrows(IllegalArgumentException.class, () -> CsvUtil.parseToTeam(invalidParticipants, model));
 
         String[] invalidMentor = new String[] {
-                "T",
-                "",
-                "Team Batman^^",
-                "",
-                "M-1", // Mentor with ID M-1 does not exist in model
-                "Social",
-                "100",
-                "Project Cleanup Gotham",
-                "Placeholder",
-                "1"
+            "T",
+            "",
+            "Team Batman^^",
+            "",
+            "M-1", // Mentor with ID M-1 does not exist in model
+            "Social",
+            "100",
+            "Project Cleanup Gotham",
+            "Placeholder",
+            "1"
         };
 
         String[] invalidSubject = new String[] {
