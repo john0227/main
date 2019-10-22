@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 
 import seedu.address.commons.exceptions.AlfredException;
 import seedu.address.logic.commands.exceptions.CommandException;
