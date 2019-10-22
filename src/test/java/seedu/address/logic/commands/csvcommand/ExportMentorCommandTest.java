@@ -78,15 +78,6 @@ public class ExportMentorCommandTest {
     }
 
     @Test
-    public void constructor_invalidFilePathPassed_throwsCommandException() throws AlfredException {
-        Model model = new ModelManagerStub();
-        initializeMentors(model);
-        String invalidFilePath = "\\/:*?|<>";
-        Executable execute = () -> new ExportMentorCommand(invalidFilePath, "");
-        assertThrows(CommandException.class, execute);
-    }
-
-    @Test
     public void execute_emptyModelPassed_successWithNoFileCreated() throws AlfredException {
         Model emptyModel = new ModelManagerStub();
         String filePath = TestUtil.getFilePathInCsvUtilTestFolder("").toString();
