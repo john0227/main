@@ -15,6 +15,7 @@ import seedu.address.logic.commands.csvcommand.csvutil.CsvUtil;
 import seedu.address.logic.commands.csvcommand.csvutil.ErrorTracker;
 import seedu.address.logic.commands.csvcommand.csvutil.ErrorTracker.Error;
 import seedu.address.logic.commands.exceptions.CommandException;
+import seedu.address.logic.parser.CliSyntax;
 import seedu.address.model.Model;
 import seedu.address.model.entity.Entity;
 import seedu.address.model.entity.Mentor;
@@ -33,7 +34,8 @@ public class LoadCommand extends Command {
     public static final String MESSAGE_PARTIAL_SUCCESS = "Following line(s) were unable to be loaded into Alfred\n"
              + "Possible reasons include incorrect formatting or adding of duplicate Entity:";
     public static final String MESSAGE_FILE_NOT_FOUND = "File not found at %s"; // %s -> this.csvFileName
-    public static final String MESSAGE_IO_EXCEPTION = "An IOException was caught: %s"; // %s -> exception message
+    public static final String MESSAGE_IO_EXCEPTION =
+            "Something went wrong while accessing your file! Please try again...";
     public static final String MESSAGE_INVALID_DATA = "CSV file contains invalid data";
     public static final String MESSAGE_INVALID_FORMAT = "CSV file must contain Entity data in the following format:\n"
             + "\tMentors: " + CsvUtil.HEADER_MENTOR + "\n"
@@ -47,9 +49,7 @@ public class LoadCommand extends Command {
             + " Parameters: "
             + PREFIX_FILE_NAME + "CSV_FILE_NAME\n"
             + "\tExample (Windows): " + COMMAND_WORD
-            + " " + PREFIX_FILE_NAME + "C:/Users/USER/AlfredData/Alfred.csv\n"
-            + "Note the path does not have to be absolute (i.e. can be relative). "
-            + "Hence, if a drive is not specified, Alfred will search for the file in current working directory.";
+            + " " + PREFIX_FILE_NAME + "C:/Users/USER/AlfredData/Alfred.csv\n";
 
     private String csvFileName;
 
@@ -121,13 +121,14 @@ public class LoadCommand extends Command {
             return null;
         }
         String[] data = line.split(CsvUtil.CSV_SEPARATOR_REGEX);
+        data[0] = data[0].toUpperCase();
         try {
-            switch (data[0].toUpperCase()) {
-            case "M":
+            switch (data[0]) {
+            case CliSyntax.PREFIX_ENTITY_MENTOR:
                 return CsvUtil.parseToMentor(data);
-            case "P":
+            case CliSyntax.PREFIX_ENTITY_PARTICIPANT:
                 return CsvUtil.parseToParticipant(data);
-            case "T":
+            case CliSyntax.PREFIX_ENTITY_TEAM:
                 // Model is passed to verify Participant's and Mentor's existence
                 return CsvUtil.parseToTeam(data, model);
             default:

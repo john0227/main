@@ -28,7 +28,7 @@ public class ExportCommandParser implements Parser<ExportCommand> {
         requireNonNull(args);
 
         ArgumentMultimap argMultimap = ArgumentTokenizer.tokenize(args, PREFIX_FILE_PATH, PREFIX_FILE_NAME);
-        String entity = argMultimap.getPreamble();
+        String entity = argMultimap.getPreamble().toLowerCase();
         String filePath = argMultimap.getValue(PREFIX_FILE_PATH).orElse("");
         String fileName = argMultimap.getValue(PREFIX_FILE_NAME).orElse("");
 
@@ -37,7 +37,7 @@ public class ExportCommandParser implements Parser<ExportCommand> {
         }
 
         try {
-            switch (entity.toLowerCase()) {
+            switch (entity) {
             case CliSyntax.ENTITY_MENTOR:
                 return new ExportMentorCommand(filePath, fileName);
             case CliSyntax.ENTITY_PARTICIPANT:
