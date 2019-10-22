@@ -81,7 +81,7 @@ public class ExportMentorCommandTest {
     public void constructor_invalidFilePathPassed_throwsCommandException() throws AlfredException {
         Model model = new ModelManagerStub();
         initializeMentors(model);
-        String invalidFilePath = "::";
+        String invalidFilePath = "\\/:*?|<>";
         Executable execute = () -> new ExportMentorCommand(invalidFilePath, "");
         assertThrows(CommandException.class, execute);
     }

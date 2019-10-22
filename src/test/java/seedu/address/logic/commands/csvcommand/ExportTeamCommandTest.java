@@ -75,7 +75,7 @@ public class ExportTeamCommandTest {
     public void constructor_invalidFilePathPassed_throwsCommandException() throws AlfredException {
         Model model = new ModelManagerStub();
         initializeTeams(model);
-        String invalidFilePath = "::";
+        String invalidFilePath = "\\/:*?|<>";
         Executable execute = () -> new ExportTeamCommand(invalidFilePath, "");
         assertThrows(CommandException.class, execute);
     }
