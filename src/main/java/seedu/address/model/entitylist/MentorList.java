@@ -221,6 +221,11 @@ public class MentorList extends EntityList {
     }
 
     @Override
+    public PrefixType getPrefix() {
+        return PrefixType.M;
+    }
+
+    @Override
     public boolean equals(Object other) {
         if (!(other instanceof MentorList)) {
             return false;

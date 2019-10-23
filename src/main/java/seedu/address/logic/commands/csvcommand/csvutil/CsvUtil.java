@@ -11,8 +11,8 @@ import java.util.stream.Collectors;
 
 import seedu.address.commons.exceptions.AlfredException;
 import seedu.address.commons.exceptions.IllegalValueException;
+import seedu.address.commons.exceptions.MissingEntityException;
 import seedu.address.commons.util.AppUtil;
-import seedu.address.commons.util.PrefixUtil;
 import seedu.address.model.Model;
 import seedu.address.model.entity.Email;
 import seedu.address.model.entity.Entity;
@@ -49,6 +49,8 @@ public class CsvUtil {
 
     public static final String ASSERTION_FAILED_NOT_CSV = "File given is not a CSV file.";
     public static final String MESSAGE_INVALID_ENTITY = "Entity given is invalid";
+    public static final String MESSAGE_MISSING_PARTICIPANT = "No participant with ID %s in Alfred";
+    public static final String MESSAGE_MISSING_MENTOR = "No mentor with with ID %s in Alfred";
     public static final String CSV_SEPARATOR = ",";
     public static final String CSV_SEPARATOR_REGEX = "\\s*,\\s*"; // comma surrounded by arbitrary number of spaces
 
@@ -89,9 +91,9 @@ public class CsvUtil {
      * @param model {@code Model} to retrieve {@code Mentor} from.
      * @return Retrieved {@code Mentor}.
      * @throws IllegalArgumentException If given {@code strId} cannot be converted into an {@link Id}
-     *                                  or if a {@code Mentor} with given {@code Id} does not exist in {@code model}.
+     * @throws MissingEntityException   If a {@code Mentor} with given {@code Id} does not exist in {@code model}.
      */
-    private static Optional<Mentor> parseToMentor(String strId, Model model) {
+    private static Optional<Mentor> parseToMentor(String strId, Model model) throws MissingEntityException {
         if (strId.isBlank()) {
             return Optional.empty();
         }
@@ -102,8 +104,10 @@ public class CsvUtil {
             }
             Id id = Id.toId(strId);
             return Optional.of(model.getMentor(id));
-        } catch (AlfredException e) {
+        } catch (IllegalValueException ive) {
             throw new IllegalArgumentException();
+        } catch (AlfredException e) {
+            throw new MissingEntityException(MESSAGE_MISSING_MENTOR);
         }
     }
 
@@ -139,17 +143,18 @@ public class CsvUtil {
      * {@code EntityType(T), ID, Name, Participants, Mentor, SubjectName, Score, ProjectName, ProjectType, Location}.
      * {@code ID, Participants} and {@code Mentor} may be left empty. If {@code ID} is left empty, Alfred will
      * generate a valid ID for the team. If {@code Participants} and {@code Mentor} are left empty, the team
-     * will not have connections to any {@code Participants} and {@code Mentor}.
+     * will not have connections to any {@code Participant}s and {@code Mentor}.
      *
      * @param data Array containing {@code Team} attribute data as {@code String}s.
      * @param model {@code Model} to operate on.
      * @return A valid {@code Team} with attributes set corresponding to {@code data}.
      * @throws IllegalArgumentException If any field does not pass {@link AppUtil#checkArgument(Boolean, String)}
      *                                  or if enum constant is invalid
+     * @throws MissingEntityException   If any {@code Participant} or {@code Mentor} referenced by this {@code Team}
+     *                                  is nonexistent.
      */
-    public static Team parseToTeam(String[] data, Model model) {
+    public static Team parseToTeam(String[] data, Model model) throws MissingEntityException {
         // EntityType (T), ID, Name, Participants, Mentor, SubjectName, Score, ProjectName, ProjectType, Location
-        //    cannot bulk register list of participants/mentor to Team (-> accomplish via AddToTeam)
         if (data.length != 10) {
             throw new IllegalArgumentException();
         }
@@ -185,10 +190,11 @@ public class CsvUtil {
      * @param model {@code Model} to retrieve {@code Participant}s with specified {@code Id}s.
      * @return A list of retrieved {@code Participant}s.
      * @throws IllegalArgumentException If the {@code String Id} in {@code data} cannot be converted into an
-     *                                  {@code Id} or if a {@code Participant} with stated {@code Id} does not
+     *                                  {@code Id} or
+     * @throws MissingEntityException   If a {@code Participant} with stated {@code Id} does not
      *                                  exist within {@code model}.
      */
-    private static List<Participant> parseToParticipants(String data, Model model) {
+    private static List<Participant> parseToParticipants(String data, Model model) throws MissingEntityException {
         List<Participant> participants = new ArrayList<>();
         if (data.isBlank()) {
             return participants;
@@ -201,8 +207,10 @@ public class CsvUtil {
                 }
                 Id id = Id.toId(strId);
                 participants.add(model.getParticipant(id));
-            } catch (AlfredException e) {
+            } catch (IllegalValueException ive) {
                 throw new IllegalArgumentException();
+            } catch (AlfredException e) {
+                throw new MissingEntityException(String.format(MESSAGE_MISSING_PARTICIPANT, strId));
             }
         }
         return participants;
@@ -285,7 +293,7 @@ public class CsvUtil {
             ReadOnlyEntityList entityList, boolean shouldAppend) throws IOException {
         assert csvFile.toString().toLowerCase().endsWith(".csv") : ASSERTION_FAILED_NOT_CSV;
         BufferedWriter csvWriter = new BufferedWriter(new FileWriter(csvFile, shouldAppend));
-        csvWriter.write(getHeader(PrefixUtil.getPrefixOf(entityList)) + "\n");
+        csvWriter.write(getHeader(entityList.getPrefix()) + "\n");
         for (Entity e : entityList.list()) {
             String entityToCsvString = toCsvString(e);
             csvWriter.write(entityToCsvString + "\n");
@@ -393,6 +401,25 @@ public class CsvUtil {
             return "";
         }
         return mentor.get().getId().toString();
+    }
+
+    // =================================== Util Methods ================================================
+
+    /**
+     * Checks if given {@code line} is a valid CSV header or not.<p>
+     * Valid CSV headers are:
+     * <ul>
+     *     <li>{@value #HEADER_MENTOR}
+     *     <li>{@value #HEADER_PARTICIPANT}
+     *     <li>{@value #HEADER_TEAM}
+     * </ul>
+     * Comparison is case-insensitive and comma separation can include whitespaces.
+     */
+    public static boolean isCsvHeader(String line) {
+        line = line.replaceAll(CSV_SEPARATOR_REGEX, CSV_SEPARATOR);
+        return line.equalsIgnoreCase(String.join(CSV_SEPARATOR, CsvUtil.HEADER_MENTOR))
+                || line.equalsIgnoreCase(String.join(CSV_SEPARATOR, CsvUtil.HEADER_PARTICIPANT))
+                || line.equalsIgnoreCase(String.join(CSV_SEPARATOR, CsvUtil.HEADER_TEAM));
     }
 
 }

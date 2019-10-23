@@ -12,7 +12,6 @@ import java.io.IOException;
 import org.junit.jupiter.api.Test;
 
 import seedu.address.commons.exceptions.AlfredException;
-import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 import seedu.address.stub.ModelManagerStub;
 import seedu.address.testutil.FileUtil;
@@ -31,65 +30,49 @@ public class ExportParticipantCommandTest {
     }
 
     @Test
-    public void equals_sameCommands_returnTrue() throws CommandException {
+    public void equals_sameCommands_returnTrue() {
+        String filePath = "src/main/test/Alfred.csv";
         // Same command returns true
-        ExportParticipantCommand command1 = new ExportParticipantCommand(
-                "src/main/test",
-                "Alfred.csv"
-        );
+        ExportParticipantCommand command1 = new ExportParticipantCommand(filePath);
         assertEquals(command1, command1);
 
         // Same parameter returns true
-        ExportParticipantCommand command2 = new ExportParticipantCommand(
-                "src/main/test",
-                "Alfred.csv"
-        );
+        ExportParticipantCommand command2 = new ExportParticipantCommand(filePath);
         assertEquals(command1, command2);
 
         // Empty strings result in default names
-        command1 = new ExportParticipantCommand("", "");
-        command2 = new ExportParticipantCommand(
-                ExportParticipantCommand.DEFAULT_FILE_PATH,
-                ExportParticipantCommand.DEFAULT_FILE_NAME
-        );
-        assertEquals(command1, command2);
-
-        // Path ending with File.separator has no difference on the outcome
-        String filePath = ".";
-        command1 = new ExportParticipantCommand(filePath + File.separator, "Alfred.csv");
-        command2 = new ExportParticipantCommand(filePath, "Alfred.csv");
+        command1 = new ExportParticipantCommand("");
+        command2 = new ExportParticipantCommand(ExportParticipantCommand.DEFAULT_FILE_PATH.toString());
         assertEquals(command1, command2);
     }
 
     @Test
-    public void equals_differentCommands_returnFalse() throws CommandException {
+    public void equals_differentCommands_returnFalse() {
+        String filePath = "src/main/test/Alfred.csv";
         // Different class returns false
-        ExportParticipantCommand command1 = new ExportParticipantCommand(
-                "src/main/test",
-                "Alfred.csv"
-        );
-        ExportTeamCommand exportTeamCommand = new ExportTeamCommand("src/main/test", "Alfred.csv");
+        ExportParticipantCommand command1 = new ExportParticipantCommand(filePath);
+        ExportTeamCommand exportTeamCommand = new ExportTeamCommand(filePath);
         assertNotEquals(command1, exportTeamCommand);
 
         // Different parameters returns false
-        ExportParticipantCommand command2 = new ExportParticipantCommand("src/main/test", "Alfred1.csv");
+        ExportParticipantCommand command2 = new ExportParticipantCommand("src/main/test/Alfred1.csv");
         assertNotEquals(command1, command2);
     }
 
     @Test
     public void constructor_nonCsvFilePassed_assertionErrorThrown() {
-        String fileName = "Alfred.txt";
-        assertThrows(AssertionError.class, () -> new ExportParticipantCommand("", fileName));
+        String filePath = "Alfred.txt";
+        assertThrows(AssertionError.class, () -> new ExportParticipantCommand(filePath));
     }
 
     @Test
     public void execute_emptyModelPassed_successWithNoFileCreated() throws AlfredException {
         Model emptyModel = new ModelManagerStub();
-        String filePath = TestUtil.getFilePathInCsvUtilTestFolder("").toString();
         String fileName = "Alfred.csv";
+        String filePath = TestUtil.getFilePathInCsvUtilTestFolder(fileName).toString();
         assertEquals(
                 ExportParticipantCommand.MESSAGE_EMPTY_DATA,
-                new ExportParticipantCommand(filePath, fileName).execute(emptyModel).getFeedbackToUser()
+                new ExportParticipantCommand(filePath).execute(emptyModel).getFeedbackToUser()
         );
         assertFalse(TestUtil.getFilePathInCsvUtilTestFolder(fileName).toFile().exists());
     }
@@ -100,19 +83,13 @@ public class ExportParticipantCommandTest {
         initializeParticipants(model);
 
         File expectedFile = TestUtil.getFilePathInCsvUtilTestFolder("ExpectedParticipants.csv").toFile();
-        String filePath = TestUtil.getFilePathInSandboxFolder("").toString();
         String fileName = "Alfred.csv";
-        String expectedMessage = String.format(
-                ExportParticipantCommand.MESSAGE_SUCCESS,
-                filePath + File.separator + fileName
-        );
+        String filePath = TestUtil.getFilePathInSandboxFolder(fileName).toString();
+        String expectedMessage = String.format(ExportParticipantCommand.MESSAGE_SUCCESS, filePath);
 
-        assertEquals(
-                expectedMessage,
-                new ExportParticipantCommand(filePath, fileName).execute(model).getFeedbackToUser()
-        );
+        assertEquals(expectedMessage, new ExportParticipantCommand(filePath).execute(model).getFeedbackToUser());
 
-        File outcomeFile = TestUtil.getFilePathInSandboxFolder("Alfred.csv").toFile();
+        File outcomeFile = TestUtil.getFilePathInSandboxFolder(fileName).toFile();
         outcomeFile.deleteOnExit();
         assertTrue(FileUtil.hasEqualContents(expectedFile, outcomeFile));
     }

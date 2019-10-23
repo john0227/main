@@ -222,6 +222,11 @@ public class ParticipantList extends EntityList {
     }
 
     @Override
+    public PrefixType getPrefix() {
+        return PrefixType.P;
+    }
+
+    @Override
     public boolean equals(Object other) {
         if (!(other instanceof ParticipantList)) {
             return false;

@@ -1,13 +1,16 @@
 package seedu.address.logic.commands.csvcommand;
 
-import static seedu.address.logic.parser.CliSyntax.PREFIX_FILE_NAME;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_FILE_PATH;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import seedu.address.commons.exceptions.AlfredException;
+import seedu.address.commons.exceptions.MissingEntityException;
 import seedu.address.commons.util.FileUtil;
 import seedu.address.logic.commands.Command;
 import seedu.address.logic.commands.CommandResult;
@@ -26,12 +29,12 @@ import seedu.address.model.entity.Team;
  * Supports bulk registration via a CSV file.
  * This command aims to facilitate registration of entities onto Alfred.
  */
-public class LoadCommand extends Command {
+public class ImportCommand extends Command {
 
-    public static final String COMMAND_WORD = "load";
+    public static final String COMMAND_WORD = "import";
 
-    public static final String MESSAGE_SUCCESS = "Successfully loaded CSV file into Alfred";
-    public static final String MESSAGE_PARTIAL_SUCCESS = "Following line(s) were unable to be loaded into Alfred\n"
+    public static final String MESSAGE_SUCCESS = "Successfully imported CSV file into Alfred";
+    public static final String MESSAGE_PARTIAL_SUCCESS = "Following line(s) were unable to be imported into Alfred\n"
              + "Possible reasons include incorrect formatting or adding of duplicate Entity:";
     public static final String MESSAGE_FILE_NOT_FOUND = "File not found at %s"; // %s -> this.csvFileName
     public static final String MESSAGE_IO_EXCEPTION =
@@ -47,15 +50,19 @@ public class LoadCommand extends Command {
 
     public static final String MESSAGE_USAGE = COMMAND_WORD + ": Loads data in CSV file into Alfred"
             + " Parameters: "
-            + PREFIX_FILE_NAME + "CSV_FILE_NAME\n"
+            + PREFIX_FILE_PATH + "CSV_FILE_NAME\n"
             + "\tExample (Windows): " + COMMAND_WORD
-            + " " + PREFIX_FILE_NAME + "C:/Users/USER/AlfredData/Alfred.csv\n";
+            + " " + PREFIX_FILE_PATH + "C:/Users/USER/AlfredData/Alfred.csv\n";
 
     private String csvFileName;
+    private Queue<String> teamBuffers;
+    private ErrorTracker errors;
 
-    public LoadCommand(String csvFileName) {
+    public ImportCommand(String csvFileName) {
         assert csvFileName.toLowerCase().endsWith(".csv") : ASSERTION_FAILED_NOT_CSV;
         this.csvFileName = csvFileName;
+        this.teamBuffers = new LinkedList<>();
+        this.errors = new ErrorTracker();
     }
 
     @Override
@@ -65,9 +72,8 @@ public class LoadCommand extends Command {
         if (!FileUtil.isFileExists(csvFile.toPath())) {
             throw new CommandException(String.format(MESSAGE_FILE_NOT_FOUND, this.csvFileName));
         }
-        ErrorTracker errors = new ErrorTracker();
         try {
-            this.parseFile(csvFile, errors, model);
+            this.parseFile(csvFile, model);
         } catch (IOException ioe) {
             throw new CommandException(String.format(MESSAGE_IO_EXCEPTION, ioe.toString()));
         }
@@ -82,42 +88,50 @@ public class LoadCommand extends Command {
      * Parses a CSV file located at given {@link #csvFileName} to {@code Entity} objects.
      *
      * @param csvFile The CSV file to parse.
-     * @param errors {@link ErrorTracker} to store potential errors that may arise while parsing the CSV file.
      * @param model {@code Model} to add the {@code Entity} objects.
      */
-    private void parseFile(File csvFile, ErrorTracker errors, Model model) throws IOException {
+    private void parseFile(File csvFile, Model model) throws IOException {
         BufferedReader csvReader = new BufferedReader(new FileReader(csvFile));
         int lineNumber = 1;
         String line;
         while ((line = csvReader.readLine()) != null) {
-            Entity entityToAdd = this.parseLineToEntity(model, lineNumber, line, errors);
-            if (entityToAdd == null) {
-                lineNumber++;
-                continue;
-            }
+            Entity entityToAdd = this.parseLineToEntity(model, lineNumber, line, true);
             try {
                 this.addEntity(entityToAdd, model);
             } catch (AlfredException e) {
-                errors.add(new Error(lineNumber, line, CAUSE_DUPLICATE_ENTITY));
+                this.errors.add(new Error(lineNumber, line, CAUSE_DUPLICATE_ENTITY));
             }
             lineNumber++;
         }
         csvReader.close();
+        this.addBufferedTeams(model);
+    }
+
+    /**
+     * Parses and adds teams in {@link #teamBuffers} into {@code Alfred}.
+     */
+    private void addBufferedTeams(Model model) {
+        while (!this.teamBuffers.isEmpty()) {
+            String[] data = this.teamBuffers.poll().split(CsvUtil.CSV_SEPARATOR_REGEX, 2);
+            int lineNumber = Integer.parseInt(data[0]);
+            Entity entityToAdd = this.parseLineToEntity(model, lineNumber, data[1], false);
+            try {
+                this.addEntity(entityToAdd, model);
+            } catch (AlfredException e) {
+                this.errors.add(new Error(lineNumber, data[1], CAUSE_DUPLICATE_ENTITY));
+            }
+        }
     }
 
     /**
      * Parses given line into the corresponding {@code Entity}.
      *
-     * @param model {@code Model} to operate on.
      * @param lineNumber Line number of given line in the CSV file.
      * @param line Line in the CSV file.
-     * @param errors {@code ErrorTracker} to keep track of potential errors while parsing.
      * @return Corresponding {@code Entity}.
      */
-    private Entity parseLineToEntity(Model model, int lineNumber, String line, ErrorTracker errors) {
-        if (line.equals(CsvUtil.HEADER_MENTOR)
-                || line.equals(CsvUtil.HEADER_PARTICIPANT)
-                || line.equals(CsvUtil.HEADER_TEAM)) {
+    private Entity parseLineToEntity(Model model, int lineNumber, String line, boolean shouldBufferTeam) {
+        if (CsvUtil.isCsvHeader(line)) {
             return null;
         }
         String[] data = line.split(CsvUtil.CSV_SEPARATOR_REGEX);
@@ -129,14 +143,20 @@ public class LoadCommand extends Command {
             case CliSyntax.PREFIX_ENTITY_PARTICIPANT:
                 return CsvUtil.parseToParticipant(data);
             case CliSyntax.PREFIX_ENTITY_TEAM:
-                // Model is passed to verify Participant's and Mentor's existence
+                // Buffer teams to add them after Mentors and Participants
+                if (shouldBufferTeam) {
+                    this.teamBuffers.offer(lineNumber + CsvUtil.CSV_SEPARATOR + line);
+                    return null;
+                }
                 return CsvUtil.parseToTeam(data, model);
             default:
                 // If Entity Type is incorrect
-                errors.add(new Error(lineNumber, line, CAUSE_INVALID_DATA));
+                this.errors.add(new Error(lineNumber, line, CAUSE_INVALID_DATA));
             }
-        } catch (IllegalArgumentException e) {
-            errors.add(new Error(lineNumber, line, CAUSE_INVALID_DATA));
+        } catch (IllegalArgumentException iae) {
+            this.errors.add(new Error(lineNumber, line, CAUSE_INVALID_DATA));
+        } catch (MissingEntityException mee) {
+            this.errors.add(new Error(lineNumber, line, mee.getMessage()));
         }
         return null;
     }
@@ -149,7 +169,9 @@ public class LoadCommand extends Command {
      * @throws AlfredException If the parsed Entity is already contained in {@code Model} (i.e. duplicate Entity).
      */
     private void addEntity(Entity entityToAdd, Model model) throws AlfredException {
-        // instanceof takes care of null value
+        if (entityToAdd == null) {
+            return;
+        }
         if (entityToAdd instanceof Mentor) {
             model.addMentor((Mentor) entityToAdd);
         } else if (entityToAdd instanceof Participant) {
@@ -161,13 +183,13 @@ public class LoadCommand extends Command {
 
     @Override
     public boolean equals(Object other) {
-        if (!(other instanceof LoadCommand)) {
+        if (!(other instanceof ImportCommand)) {
             return false;
         }
         if (this == other) {
             return true;
         }
-        LoadCommand command = (LoadCommand) other;
+        ImportCommand command = (ImportCommand) other;
         return this.csvFileName.equalsIgnoreCase(command.csvFileName);
     }
 

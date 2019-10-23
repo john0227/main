@@ -224,6 +224,11 @@ public class TeamList extends EntityList {
     }
 
     @Override
+    public PrefixType getPrefix() {
+        return PrefixType.T;
+    }
+
+    @Override
     public boolean equals(Object other) {
         if (!(other instanceof TeamList)) {
             return false;

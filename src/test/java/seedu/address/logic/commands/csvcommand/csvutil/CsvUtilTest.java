@@ -369,4 +369,22 @@ public class CsvUtilTest {
         assertTrue(FileUtil.hasEqualContents(csvFile, expectedFile));
     }
 
+    @Test
+    public void isCsvHeader_validHeaderPassed_returnTrue() {
+        String validHeader = "EntityType,ID,Name,Phone,Email,Organization,SubjectName";
+        assertTrue(CsvUtil.isCsvHeader(validHeader));
+
+        validHeader = "EntityType, ID ,  Name   , Phone, Email, Organization,SubjectName";
+        assertTrue(CsvUtil.isCsvHeader(validHeader));
+
+        validHeader = "EntityType, ID ,  NaME   , Phone, EMAil, ORGANIZATION,SubjectName";
+        assertTrue(CsvUtil.isCsvHeader(validHeader));
+
+        validHeader = "EntityTyPE, ID, Name , Phone,Email";
+        assertTrue(CsvUtil.isCsvHeader(validHeader));
+
+        validHeader = "EntityType,ID,Name , Participants, MeNTOr,SubjectName,Score,  ProjectName,ProjectType,Location";
+        assertTrue(CsvUtil.isCsvHeader(validHeader));
+    }
+
 }

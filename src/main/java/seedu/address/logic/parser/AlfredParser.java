@@ -16,7 +16,7 @@ import seedu.address.logic.commands.FindCommand;
 import seedu.address.logic.commands.HelpCommand;
 import seedu.address.logic.commands.addcommand.AddCommand;
 import seedu.address.logic.commands.csvcommand.ExportCommand;
-import seedu.address.logic.commands.csvcommand.LoadCommand;
+import seedu.address.logic.commands.csvcommand.ImportCommand;
 import seedu.address.logic.commands.deletecommand.DeleteCommand;
 import seedu.address.logic.commands.findcommand.FindMentorCommand;
 import seedu.address.logic.commands.findcommand.FindParticipantCommand;
@@ -26,7 +26,7 @@ import seedu.address.logic.commands.undocommand.UndoCommand;
 import seedu.address.logic.commands.viewcommand.ViewCommand;
 import seedu.address.logic.parser.addcommandparser.AddCommandAllocator;
 import seedu.address.logic.parser.csvcommandparser.ExportCommandParser;
-import seedu.address.logic.parser.csvcommandparser.LoadCommandParser;
+import seedu.address.logic.parser.csvcommandparser.ImportCommandParser;
 import seedu.address.logic.parser.deletecommandparser.DeleteCommandAllocator;
 import seedu.address.logic.parser.editcommandparser.EditCommandAllocator;
 import seedu.address.logic.parser.exceptions.ParseException;
@@ -100,8 +100,8 @@ public class AlfredParser {
         case HelpCommand.COMMAND_WORD:
             return new HelpCommand();
 
-        case LoadCommand.COMMAND_WORD:
-            return new LoadCommandParser().parse(arguments);
+        case ImportCommand.COMMAND_WORD:
+            return new ImportCommandParser().parse(arguments);
 
         case ExportCommand.COMMAND_WORD:
             return new ExportCommandParser().parse(arguments);

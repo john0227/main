@@ -1,27 +1,21 @@
 package seedu.address.logic.commands.csvcommand.csvutil;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.PriorityQueue;
 
 /**
  * A tracker to show user which line in the CSV file was not able to be loaded into Alfred.
  */
 public class ErrorTracker {
 
-    private List<Error> errors;
+    private PriorityQueue<Error> errors;
 
     public ErrorTracker() {
-        this.errors = new ArrayList<>();
+        this.errors = new PriorityQueue<>();
     }
 
     public ErrorTracker(Error... errors) {
-        this.errors = Arrays.asList(errors);
-    }
-
-    public ErrorTracker(ErrorTracker errorTrackerToCopy) {
-        this.errors = errorTrackerToCopy.errors;
+        this.errors = new PriorityQueue<>(Arrays.asList(errors));
     }
 
     public void add(Error error) {
@@ -34,13 +28,18 @@ public class ErrorTracker {
 
     @Override
     public String toString() {
-        return errors.stream().map(Error::toString).collect(Collectors.joining("\n"));
+        PriorityQueue<Error> copy = new PriorityQueue<>(this.errors);
+        StringBuilder sb = new StringBuilder();
+        while (!copy.isEmpty()) {
+            sb.append(copy.poll().toString()).append("\n");
+        }
+        return sb.toString().stripTrailing();
     }
 
     /**
      * Encapsulates an error arisen while parsing a CSV file into {@code Entity} objects.
      */
-    public static class Error {
+    public static class Error implements Comparable<Error> {
         private int lineNumber;
         private String csvLine;
         private String cause;
@@ -49,6 +48,11 @@ public class ErrorTracker {
             this.lineNumber = lineNumber;
             this.csvLine = csvLine;
             this.cause = cause;
+        }
+
+        @Override
+        public int compareTo(Error other) {
+            return this.lineNumber - other.lineNumber;
         }
 
         @Override

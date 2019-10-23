@@ -16,8 +16,8 @@ public class ExportParticipantCommand extends ExportCommand {
 
     public static final String MESSAGE_SUCCESS = "Exported all participants to %s"; // %s -> file name
 
-    public ExportParticipantCommand(String csvFilePath, String csvFileName) throws CommandException {
-        super(csvFilePath, csvFileName);
+    public ExportParticipantCommand(String csvFilePath) {
+        super(csvFilePath);
     }
 
     @Override
@@ -26,13 +26,13 @@ public class ExportParticipantCommand extends ExportCommand {
             return new CommandResult(MESSAGE_EMPTY_DATA);
         }
         try {
-            File csvFile = this.csvFileName.toFile();
-            FileUtil.createIfMissing(this.csvFileName);
+            File csvFile = this.csvFilePath.toFile();
+            FileUtil.createIfMissing(this.csvFilePath);
             CsvUtil.writeToCsv(csvFile, model.getParticipantList());
         } catch (IOException ioe) {
             throw new CommandException(String.format(MESSAGE_IO_EXCEPTION, ioe.toString()));
         }
-        return new CommandResult(String.format(MESSAGE_SUCCESS, this.csvFileName.toString()));
+        return new CommandResult(String.format(MESSAGE_SUCCESS, this.csvFilePath.toString()));
     }
 
     @Override
