@@ -1,10 +1,17 @@
 package seedu.address.testutil;
 
+import static seedu.address.logic.commands.CommandTestUtil.VALID_EMAIL_AMY;
+import static seedu.address.logic.commands.CommandTestUtil.VALID_EMAIL_BOB;
+import static seedu.address.logic.commands.CommandTestUtil.VALID_NAME_AMY;
+import static seedu.address.logic.commands.CommandTestUtil.VALID_NAME_BOB;
+import static seedu.address.logic.commands.CommandTestUtil.VALID_PHONE_AMY;
+import static seedu.address.logic.commands.CommandTestUtil.VALID_PHONE_BOB;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import seedu.address.commons.exceptions.AlfredException;
+import seedu.address.commons.exceptions.AlfredModelException;
 import seedu.address.model.entity.Email;
 import seedu.address.model.entity.Id;
 import seedu.address.model.entity.Name;
@@ -42,8 +49,15 @@ public class TypicalParticipants {
                                                         new Email("participantC@yahoo.com"),
                                                         new Phone("933331231"));
 
+    // Manually created mentors - Mentor details found in {@code CommandTestUtil}
+    public static final Participant AMY = new ParticipantBuilder().withName(VALID_NAME_AMY).withEmail(VALID_EMAIL_AMY)
+            .withPhone(VALID_PHONE_AMY).build();
+
+    public static final Participant BOB = new ParticipantBuilder().withName(VALID_NAME_BOB).withEmail(VALID_EMAIL_BOB)
+            .withPhone(VALID_PHONE_BOB).build();
+
     /**
-     * Gets the Typical Participants in the form of a List (Does not ParticipantList).
+     * Gets the Typical Participants in the form of a List.
      * @return List of Typical Participants
      */
     public static List<Participant> getTypicalParticipants() {
@@ -53,9 +67,9 @@ public class TypicalParticipants {
     /**
      * Gets the Typical Participants in the form of a ParticipantList.
      * @return ParticipantList containing Typical Participants
-     * @throws AlfredException
+     * @throws AlfredModelException
      */
-    public static ParticipantList getTypicalParticipantList() throws AlfredException {
+    public static ParticipantList getTypicalParticipantList() throws AlfredModelException {
         ParticipantList pList = new ParticipantList();
         for (Participant p: getTypicalParticipants()) {
             pList.add(p);

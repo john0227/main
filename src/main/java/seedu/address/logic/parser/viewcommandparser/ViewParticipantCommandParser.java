@@ -1,5 +1,7 @@
 package seedu.address.logic.parser.viewcommandparser;
 
+import static seedu.address.commons.core.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
+
 import seedu.address.logic.commands.viewcommand.ViewParticipantCommand;
 import seedu.address.logic.parser.AlfredParserUtil;
 import seedu.address.logic.parser.Parser;
@@ -18,8 +20,12 @@ public class ViewParticipantCommandParser implements Parser<ViewParticipantComma
      * @throws ParseException if the user input does not conform the expected format
      */
     public ViewParticipantCommand parse(String args) throws ParseException {
-        Id id;
+        if (args.equals("")) {
+            throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT,
+                    ViewParticipantCommand.MESSAGE_USAGE));
+        }
 
+        Id id;
         try {
             id = AlfredParserUtil.parseIndex(args, PrefixType.P);
         } catch (ParseException p) {

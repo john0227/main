@@ -21,6 +21,7 @@ import seedu.address.commons.exceptions.AlfredModelException;
 import seedu.address.commons.exceptions.AlfredModelHistoryException;
 import seedu.address.commons.exceptions.MissingEntityException;
 import seedu.address.commons.exceptions.ModelValidationException;
+import seedu.address.model.entity.Entity;
 import seedu.address.model.entity.Id;
 import seedu.address.model.entity.Mentor;
 import seedu.address.model.entity.Participant;
@@ -91,29 +92,20 @@ public class ModelManager implements Model {
     public void initialize() {
         // Try loading the 3 lists into memory.
         try {
-            Optional<TeamList> storageTeamList = this.storage.readTeamList();
-            if (storageTeamList.isEmpty()) {
-                this.teamList = new TeamList();
-            } else {
-                this.teamList = storageTeamList.get();
-                this.teamList.setLastUsedId(this.teamList.getSize() - 1);
-            }
-        } catch (IOException | AlfredException e) {
-            logger.warning("TeamList is empty in storage. Writing a new one.");
-            this.teamList = new TeamList();
-        }
-
-        try {
             Optional<ParticipantList> storageParticipantList =
                     this.storage.readParticipantList();
             if (storageParticipantList.isEmpty()) {
                 this.participantList = new ParticipantList();
             } else {
                 this.participantList = storageParticipantList.get();
-                this.participantList.setLastUsedId(this.participantList.getSize() - 1);
+                int largestIdUsed = participantList.list().stream()
+                        .map(participant -> ((Entity) participant).getId().getNumber())
+                        .max(Integer::compare).get();
+                participantList.setLastUsedId(largestIdUsed);
             }
-        } catch (IOException | AlfredException e) {
-            logger.warning("ParticipantList is empty in storage. Writing a new one.");
+        } catch (AlfredException e) {
+            logger.warning("Initialising new ParticipantList. "
+                           + "Problem encountered reading ParticipantList from storage: " + e.getMessage());
             this.participantList = new ParticipantList();
         }
 
@@ -123,11 +115,45 @@ public class ModelManager implements Model {
                 this.mentorList = new MentorList();
             } else {
                 this.mentorList = storageMentorList.get();
-                this.mentorList.setLastUsedId(this.mentorList.getSize() - 1);
+                int largestIdUsed = mentorList.list().stream()
+                        .map(mentor -> ((Entity) mentor).getId().getNumber())
+                        .max(Integer::compare).get();
+                mentorList.setLastUsedId(largestIdUsed);
             }
-        } catch (IOException | AlfredException e) {
-            logger.warning("MentorList is empty in storage. Writing a new one.");
+        } catch (AlfredException e) {
+            logger.warning("Initialising new MentorList. "
+                           + "Problem encountered reading MentorList from storage: " + e.getMessage());
             this.mentorList = new MentorList();
+        }
+
+        try {
+            Optional<TeamList> storageTeamList = this.storage.readTeamList();
+            if (storageTeamList.isEmpty()) {
+                this.teamList = new TeamList();
+            } else {
+                this.teamList = storageTeamList.get();
+                int largestIdUsed = teamList.list().stream()
+                        .map(team -> ((Entity) team).getId().getNumber())
+                        .max(Integer::compare).get();
+                teamList.setLastUsedId(largestIdUsed);
+            }
+        } catch (AlfredException e) {
+            logger.warning("Initialising new TeamList. "
+                           + "Problem encountered reading TeamList from storage: " + e.getMessage());
+            this.teamList = new TeamList();
+        }
+
+        //The following try-catch block is necessary to ensure that the teamList loaded is valid
+        //and the data has not been tampered with.
+        try {
+            for (Team t: this.teamList.getSpecificTypedList()) {
+                validateNewTeamObject(t);
+            }
+        } catch (ModelValidationException e) {
+            logger.severe("Team List is not valid. New EntityLists will be initialised.");
+            this.participantList = new ParticipantList();
+            this.mentorList = new MentorList();
+            this.teamList = new TeamList();
         }
 
         try {

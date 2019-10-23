@@ -19,10 +19,10 @@ public class DeleteParticipantCommand extends DeleteCommand {
     public static final String MESSAGE_INVALID_PARTICIPANT_DISPLAYED_INDEX = "The participant ID provided is "
             + "invalid or does not exist.";
     public static final String MESSAGE_DELETE_PARTICIPANT_SUCCESS = "Deleted Participant: %1$s";
-    public static final String MESSAGE_USAGE = COMMAND_WORD
+    public static final String MESSAGE_USAGE = COMMAND_WORD + " participant"
             + ": Deletes a participant by ID shown in the list of participants.\n"
-            + "Format: " + COMMAND_WORD + " ID\n"
-            + "Example: " + COMMAND_WORD + " P-1";
+            + "Format: " + COMMAND_WORD + " participant ID\n"
+            + "Example: " + COMMAND_WORD + " participant P-1";
 
     private Name teamName;
 
@@ -57,6 +57,13 @@ public class DeleteParticipantCommand extends DeleteCommand {
 
         return new CommandResult(String.format(MESSAGE_DELETE_PARTICIPANT_SUCCESS,
                                                participantToBeDeleted.toString()), PrefixType.P);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return other == this // short circuit if same object
+                || (other instanceof DeleteParticipantCommand // instanceof handles nulls
+                && id.equals(((DeleteParticipantCommand) other).id));
     }
 
 }

@@ -18,10 +18,10 @@ public class DeleteMentorCommand extends DeleteCommand {
     public static final String MESSAGE_INVALID_MENTOR_DISPLAYED_INDEX = "The mentor ID provided is "
             + "invalid or does not exist.";
     public static final String MESSAGE_DELETE_MENTOR_SUCCESS = "Deleted Mentor: %1$s";
-    public static final String MESSAGE_USAGE = COMMAND_WORD
+    public static final String MESSAGE_USAGE = COMMAND_WORD + " mentor"
             + ": Deletes the mentor by the ID shown in the list of mentors.\n"
-            + "Format: " + COMMAND_WORD + " ID\n"
-            + "Example: " + COMMAND_WORD + " M-1";
+            + "Format: " + COMMAND_WORD + " mentor ID\n"
+            + "Example: " + COMMAND_WORD + " mentor M-1";
 
     private Name teamName;
 
@@ -54,6 +54,13 @@ public class DeleteMentorCommand extends DeleteCommand {
 
         return new CommandResult(String.format(MESSAGE_DELETE_MENTOR_SUCCESS,
                 mentorToBeDeleted.toString()), PrefixType.M);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return other == this // short circuit if same object
+                || (other instanceof DeleteMentorCommand // instanceof handles nulls
+                && id.equals(((DeleteMentorCommand) other).id));
     }
 
 }

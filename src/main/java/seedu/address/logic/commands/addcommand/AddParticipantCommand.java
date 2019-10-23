@@ -15,7 +15,7 @@ import seedu.address.model.entity.PrefixType;
  * Adds a {@link Participant} to Alfred.
  */
 public class AddParticipantCommand extends AddCommand {
-    public static final String COMMAND_WORD = "addParticipant";
+    public static final String COMMAND_WORD = "add participant";
     public static final String MESSAGE_SUCCESS = "New participant added: %s";
     public static final String MESSAGE_DUPLICATE_PARTICIPANT = "This participant already exists in this Hackathon";
     public static final String MESSAGE_USAGE = COMMAND_WORD + ": Adds a participant to Alfred.\n"
@@ -64,6 +64,13 @@ public class AddParticipantCommand extends AddCommand {
         }
 
         return new CommandResult(String.format(MESSAGE_SUCCESS, this.participant.toString()), PrefixType.P);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return other == this // short circuit if same object
+                || (other instanceof AddParticipantCommand // instanceof handles nulls
+                && participant.equals(((AddParticipantCommand) other).participant));
     }
 
 }
