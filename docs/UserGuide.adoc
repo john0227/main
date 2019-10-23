@@ -71,7 +71,7 @@ you may input `p/PHONE_NUMBER n/NAME` and Alfred will still deem it as an accept
 * Type your commands in the textbox displayed on the Alfred UI. After you are done typing the command, press ENTER on your keyboard to execute the command.
 ====
 
-=== Viewing help : `help`
+=== Viewing help : `help` (Coming in v1.3)
 
 This command displays a help page in a separate pop-up window. Should you require further information,
 the pop-up window also includes links to further references and documentation. +
@@ -219,6 +219,8 @@ Example:
 ==== Subtract points: `score sub TEAM_ID NEW_POINTS`
 Deducts the value of POINTS from the current score of the team with ID TEAM_ID. Use this command when you want to take away a certain amount of points from a particular team.
 
+Do note that if you try to subtract more than the maximum amount of points (which is set to 100 as default), Alfred will not allow it and will display an error message. If the subtraction of points makes the team's total go below the minimum (which is set to 0 points), the score will simply be set to 0.
+
 Example:
 
 * `score sub T-1 15` will subtract 20 points from the score of the team with ID T-1.
@@ -329,6 +331,13 @@ Example:
 * `export` will export all entities' data in Alfred to `/AlfredData/Alfred_Data.csv`.
 * `export mentor fp/data/Alfred.csv` will export all mentor data in Alfred to `/data/Alfred.csv`. If the any folders do not happen to exist, Alfred will create them for you.
 
+=== Help command (Coming in v1.3)
+
+The help command will list down all the commands you need to use this
+application properly!
+
+Simply run `help`.
+
 === Seating: `locate {PARTICIPANT/TEAM}` (Coming in v2.0)
 Find where a particular participant or team is seated.
 
@@ -337,6 +346,7 @@ Examples:
 * `locate n/Brian` will tell you where the participant Brian is seated.
 
 * `locate n/GenericTeamName` will tell you where the team GenericTeamName is seated.
+
 
 === Swag (Coming in v2.0)
 ==== Add Swag: `add swag DESCRIPTION QUANTITY`
