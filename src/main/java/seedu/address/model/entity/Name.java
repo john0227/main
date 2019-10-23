@@ -13,7 +13,7 @@ import seedu.address.commons.core.LogsCenter;
  * field values is  validated as declared in {@link #isValidName(String)}, immutable.
  */
 public class Name {
-    //Constat
+    //Constant
     public static final String SPECIAL_CHARACTERS = "\\,.-'";
     private static final String VALIDATION_REGEX =
             "^[A-Za-z][A-Za-z\\'\\-\\.\\,0-9]+([\\ A-Za-z0-9][A-Za-z\\'\\-\\.\\,0-9]+)*";
