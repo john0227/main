@@ -317,7 +317,7 @@ public class CsvUtilTest {
     }
 
     @Test
-    public void writeToCsv_participantListPassed_correctContentWrittenToFile() throws IOException, AlfredException {
+    public void writeToCsv_entityListPassed_correctContentWrittenToFile() throws IOException, AlfredException {
         // Initialize EntityLists and create a temporary file (to be deleted upon exit)
         initializeMentors();
         initializeParticipants();
