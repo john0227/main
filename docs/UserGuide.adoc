@@ -219,8 +219,6 @@ Example:
 ==== Subtract points: `score sub TEAM_ID NEW_POINTS`
 Deducts the value of POINTS from the current score of the team with ID TEAM_ID. Use this command when you want to take away a certain amount of points from a particular team.
 
-Do note that if you try to subtract more than the maximum amount of points (which is set to 100 as default), Alfred will not allow it and will display an error message. If the subtraction of points makes the team's total go below the minimum (which is set to 0 points), the score will simply be set to 0.
-
 Example:
 
 * `score sub T-1 15` will subtract 20 points from the score of the team with ID T-1.
@@ -237,6 +235,8 @@ Example:
 * `score set T-1 15` will set the score of the team with ID T-1 as 15.
 
 * `score set T-5 10` will set the score of the team with ID T-5 as 10.
+
+Do note that if you try to subtract more than the maximum amount of points (which is set to 100 as default), Alfred will not allow it and will display an error message. If the subtraction of points makes the team's total go below the minimum (which is set to 0 points), the score will simply be set to 0.
 
 === Bulk Registration: `import fp/PATH_TO_CSV_FILE`
 You may import multiple entities at once into Alfred through the specification of a CSV file.
