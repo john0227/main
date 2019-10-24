@@ -3,7 +3,6 @@ package seedu.address.logic.commands.viewcommand;
 import static java.util.Objects.requireNonNull;
 
 import seedu.address.logic.commands.Command;
-import seedu.address.model.Model;
 import seedu.address.model.entity.Entity;
 import seedu.address.model.entity.Id;
 

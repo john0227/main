@@ -4,6 +4,9 @@ import seedu.address.model.Model;
 import seedu.address.model.entity.PrefixType;
 import seedu.address.model.entitylist.ReadOnlyEntityList;
 
+/**
+ * Facilitates retrieving of different items based on {@code PrefixType} of {@code Entity}s.
+ */
 public class PrefixUtil {
 
     public static String getStringBasedOnPrefixType(

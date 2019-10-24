@@ -710,6 +710,11 @@ public class ModelManager implements Model {
         return results;
     }
 
+    /**
+     * Sets the predicate to show detailed information of {@code entity}.
+     *
+     * @param entity {@code Entity} to view.
+     */
     public void viewEntity(Entity entity) {
         PrefixType entityType = entity.getPrefix();
         Predicate<Entity> predicate = Predicates.viewSpecifiedEntity(entity);
