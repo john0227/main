@@ -39,6 +39,7 @@ public class ViewMentorCommand extends ViewCommand {
             throw new CommandException(MESSAGE_INVALID_MENTOR_DISPLAYED_INDEX);
         }
         model.viewEntity(mentorToView);
+        this.displayDetailedEntity(mentorToView);
 
         return new CommandResult(String.format(MESSAGE_SUCCESS, this.id), PrefixType.M);
     }

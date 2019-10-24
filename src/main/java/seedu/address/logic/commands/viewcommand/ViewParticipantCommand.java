@@ -41,6 +41,7 @@ public class ViewParticipantCommand extends ViewCommand {
             throw new CommandException(MESSAGE_INVALID_PARTICIPANT_DISPLAYED_INDEX);
         }
         model.viewEntity(participantToView);
+        this.displayDetailedEntity(participantToView);
 
         return new CommandResult(String.format(MESSAGE_SUCCESS, this.id), PrefixType.P);
     }

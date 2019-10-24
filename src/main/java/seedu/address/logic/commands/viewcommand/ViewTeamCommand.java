@@ -40,6 +40,7 @@ public class ViewTeamCommand extends ViewCommand {
             throw new CommandException(MESSAGE_INVALID_TEAM_DISPLAYED_INDEX);
         }
         model.viewEntity(teamToView);
+        this.displayDetailedEntity(teamToView);
 
         return new CommandResult(String.format(MESSAGE_SUCCESS, this.id), PrefixType.T);
     }
