@@ -20,9 +20,10 @@ public class ListMentorCommand extends ListCommand {
     public CommandResult execute(Model model) {
         requireNonNull(model);
 
-        this.displayMentors(model);
+        this.displayEntities(model, PrefixType.M);
         model.resetFilteredLists();
         model.updateHistory(this);
+
         return new CommandResult(MESSAGE_SUCCESS, PrefixType.M);
     }
 }

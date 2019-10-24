@@ -16,7 +16,7 @@ import seedu.address.model.entity.PrefixType;
 public class ViewParticipantCommand extends ViewCommand {
 
     public static final String COMMAND_WORD = "view participant";
-    public static final String MESSAGE_SUCCESS = "Showed specified participant";
+    public static final String MESSAGE_SUCCESS = "Showing participant with ID: %s"; // %s -> Id
     public static final String MESSAGE_INVALID_PARTICIPANT_DISPLAYED_INDEX =
             "The participant index provided is invalid";
     public static final String MESSAGE_USAGE = COMMAND_WORD + " participant"
@@ -40,9 +40,9 @@ public class ViewParticipantCommand extends ViewCommand {
         } catch (AlfredException e) {
             throw new CommandException(MESSAGE_INVALID_PARTICIPANT_DISPLAYED_INDEX);
         }
-        viewEntity(participantToView);
+        model.viewEntity(participantToView);
 
-        return new CommandResult(MESSAGE_SUCCESS, PrefixType.P);
+        return new CommandResult(String.format(MESSAGE_SUCCESS, this.id), PrefixType.P);
     }
 
     @Override

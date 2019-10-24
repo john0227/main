@@ -12,7 +12,7 @@ import seedu.address.model.entity.Id;
 public abstract class ViewCommand extends Command {
 
     public static final String COMMAND_WORD = "view";
-    public static final String MESSAGE_USAGE = COMMAND_WORD + ": shows details of the specified "
+    public static final String MESSAGE_USAGE = COMMAND_WORD + ": shows details of the "
             + "entity with the specified ID. \n"
             + "Format: view [entity name] [entity ID] \n"
             + "For example (to view Mentor with ID M-1): " + COMMAND_WORD + " mentor M-1";
@@ -22,16 +22,6 @@ public abstract class ViewCommand extends Command {
     ViewCommand(Id id) {
         requireNonNull(id);
         this.id = id;
-    }
-
-    /**
-     * Prints detailed information regarding given entity.
-     *
-     * @param entity Entity to view.
-     */
-    void viewEntity(Entity entity) {
-        System.out.println("Viewing " + entity.getName());
-        System.out.println("\t" + entity.toString());
     }
 
 }

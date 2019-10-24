@@ -20,9 +20,10 @@ public class ListParticipantCommand extends ListCommand {
     public CommandResult execute(Model model) {
         requireNonNull(model);
 
-        this.displayParticipants(model);
+        this.displayEntities(model, PrefixType.P);
         model.resetFilteredLists();
         model.updateHistory(this);
+
         return new CommandResult(MESSAGE_SUCCESS, PrefixType.P);
     }
 }

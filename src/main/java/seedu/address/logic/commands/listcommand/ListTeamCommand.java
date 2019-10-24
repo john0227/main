@@ -20,9 +20,10 @@ public class ListTeamCommand extends ListCommand {
     public CommandResult execute(Model model) {
         requireNonNull(model);
 
-        this.displayTeams(model);
+        this.displayEntities(model, PrefixType.T);
         model.resetFilteredLists();
         model.updateHistory(this);
+
         return new CommandResult(MESSAGE_SUCCESS, PrefixType.T);
     }
 }

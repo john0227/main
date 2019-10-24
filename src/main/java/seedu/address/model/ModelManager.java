@@ -133,7 +133,7 @@ public class ModelManager implements Model {
             } else {
                 this.teamList = storageTeamList.get();
                 int largestIdUsed = teamList.list().stream()
-                        .map(team -> ((Entity) team).getId().getNumber())
+                        .map(team -> team.getId().getNumber())
                         .max(Integer::compare).orElse(0);
                 TeamList.setLastUsedId(largestIdUsed);
             }
@@ -708,6 +708,25 @@ public class ModelManager implements Model {
         this.filteredMentorList.setPredicate(
                 Predicates.getPredicateFindEntityByName(name));
         return results;
+    }
+
+    public void viewEntity(Entity entity) {
+        PrefixType entityType = entity.getPrefix();
+        Predicate<Entity> predicate = Predicates.viewSpecifiedEntity(entity);
+        switch (entityType) {
+        case M:
+            this.filteredMentorList.setPredicate(predicate);
+            return;
+        case P:
+            this.filteredParticipantList.setPredicate(predicate);
+            return;
+        case T:
+            this.filteredTeamList.setPredicate(predicate);
+            return;
+        default:
+            // should never reach here
+            throw new RuntimeException();
+        }
     }
 
     //=========== AddressBook ================================================================================
