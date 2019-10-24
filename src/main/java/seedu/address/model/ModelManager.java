@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
@@ -88,8 +87,7 @@ public class ModelManager implements Model {
     }
 
     /**
-     * Initializes the various lists used. If storage contains no data, it defaults to loading
-     * the sample lists provided.
+     * Initializes the various lists used. If storage contains no data, empty lists are initialized.
      */
     public void initialize() {
         // Try loading the 3 lists into memory.
