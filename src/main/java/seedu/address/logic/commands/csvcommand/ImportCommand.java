@@ -75,7 +75,7 @@ public class ImportCommand extends Command {
         try {
             this.parseFile(csvFile, model);
         } catch (IOException ioe) {
-            throw new CommandException(String.format(MESSAGE_IO_EXCEPTION, ioe.toString()));
+            throw new CommandException(MESSAGE_IO_EXCEPTION);
         }
         if (!errors.isEmpty()) {
             String message = String.join("\n", MESSAGE_PARTIAL_SUCCESS, errors.toString(), MESSAGE_INVALID_FORMAT);
