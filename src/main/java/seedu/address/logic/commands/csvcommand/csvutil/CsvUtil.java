@@ -301,6 +301,15 @@ public class CsvUtil {
         csvWriter.close();
     }
 
+    public static void writeToCsv(File csvFile, boolean shouldAppend, String... toWrite) throws IOException {
+        assert csvFile.toString().toLowerCase().endsWith(".csv") : ASSERTION_FAILED_NOT_CSV;
+        BufferedWriter csvWriter = new BufferedWriter(new FileWriter(csvFile, shouldAppend));
+        for (String s : toWrite) {
+            csvWriter.write(s);
+        }
+        csvWriter.close();
+    }
+
     private static String getHeader(PrefixType prefixType) {
         switch (prefixType) {
         case M:

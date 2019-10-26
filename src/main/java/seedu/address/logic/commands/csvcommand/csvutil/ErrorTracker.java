@@ -26,6 +26,15 @@ public class ErrorTracker {
         return this.errors.isEmpty();
     }
 
+    public String toCsvString() {
+        PriorityQueue<Error> copy = new PriorityQueue<>(this.errors);
+        StringBuilder sb = new StringBuilder();
+        while (!copy.isEmpty()) {
+            sb.append(copy.poll().csvLine).append("\n");
+        }
+        return sb.toString().stripTrailing();
+    }
+
     @Override
     public String toString() {
         PriorityQueue<Error> copy = new PriorityQueue<>(this.errors);
