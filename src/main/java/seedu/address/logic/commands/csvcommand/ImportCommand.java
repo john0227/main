@@ -211,15 +211,16 @@ public class ImportCommand extends Command {
     }
 
     private String createErrorFile() {
-        String errorFileMessage = String.format(MESSAGE_ERROR_FILE_CREATED, this.errorFilePath.toString());
+        String errorFileMessage = MESSAGE_ERROR_FILE_NOT_CREATED;
         if (this.shouldCreateErrorFile) {
             // Create csv file containing all lines unable to be loaded
             File errorFile = this.errorFilePath.toFile();
             try {
                 FileUtil.createFile(errorFilePath);
                 CsvUtil.writeToCsv(errorFile, false, errors.toCsvString());
+                errorFileMessage = String.format(MESSAGE_ERROR_FILE_CREATED, this.errorFilePath.toString());
             } catch (IOException ioe) {
-                errorFileMessage = MESSAGE_ERROR_FILE_NOT_CREATED;
+                return errorFileMessage;
             }
         }
         return errorFileMessage;
