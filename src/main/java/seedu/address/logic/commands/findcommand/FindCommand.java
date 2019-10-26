@@ -12,6 +12,9 @@ import seedu.address.model.entity.PrefixType;
  */
 public abstract class FindCommand extends Command {
 
+    public static final String COMMAND_WORD = "find";
+    public static final String MESSAGE_USAGE = ""; // TODO: implement
+
     public static final String HEADER_MENTOR = "Found Mentors";
     public static final String HEADER_PARTICIPANT = "Found Participants";
     public static final String HEADER_TEAM = "Found Teams";
@@ -33,4 +36,5 @@ public abstract class FindCommand extends Command {
                     String.format("%d. Name: %s, ID: %s", i, result.getName(), result.getId()));
         }
     }
+
 }

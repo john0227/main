@@ -1,6 +1,7 @@
 package seedu.address.model;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -148,11 +149,11 @@ public interface Model {
 
     /* Find commands */
 
-    List<Participant> findParticipantByName(String name);
+    List<Participant> findParticipant(Predicate<Participant> predicate);
 
-    List<Team> findTeamByName(String name);
+    List<Team> findTeam(Predicate<Team> predicate);
 
-    List<Mentor> findMentorByName(String name);
+    List<Mentor> findMentor(Predicate<Mentor> predicate);
 
     /* View Command */
     void viewEntity(Entity entity);
@@ -213,5 +214,5 @@ public interface Model {
      * Gets a String detailing the previously executed commands that can be undone by the user.
      * @return String representing the previously executed commands that can be undone by the user.
      */
-    String getCommandHistory();
+    ArrayList<CommandRecord> getCommandHistory() throws AlfredModelHistoryException;
 }

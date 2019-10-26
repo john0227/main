@@ -34,7 +34,7 @@ public class EntityListPanel extends UiPart<Region> {
     //Not sure whether these generics is advisable, please advise
     public EntityListPanel(ObservableList<? extends Entity> entityList) {
         super(FXML);
-        entityList.forEach(item -> entityListView.getItems().add(item));
+        entityList.stream().forEach(item -> entityListView.getItems().add((Entity) item));
         logger.info("Size of EntityList is: " + entityListView.getItems().size());
         logger.info("Size of EntityListView is: " + entityListView.getItems().size());
         if (!entityList.isEmpty()) {
@@ -42,12 +42,16 @@ public class EntityListPanel extends UiPart<Region> {
             if (firstItem instanceof Participant) {
                 prefix = PrefixType.P;
                 entityListView.setCellFactory(listView -> new ParticipantListViewCell());
+
+
             } else if (firstItem instanceof Team) {
                 prefix = PrefixType.T;
                 entityListView.setCellFactory(listView -> new TeamListViewCell());
+
             } else if (firstItem instanceof Mentor) {
                 prefix = PrefixType.M;
                 entityListView.setCellFactory(listView -> new MentorListViewCell());
+
             }
             logger.info("EntityListView has prefix type: " + this.prefix);
         }
