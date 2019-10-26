@@ -199,6 +199,8 @@ public class CsvUtil {
         if (data.isBlank()) {
             return participants;
         }
+
+        List<String> missingIds = new ArrayList<>();
         data = data.replace("[", "").replace("]", "").trim();
         for (String strId : data.split("\\s*\\|\\s*")) {
             try {
@@ -210,8 +212,14 @@ public class CsvUtil {
             } catch (IllegalValueException ive) {
                 throw new IllegalArgumentException();
             } catch (AlfredException e) {
-                throw new MissingEntityException(String.format(MESSAGE_MISSING_PARTICIPANT, strId));
+                missingIds.add(strId);
             }
+        }
+        if (!missingIds.isEmpty()) {
+            throw new MissingEntityException(String.format(
+                    MESSAGE_MISSING_PARTICIPANT,
+                    String.join(", ", missingIds)
+            ));
         }
         return participants;
     }
