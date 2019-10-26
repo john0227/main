@@ -309,6 +309,11 @@ public class CsvUtil {
         csvWriter.close();
     }
 
+    /**
+     * Writes all of {@code toWrite} to {@code csvFile}.
+     * If {@code shouldAppend} is true, {@code toWrite} will be appended at the end of {@code csvFile}
+     * opposed to the beginning.
+     */
     public static void writeToCsv(File csvFile, boolean shouldAppend, String... toWrite) throws IOException {
         assert csvFile.toString().toLowerCase().endsWith(".csv") : ASSERTION_FAILED_NOT_CSV;
         BufferedWriter csvWriter = new BufferedWriter(new FileWriter(csvFile, shouldAppend));

@@ -210,6 +210,10 @@ public class ImportCommand extends Command {
         }
     }
 
+    /**
+     * Creates a CSV file containing all of the lines in user-provided CSV file
+     * that were not able to be imported into Alfred.
+     */
     private String createErrorFile() {
         String errorFileMessage = MESSAGE_ERROR_FILE_NOT_CREATED;
         if (this.shouldCreateErrorFile) {
