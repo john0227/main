@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.model.Model;
+import seedu.address.model.entity.CommandType;
 import seedu.address.model.entity.Participant;
 import seedu.address.model.entity.PrefixType;
 
@@ -24,6 +25,6 @@ public class ListParticipantCommand extends ListCommand {
         model.resetFilteredLists();
         model.updateHistory(this);
 
-        return new CommandResult(MESSAGE_SUCCESS, PrefixType.P);
+        return new CommandResult(MESSAGE_SUCCESS, CommandType.P);
     }
 }

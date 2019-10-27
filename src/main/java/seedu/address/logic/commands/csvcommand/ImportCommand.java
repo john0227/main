@@ -54,11 +54,13 @@ public class ImportCommand extends Command {
     public static final String CAUSE_DUPLICATE_ENTITY = "This entity already exists in Alfred";
     public static final String ASSERTION_FAILED_NOT_CSV = "File given is not a CSV file.";
 
-    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Loads data in CSV file into Alfred"
-            + " Parameters: "
-            + PREFIX_FILE_PATH + "CSV_FILE_NAME\n"
-            + "\tExample (Windows): " + COMMAND_WORD
-            + " " + PREFIX_FILE_PATH + "C:/Users/USER/AlfredData/Alfred.csv\n";
+    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Loads data in CSV file into Alfred\n"
+            + "Format: " + COMMAND_WORD + " "
+            + PREFIX_FILE_PATH + "CSV_FILE_PATH [" + PREFIX_FILE_PATH + "ERROR_FILE_PATH]\n"
+            + "\tExample 1 (Windows): " + COMMAND_WORD + " "
+            + PREFIX_FILE_PATH + "C:/Users/USER/AlfredData/Alfred.csv\n"
+            + "\tExample 2 (Windows) " + COMMAND_WORD + " "
+            + PREFIX_FILE_PATH + "Alfred.csv " + PREFIX_FILE_PATH + "Alfred_Errors.csv";
 
     private Path csvFilePath;
     private boolean shouldCreateErrorFile;
@@ -179,7 +181,7 @@ public class ImportCommand extends Command {
                 }
                 return CsvUtil.parseToTeam(data, model);
             default:
-                // If Entity Type is incorrect
+                // If Entity CommandType is incorrect
                 this.errors.add(new Error(lineNumber, line, CAUSE_INVALID_DATA));
             }
         } catch (IllegalArgumentException iae) {
