@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.commons.core.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.commons.core.Messages.MESSAGE_UNKNOWN_COMMAND;
 import static seedu.address.testutil.Assert.assertThrows;
+import static seedu.address.testutil.TypicalIds.ID_FIRST_MENTOR;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_MENTOR;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_TEAM;
 import static seedu.address.testutil.TypicalIndexes.INDEX_THIRD_PARTICIPANT;
@@ -25,7 +26,6 @@ import seedu.address.logic.commands.addcommand.AddTeamCommand;
 import seedu.address.logic.commands.deletecommand.DeleteMentorCommand;
 import seedu.address.logic.commands.deletecommand.DeleteParticipantCommand;
 import seedu.address.logic.commands.deletecommand.DeleteTeamCommand;
-import seedu.address.logic.commands.editcommand.EditCommand;
 import seedu.address.logic.commands.editcommand.EditMentorCommand;
 import seedu.address.logic.commands.editcommand.EditMentorCommand.EditMentorDescriptor;
 import seedu.address.logic.commands.listcommand.ListMentorCommand;
@@ -85,17 +85,16 @@ public class AlfredParserTest {
         assertEquals(new DeleteMentorCommand(INDEX_FIRST_MENTOR), deleteMentorCommand);
     }
 
-    @Disabled
     @Test
     public void parseCommand_edit() throws Exception {
+        // Checking if parse mentor command is called appropriately.
         Mentor mentor = new MentorBuilder().build();
         EditMentorDescriptor mentorDescriptor = new EditMentorDescriptorBuilder(mentor).build();
-        EditCommand command = (EditMentorCommand) parser
+        EditMentorCommand command = (EditMentorCommand) parser
                 .parseCommand(EditMentorCommand.COMMAND_WORD + " mentor " + mentor.getId().toString()
                 + " " + MentorUtil.getEditMentorDescriptorDetails(mentorDescriptor));
 
-        assertEquals(new EditMentorCommand(INDEX_FIRST_MENTOR, mentorDescriptor), command);
-
+        assertEquals(new EditMentorCommand(ID_FIRST_MENTOR, mentorDescriptor), command);
     }
 
     @Test

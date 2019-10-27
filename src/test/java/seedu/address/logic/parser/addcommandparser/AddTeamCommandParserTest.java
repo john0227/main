@@ -23,7 +23,6 @@ import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailur
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
 import static seedu.address.testutil.TypicalTeams.BRUCE;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import seedu.address.logic.commands.addcommand.AddTeamCommand;
@@ -37,10 +36,13 @@ class AddTeamCommandParserTest {
 
     private AddTeamCommandParser parser = new AddTeamCommandParser();
 
-    @Disabled
     @Test
     void parse_allFieldsPresent_success() {
         Team expectedTeam = new TeamBuilder(BRUCE).withScore(0).build();
+        Team expectedTeam2 = new TeamBuilder(BRUCE).withScore(0).withId(2).build();
+        Team expectedTeam3 = new TeamBuilder(BRUCE).withScore(0).withId(3).build();
+        Team expectedTeam4 = new TeamBuilder(BRUCE).withScore(0).withId(4).build();
+        Team expectedTeam5 = new TeamBuilder(BRUCE).withScore(0).withId(5).build();
 
         // whitespace only preamble
         assertParseSuccess(parser, PREAMBLE_WHITESPACE + NAME_DESC_BRUCE + LOCATION_DESC_BRUCE
@@ -50,22 +52,22 @@ class AddTeamCommandParserTest {
         // multiple names - last name accepted
         assertParseSuccess(parser, PREAMBLE_WHITESPACE + NAME_DESC_ALFRED + NAME_DESC_BRUCE
                 + LOCATION_DESC_BRUCE + PROJECT_NAME_DESC_BRUCE + SUBJECT_DESC_BRUCE,
-                new AddTeamCommand(expectedTeam));
+                new AddTeamCommand(expectedTeam2));
 
         // multiple locations - last location accepted
         assertParseSuccess(parser, PREAMBLE_WHITESPACE + LOCATION_DESC_ALFRED + NAME_DESC_BRUCE
                 + LOCATION_DESC_BRUCE + PROJECT_NAME_DESC_BRUCE + SUBJECT_DESC_BRUCE,
-                new AddTeamCommand(expectedTeam));
+                new AddTeamCommand(expectedTeam3));
 
         // multiple project names - last project name accepted
         assertParseSuccess(parser, PREAMBLE_WHITESPACE + PROJECT_NAME_DESC_ALFRED + NAME_DESC_BRUCE
                 + LOCATION_DESC_BRUCE + PROJECT_NAME_DESC_BRUCE + SUBJECT_DESC_BRUCE,
-                new AddTeamCommand(expectedTeam));
+                new AddTeamCommand(expectedTeam4));
 
         // multiple subjects - last subject accepted
         assertParseSuccess(parser, PREAMBLE_WHITESPACE + SUBJECT_DESC_ALFRED + NAME_DESC_BRUCE
                 + LOCATION_DESC_BRUCE + PROJECT_NAME_DESC_BRUCE + SUBJECT_DESC_BRUCE,
-                new AddTeamCommand(expectedTeam));
+                new AddTeamCommand(expectedTeam5));
     }
 
     @Test
