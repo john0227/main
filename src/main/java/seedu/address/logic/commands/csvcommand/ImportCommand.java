@@ -16,6 +16,7 @@ import seedu.address.commons.exceptions.MissingEntityException;
 import seedu.address.commons.util.FileUtil;
 import seedu.address.logic.commands.Command;
 import seedu.address.logic.commands.CommandResult;
+import seedu.address.logic.commands.TrackableState;
 import seedu.address.logic.commands.csvcommand.csvutil.CsvUtil;
 import seedu.address.logic.commands.csvcommand.csvutil.ErrorTracker;
 import seedu.address.logic.commands.csvcommand.csvutil.ErrorTracker.Error;
@@ -31,7 +32,7 @@ import seedu.address.model.entity.Team;
  * Supports bulk registration via a CSV file.
  * This command aims to facilitate registration of entities onto Alfred.
  */
-public class ImportCommand extends Command {
+public class ImportCommand extends Command implements TrackableState {
 
     public static final String COMMAND_WORD = "import";
 
@@ -49,7 +50,7 @@ public class ImportCommand extends Command {
     public static final String MESSAGE_ERROR_FILE_CREATED =
             "CSV file containing the errors was created at %s."; // %s -> file path
     public static final String MESSAGE_ERROR_FILE_NOT_CREATED =
-            "CSV file containing the errors was not created.";
+            "CSV file containing the errors was not able to be created.";
     public static final String CAUSE_INVALID_DATA = "Invalid data format";
     public static final String CAUSE_DUPLICATE_ENTITY = "This entity already exists in Alfred";
     public static final String ASSERTION_FAILED_NOT_CSV = "File given is not a CSV file.";
@@ -112,6 +113,7 @@ public class ImportCommand extends Command {
             );
             throw new CommandException(message);
         }
+        model.updateHistory(this);
         return new CommandResult(MESSAGE_SUCCESS);
     }
 
