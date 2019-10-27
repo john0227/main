@@ -6,6 +6,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -44,6 +46,10 @@ public class ImportCommand extends Command {
             + "\tMentors: " + CsvUtil.HEADER_MENTOR + "\n"
             + "\tParticipants: " + CsvUtil.HEADER_PARTICIPANT + "\n"
             + "\tTeams: " + CsvUtil.HEADER_TEAM;
+    public static final String MESSAGE_ERROR_FILE_CREATED =
+            "CSV file containing the errors was created at %s."; // %s -> file path
+    public static final String MESSAGE_ERROR_FILE_NOT_CREATED =
+            "CSV file containing the errors was not created.";
     public static final String CAUSE_INVALID_DATA = "Invalid data format";
     public static final String CAUSE_DUPLICATE_ENTITY = "This entity already exists in Alfred";
     public static final String ASSERTION_FAILED_NOT_CSV = "File given is not a CSV file.";
@@ -54,13 +60,28 @@ public class ImportCommand extends Command {
             + "\tExample (Windows): " + COMMAND_WORD
             + " " + PREFIX_FILE_PATH + "C:/Users/USER/AlfredData/Alfred.csv\n";
 
-    private String csvFileName;
+    private Path csvFilePath;
+    private boolean shouldCreateErrorFile;
+    private Path errorFilePath;
     private Queue<String> teamBuffers;
     private ErrorTracker errors;
 
-    public ImportCommand(String csvFileName) {
-        assert csvFileName.toLowerCase().endsWith(".csv") : ASSERTION_FAILED_NOT_CSV;
-        this.csvFileName = csvFileName;
+    public ImportCommand(String csvFilePath) {
+        assert csvFilePath.toLowerCase().endsWith(".csv") : ASSERTION_FAILED_NOT_CSV;
+
+        this.csvFilePath = Paths.get(csvFilePath);
+        this.shouldCreateErrorFile = false;
+        this.teamBuffers = new LinkedList<>();
+        this.errors = new ErrorTracker();
+    }
+
+    public ImportCommand(String csvFilePath, String errorFilePath) {
+        assert csvFilePath.toLowerCase().endsWith(".csv") : ASSERTION_FAILED_NOT_CSV;
+        assert errorFilePath.toLowerCase().endsWith(".csv") : ASSERTION_FAILED_NOT_CSV;
+
+        this.csvFilePath = Paths.get(csvFilePath);
+        this.shouldCreateErrorFile = true;
+        this.errorFilePath = Paths.get(errorFilePath);
         this.teamBuffers = new LinkedList<>();
         this.errors = new ErrorTracker();
     }
@@ -68,24 +89,32 @@ public class ImportCommand extends Command {
     @Override
     public CommandResult execute(Model model) throws CommandException {
         // Details must not be empty (except for ID)
-        File csvFile = new File(this.csvFileName);
-        if (!FileUtil.isFileExists(csvFile.toPath())) {
-            throw new CommandException(String.format(MESSAGE_FILE_NOT_FOUND, this.csvFileName));
+        if (!FileUtil.isFileExists(this.csvFilePath)) {
+            throw new CommandException(String.format(MESSAGE_FILE_NOT_FOUND, this.csvFilePath));
         }
+        File csvFile = this.csvFilePath.toFile();
         try {
             this.parseFile(csvFile, model);
         } catch (IOException ioe) {
-            throw new CommandException(String.format(MESSAGE_IO_EXCEPTION, ioe.toString()));
+            throw new CommandException(MESSAGE_IO_EXCEPTION);
         }
         if (!errors.isEmpty()) {
-            String message = String.join("\n", MESSAGE_PARTIAL_SUCCESS, errors.toString(), MESSAGE_INVALID_FORMAT);
+            String errorFileMessage = this.createErrorFile();
+            // Return result message
+            String message = String.join(
+                    "\n",
+                    MESSAGE_PARTIAL_SUCCESS,
+                    errors.toString(),
+                    errorFileMessage,
+                    MESSAGE_INVALID_FORMAT
+            );
             throw new CommandException(message);
         }
         return new CommandResult(MESSAGE_SUCCESS);
     }
 
     /**
-     * Parses a CSV file located at given {@link #csvFileName} to {@code Entity} objects.
+     * Parses a CSV file located at given {@link #csvFilePath} to {@code Entity} objects.
      *
      * @param csvFile The CSV file to parse.
      * @param model {@code Model} to add the {@code Entity} objects.
@@ -181,6 +210,26 @@ public class ImportCommand extends Command {
         }
     }
 
+    /**
+     * Creates a CSV file containing all of the lines in user-provided CSV file
+     * that were not able to be imported into Alfred.
+     */
+    private String createErrorFile() {
+        String errorFileMessage = MESSAGE_ERROR_FILE_NOT_CREATED;
+        if (this.shouldCreateErrorFile) {
+            // Create csv file containing all lines unable to be loaded
+            File errorFile = this.errorFilePath.toFile();
+            try {
+                FileUtil.createFile(errorFilePath);
+                CsvUtil.writeToCsv(errorFile, false, errors.toCsvString());
+                errorFileMessage = String.format(MESSAGE_ERROR_FILE_CREATED, this.errorFilePath.toString());
+            } catch (IOException ioe) {
+                return errorFileMessage;
+            }
+        }
+        return errorFileMessage;
+    }
+
     @Override
     public boolean equals(Object other) {
         if (!(other instanceof ImportCommand)) {
@@ -190,7 +239,7 @@ public class ImportCommand extends Command {
             return true;
         }
         ImportCommand command = (ImportCommand) other;
-        return this.csvFileName.equalsIgnoreCase(command.csvFileName);
+        return this.csvFilePath.equals(command.csvFilePath);
     }
 
 }
