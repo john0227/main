@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.model.Model;
+import seedu.address.model.entity.CommandType;
 import seedu.address.model.entity.Mentor;
 import seedu.address.model.entity.PrefixType;
 
@@ -24,6 +25,6 @@ public class ListMentorCommand extends ListCommand {
         model.resetFilteredLists();
         model.updateHistory(this);
 
-        return new CommandResult(MESSAGE_SUCCESS, PrefixType.M);
+        return new CommandResult(MESSAGE_SUCCESS, CommandType.M);
     }
 }

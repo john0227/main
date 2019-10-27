@@ -66,11 +66,6 @@ class AddTeamCommandParserTest {
         assertParseSuccess(parser, PREAMBLE_WHITESPACE + SUBJECT_DESC_ALFRED + NAME_DESC_BRUCE
                 + LOCATION_DESC_BRUCE + PROJECT_NAME_DESC_BRUCE + SUBJECT_DESC_BRUCE,
                 new AddTeamCommand(expectedTeam));
-
-        // multiple project types - last project type accepted
-        assertParseSuccess(parser, PREAMBLE_WHITESPACE + NAME_DESC_BRUCE
-                + LOCATION_DESC_BRUCE + PROJECT_NAME_DESC_BRUCE + SUBJECT_DESC_BRUCE,
-                new AddTeamCommand(expectedTeam));
     }
 
     @Test
@@ -120,9 +115,8 @@ class AddTeamCommandParserTest {
                 SubjectName.MESSAGE_CONSTRAINTS);
 
         // Two invalid fields - first one reported
-        assertParseFailure(parser, INVALID_NAME_DESC
-                        + LOCATION_DESC_BRUCE + PROJECT_NAME_DESC_BRUCE + SUBJECT_DESC_BRUCE,
-                Name.MESSAGE_CONSTRAINTS);
+        assertParseFailure(parser, INVALID_NAME_DESC + INVALID_LOCATION_DESC
+                + PROJECT_NAME_DESC_BRUCE + SUBJECT_DESC_BRUCE, Name.MESSAGE_CONSTRAINTS);
 
         // Non-empty preamble
         assertParseFailure(parser, PREAMBLE_NON_EMPTY + NAME_DESC_BRUCE

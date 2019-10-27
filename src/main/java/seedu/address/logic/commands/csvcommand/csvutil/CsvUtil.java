@@ -298,6 +298,9 @@ public class CsvUtil {
         csvWriter.close();
     }
 
+    /**
+     * Writes {@code toWrite} into {@code csvFile}.
+     */
     public static void writeToCsv(File csvFile, boolean shouldAppend, String... toWrite) throws IOException {
         assert csvFile.toString().toLowerCase().endsWith(".csv") : ASSERTION_FAILED_NOT_CSV;
         BufferedWriter csvWriter = new BufferedWriter(new FileWriter(csvFile, shouldAppend));

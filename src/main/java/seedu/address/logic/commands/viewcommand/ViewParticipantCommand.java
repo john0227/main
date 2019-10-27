@@ -6,9 +6,9 @@ import seedu.address.commons.exceptions.AlfredException;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
+import seedu.address.model.entity.CommandType;
 import seedu.address.model.entity.Id;
 import seedu.address.model.entity.Participant;
-import seedu.address.model.entity.PrefixType;
 
 /**
  * Shows detailed view of the {@link Participant} at specified ID.
@@ -43,7 +43,7 @@ public class ViewParticipantCommand extends ViewCommand {
         model.viewEntity(participantToView);
         this.displayDetailedEntity(participantToView);
 
-        return new CommandResult(String.format(MESSAGE_SUCCESS, this.id), PrefixType.P);
+        return new CommandResult(String.format(MESSAGE_SUCCESS, this.id), CommandType.P);
     }
 
     @Override

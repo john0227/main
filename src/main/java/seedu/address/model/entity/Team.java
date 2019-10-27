@@ -26,8 +26,7 @@ public class Team extends Entity {
 
     /**
      * Constructor with mentor.
-     *
-     * @param teamId
+     *  @param teamId
      * @param teamName
      * @param participants
      * @param subject
@@ -348,14 +347,16 @@ public class Team extends Entity {
             copiedMentor = Optional.of(this.mentor.get().copy());
         }
 
-        Team copy = new Team(this.id.copy(),
-                             this.name.copy(),
-                             pListCopy,
-                             copiedMentor,
-                             this.subject,
-                             this.score.copy(),
-                             this.projectName.copy(),
-                             this.location.copy());
+        Team copy = new Team(
+                this.id.copy(),
+                this.name.copy(),
+                pListCopy,
+                copiedMentor,
+                this.subject,
+                this.score.copy(),
+                this.projectName.copy(),
+                this.location.copy()
+        );
         return copy;
     }
 

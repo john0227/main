@@ -10,7 +10,7 @@ import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.CliSyntax;
 import seedu.address.model.Model;
-import seedu.address.model.entity.PrefixType;
+import seedu.address.model.entity.CommandType;
 import seedu.address.model.entity.Team;
 
 /**
@@ -29,7 +29,7 @@ public class AddTeamCommand extends AddCommand {
             + CliSyntax.PREFIX_LOCATION + "TABLE_NUMBER \n"
             + "Example: " + COMMAND_WORD + " "
             + CliSyntax.PREFIX_NAME + "Justice League "
-            + CliSyntax.PREFIX_SUBJECT_NAME + "Software Engineering "
+            + CliSyntax.PREFIX_SUBJECT_NAME + "Social "
             + CliSyntax.PREFIX_PROJECT_NAME + "Catwoman Dating App "
             + CliSyntax.PREFIX_LOCATION + "1";
 
@@ -55,7 +55,7 @@ public class AddTeamCommand extends AddCommand {
             throw new CommandException(MESSAGE_DUPLICATE_TEAM);
         }
 
-        return new CommandResult(String.format(MESSAGE_SUCCESS, this.team.toString()), PrefixType.T);
+        return new CommandResult(String.format(MESSAGE_SUCCESS, this.team.toString()), CommandType.T);
     }
 
     @Override
