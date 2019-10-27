@@ -60,8 +60,13 @@ public class AddTeamCommand extends AddCommand {
 
     @Override
     public boolean equals(Object other) {
-        return other == this // short circuit if same object
-                || (other instanceof AddTeamCommand // instanceof handles nulls
-                && team.equals(((AddTeamCommand) other).team));
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof AddTeamCommand)) {
+            return false;
+        }
+        AddTeamCommand addTeamCommand = (AddTeamCommand) other;
+        return this.team.equals(addTeamCommand.team);
     }
 }
