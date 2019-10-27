@@ -42,7 +42,7 @@ public class ViewTeamCommand extends ViewCommand {
         model.viewEntity(teamToView);
         this.displayDetailedEntity(teamToView);
 
-        return new CommandResult(MESSAGE_SUCCESS, CommandType.T.T);
+        return new CommandResult(String.format(MESSAGE_SUCCESS, this.id), CommandType.T);
     }
 
     @Override

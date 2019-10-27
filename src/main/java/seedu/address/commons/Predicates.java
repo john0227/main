@@ -56,5 +56,4 @@ public class Predicates {
     public static Predicate<Entity> viewSpecifiedEntity(Entity entityToView) {
         return (entity) -> entity.equals(entityToView);
     }
-
 }

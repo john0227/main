@@ -43,7 +43,7 @@ public class ViewParticipantCommand extends ViewCommand {
         model.viewEntity(participantToView);
         this.displayDetailedEntity(participantToView);
 
-        return new CommandResult(MESSAGE_SUCCESS, CommandType.P);
+        return new CommandResult(String.format(MESSAGE_SUCCESS, this.id), CommandType.P);
     }
 
     @Override

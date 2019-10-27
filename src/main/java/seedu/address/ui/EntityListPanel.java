@@ -28,8 +28,6 @@ public class EntityListPanel extends UiPart<Region> {
     @FXML
     private VBox panelContainer;
 
-    //TODO: clarify
-    //Not sure whether these generics is advisable, please advise
     public EntityListPanel(ObservableList<? extends Entity> entityList) {
         super(FXML);
         entityList.forEach(item -> listView.getItems().add(item));
@@ -40,16 +38,12 @@ public class EntityListPanel extends UiPart<Region> {
             if (firstItem instanceof Participant) {
                 prefix = PrefixType.P;
                 listView.setCellFactory(listView -> new ParticipantListViewCell());
-
-
             } else if (firstItem instanceof Team) {
                 prefix = PrefixType.T;
                 listView.setCellFactory(listView -> new TeamListViewCell());
-
             } else if (firstItem instanceof Mentor) {
                 prefix = PrefixType.M;
                 listView.setCellFactory(listView -> new MentorListViewCell());
-
             }
             logger.info("EntityListView has prefix type: " + this.prefix);
         }
@@ -114,5 +108,4 @@ public class EntityListPanel extends UiPart<Region> {
             }
         }
     }
-
 }

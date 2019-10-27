@@ -41,7 +41,7 @@ public class ViewMentorCommand extends ViewCommand {
         model.viewEntity(mentorToView);
         this.displayDetailedEntity(mentorToView);
 
-        return new CommandResult(MESSAGE_SUCCESS, CommandType.M);
+        return new CommandResult(String.format(MESSAGE_SUCCESS, this.id), CommandType.M);
     }
 
     @Override

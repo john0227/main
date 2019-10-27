@@ -13,6 +13,7 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.LogsCenter;
 import seedu.address.commons.exceptions.AlfredModelHistoryException;
@@ -21,7 +22,6 @@ import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.entity.CommandType;
-
 
 /**
  * The Main Window. Provides the basic application layout containing
@@ -68,7 +68,6 @@ public class MainWindow extends UiPart<Stage> {
 
     @FXML
     private JFXButton historyButton;
-
 
     public MainWindow(Stage primaryStage, Logic logic) {
         super(FXML, primaryStage);
@@ -261,6 +260,7 @@ public class MainWindow extends UiPart<Stage> {
         button.fire();
     }
 
+
     /**
      * Executes the command and returns the result.
      *
@@ -277,6 +277,7 @@ public class MainWindow extends UiPart<Stage> {
             if (commandResult.isShowHelp()) {
                 handleHelp();
             }
+
             if (commandResult.isExit()) {
                 handleExit();
             }
@@ -288,15 +289,19 @@ public class MainWindow extends UiPart<Stage> {
             case M:
                 this.fireButton(mentorsButton);
                 break;
+
             case T:
                 this.fireButton(teamsButton);
                 break;
+
             case P:
                 this.fireButton(participantsButton);
                 break;
+
             case H:
                 this.fireButton(historyButton);
                 break;
+
             default:
                 logger.info("The command does not edit any of the list of Entity");
                 break;
