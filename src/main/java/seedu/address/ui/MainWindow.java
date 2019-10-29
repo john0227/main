@@ -1,5 +1,6 @@
 package seedu.address.ui;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 import com.jfoenix.controls.JFXButton;
@@ -80,7 +81,6 @@ public class MainWindow extends UiPart<Stage> {
         setWindowDefaultSize(logic.getGuiSettings());
 
         setAccelerators();
-
 
         helpWindow = new HelpWindow();
     }
@@ -184,6 +184,22 @@ public class MainWindow extends UiPart<Stage> {
     }
 
     /**
+     * Handles the display of Command History in the GUI.
+     */
+    private void handleHistory() {
+        List<String> undoHistory = logic.getUndoCommandHistory();
+        List<String> redoHistory = logic.getRedoCommandHistory();
+        System.out.println("Inside handleHistory: printing");
+        for (String h: redoHistory) {
+            System.out.println(h);
+        }
+        System.out.println("=====================<< Current State >>=====================");
+        for (String h: undoHistory) {
+            System.out.println(h);
+        }
+    }
+
+    /**
      * Displays the list of Participants in Model and Storage on Graphical User Interface.
      */
     @FXML
@@ -223,7 +239,7 @@ public class MainWindow extends UiPart<Stage> {
      * Displays the Command History on Graphical User Interface.
      */
     @FXML
-    private void displayHistory() throws AlfredModelHistoryException {
+    private void displayHistory() {
         commandListPanel = new CommandListPanel(logic.getCommandHistory());
         listPanelPlaceholder.getChildren().set(0, commandListPanel.getRoot());
         listPanelPlaceholder.setStyle("-fx-background-color: #17202a");
@@ -281,6 +297,7 @@ public class MainWindow extends UiPart<Stage> {
             if (commandResult.isExit()) {
                 handleExit();
             }
+            handleHistory(); //DEBUG
 
             CommandType commandType = commandResult.getCommandType();
             logger.info("CommandResult has the prefix: " + commandType);
@@ -289,15 +306,12 @@ public class MainWindow extends UiPart<Stage> {
             case M:
                 this.fireButton(mentorsButton);
                 break;
-
             case T:
                 this.fireButton(teamsButton);
                 break;
-
             case P:
                 this.fireButton(participantsButton);
                 break;
-
             case H:
                 this.fireButton(historyButton);
                 break;
@@ -306,7 +320,6 @@ public class MainWindow extends UiPart<Stage> {
                 logger.info("The command does not edit any of the list of Entity");
                 break;
             }
-
             return commandResult;
         } catch (CommandException | ParseException | AlfredModelHistoryException e) {
             logger.info("Invalid command: " + commandText);

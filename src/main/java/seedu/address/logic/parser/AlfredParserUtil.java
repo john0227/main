@@ -17,7 +17,7 @@ import seedu.address.model.entity.Location;
 import seedu.address.model.entity.Name;
 import seedu.address.model.entity.Phone;
 import seedu.address.model.entity.PrefixType;
-import seedu.address.model.entity.ProjectType;
+import seedu.address.model.entity.Score;
 import seedu.address.model.entity.SubjectName;
 
 /**
@@ -108,6 +108,26 @@ public class AlfredParserUtil {
     }
 
     /**
+     * Parses a {@code String score} into a {@code Score}.
+     * Leading and trailing whitespaces will be trimmed.
+     *
+     * @param score the string score inputted by the user.
+     * @return a Score object representing the score inputted by the user.
+     * @throws ParseException if the score is of invalid format.
+     */
+    public static Score parseScore(String score) throws ParseException {
+        requireNonNull(score);
+        String trimmedScore = score.trim();
+        StringUtil.validateScore(trimmedScore);
+        int scoreValue = Integer.parseInt(trimmedScore);
+        if (!Score.isValidScore(scoreValue)) {
+            logger.severe("Score is not in the valid format: " + scoreValue);
+            throw new ParseException(Score.MESSAGE_CONSTRAINTS);
+        }
+        return new Score(scoreValue);
+    }
+
+    /**
      * Parses a {@code String phone} into a {@code Phone}.
      * Leading and trailing whitespaces will be trimmed.
      *
@@ -154,7 +174,7 @@ public class AlfredParserUtil {
             }
             return new Location(trimmedLocation);
         } catch (NumberFormatException e) {
-            logger.severe("Integer cannot be parsed from location:" + location);
+            logger.severe("Integer cannot be parsed from location: " + location);
             throw new ParseException(Location.MESSAGE_CONSTRAINTS_INVALID_TABLE_NUMBER);
         }
 
@@ -179,27 +199,6 @@ public class AlfredParserUtil {
             }
         }
         throw new ParseException(SubjectName.MESSAGE_CONSTRAINTS);
-    }
-
-    /**
-     * Parses a {@code String} into a {@code ProjectType}.
-     *
-     * @param type
-     * @return ProjectType
-     * @throws ParseException if the {@code String} is invalid.
-     */
-    public static ProjectType parseProjectType(String type) throws ParseException {
-        requireNonNull(type);
-        String trimmedType = type.trim();
-        if (!ProjectType.isValidProjectType(trimmedType)) {
-            throw new ParseException(ProjectType.MESSAGE_CONSTRAINTS);
-        }
-        /*for (ProjectType projectType : ProjectType.values()) {
-            if (projectType.toString().equals(trimmedType)){
-                return projectType;
-            }
-        }*/
-        return ProjectType.PLACEHOLDER;
     }
 
     /**

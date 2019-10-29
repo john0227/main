@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
-import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 
 import seedu.address.commons.core.GuiSettings;
@@ -16,6 +15,7 @@ import seedu.address.model.entity.Entity;
 import seedu.address.model.entity.Id;
 import seedu.address.model.entity.Mentor;
 import seedu.address.model.entity.Participant;
+import seedu.address.model.entity.Score;
 import seedu.address.model.entity.Team;
 import seedu.address.model.entitylist.ReadOnlyEntityList;
 import seedu.address.model.person.Person;
@@ -53,11 +53,6 @@ public interface Model {
     void setGuiSettings(GuiSettings guiSettings);
 
     /**
-     * Returns the user prefs' address book file path.
-     */
-    Path getAddressBookFilePath();
-
-    /**
      * Returns the user prefs' ParticipantList file path.
      */
     Path getParticipantListFilePath();
@@ -71,11 +66,6 @@ public interface Model {
      * Returns the user prefs' MentorList file path.
      */
     Path getMentorListFilePath();
-
-    /**
-     * Sets the user prefs' address book file path.
-     */
-    void setAddressBookFilePath(Path addressBookFilePath);
 
     /**
      * Checks if there exists any {@code Entity} in this {@code Model}.
@@ -135,6 +125,12 @@ public interface Model {
 
     void updateTeam(Id teamId, Team team) throws AlfredException;
 
+    void updateTeamScore(Team team, Score score) throws AlfredException;
+
+    void addTeamScore(Team team, Score score) throws AlfredException;
+
+    void subtractTeamScore(Team team, Score score) throws AlfredException;
+
     Team deleteTeam(Id id) throws AlfredException;
 
     /* Mentor methods */
@@ -155,49 +151,13 @@ public interface Model {
 
     List<Mentor> findMentor(Predicate<Mentor> predicate);
 
-    /* View Command */
+    /* View command */
+    /**
+     * Sets the predicate to show detailed information of {@code entity}.
+     *
+     * @param entity {@code Entity} to view.
+     */
     void viewEntity(Entity entity);
-
-    /**
-     * Replaces address book data with the data in {@code addressBook}.
-     */
-    void setAddressBook(ReadOnlyAddressBook addressBook);
-
-    /** Returns the AddressBook */
-    ReadOnlyAddressBook getAddressBook();
-
-    /**
-     * Returns true if a person with the same identity as {@code person} exists in the address book.
-     */
-    boolean hasPerson(Person person);
-
-    /**
-     * Deletes the given person.
-     * The person must exist in the address book.
-     */
-    void deletePerson(Person target);
-
-    /**
-     * Adds the given person.
-     * {@code person} must not already exist in the address book.
-     */
-    void addPerson(Person person);
-
-    /**
-     * Replaces the given person {@code target} with {@code editedPerson}.
-     * {@code target} must exist in the address book.
-     * The person identity of {@code editedPerson} must not be the same as another existing person in the address book.
-     */
-    void setPerson(Person target, Person editedPerson);
-
-    /** Returns an unmodifiable view of the filtered person list */
-    ObservableList<Person> getFilteredPersonList();
-
-    /**
-     * Updates the filter of the filtered person list to filter by the given {@code predicate}.
-     * @throws NullPointerException if {@code predicate} is null.
-     */
-    void updateFilteredPersonList(Predicate<Person> predicate);
 
     /**
      * Updates the history of entity states with the current state (after execution of Command c)
@@ -211,8 +171,30 @@ public interface Model {
     void undo() throws AlfredModelHistoryException;
 
     /**
+     * Redoes the effects of the previously executed command and returns the model to the state
+     * after the execution of the command.
+     */
+    void redo() throws AlfredModelHistoryException;
+
+    /**
      * Gets a String detailing the previously executed commands that can be undone by the user.
      * @return String representing the previously executed commands that can be undone by the user.
      */
-    ArrayList<CommandRecord> getCommandHistory() throws AlfredModelHistoryException;
+    String getCommandHistoryString();
+
+    /**
+     * Returns a List of Strings describing the commands that can be undone.
+     */
+    List<String> getUndoCommandHistory();
+
+    /**
+     * Returns a List of Strings describing the commands that can be redone.
+     */
+    List<String> getRedoCommandHistory();
+
+    /**
+     * Returns a List of CommandsRecords describing the commands that can be undone/redone
+     * @throws AlfredModelHistoryException
+     */
+    ArrayList<CommandRecord> getCommandHistory();
 }

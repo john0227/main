@@ -15,7 +15,6 @@ public class CliSyntax {
     public static final Prefix PREFIX_SCORE = new Prefix("sc/");
     public static final Prefix PREFIX_SUBJECT_NAME = new Prefix("s/");
     public static final Prefix PREFIX_PROJECT_NAME = new Prefix("pn/");
-    public static final Prefix PREFIX_PROJECT_TYPE = new Prefix("pt/");
     public static final Prefix PREFIX_LOCATION = new Prefix("l/");
     public static final Prefix PREFIX_FILE_PATH = new Prefix("fp/");
     public static final String PREFIX_ENTITY_MENTOR = "M";
@@ -24,4 +23,8 @@ public class CliSyntax {
     public static final String ENTITY_MENTOR = "mentor";
     public static final String ENTITY_PARTICIPANT = "participant";
     public static final String ENTITY_TEAM = "team";
+    public static final String SCORE_UPDATE = "set";
+    public static final String SCORE_ADD = "add";
+    public static final String SCORE_SUBTRACT = "sub";
+    public static final String SCORE_RESET = "reset";
 }

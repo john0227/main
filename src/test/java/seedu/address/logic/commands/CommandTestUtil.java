@@ -1,7 +1,6 @@
 package seedu.address.logic.commands;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_ADDRESS;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_EMAIL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_LOCATION;
@@ -9,21 +8,15 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_ORGANISATION;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PROJECT_NAME;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_PROJECT_TYPE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_SUBJECT_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 import static seedu.address.testutil.Assert.assertThrows;
 
-import java.util.Arrays;
-
-import seedu.address.commons.core.index.Index;
 import seedu.address.logic.commands.editcommand.EditMentorCommand.EditMentorDescriptor;
 import seedu.address.logic.commands.editcommand.EditParticipantCommand.EditParticipantDescriptor;
 import seedu.address.logic.commands.editcommand.EditTeamCommand.EditTeamDescriptor;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
-import seedu.address.model.person.NameContainsKeywordsPredicate;
-import seedu.address.model.person.Person;
 import seedu.address.testutil.EditMentorDescriptorBuilder;
 import seedu.address.testutil.EditParticipantDescriptorBuilder;
 import seedu.address.testutil.EditTeamDescriptorBuilder;
@@ -52,7 +45,6 @@ public class CommandTestUtil {
     public static final String VALID_SUBJECT_ALFRED = "Health";
     public static final int VALID_SCORE_ALFRED = 100;
     public static final String VALID_PROJECT_NAME_ALFRED = "Hackathon Butler";
-    public static final String VALID_PROJECT_TYPE_ALFRED = "Placeholder"; //TODO: update later
     public static final int VALID_LOCATION_ALFRED = 1;
 
     //Bruce used as a Team
@@ -60,7 +52,6 @@ public class CommandTestUtil {
     public static final String VALID_SUBJECT_BRUCE = "Education";
     public static final int VALID_SCORE_BRUCE = 99;
     public static final String VALID_PROJECT_NAME_BRUCE = "Hackathon Batman";
-    public static final String VALID_PROJECT_TYPE_BRUCE = "Placeholder"; //TODO: update later
     public static final int VALID_LOCATION_BRUCE = 2;
 
     public static final EditMentorDescriptor MENTOR_DESC_AMY;
@@ -83,12 +74,10 @@ public class CommandTestUtil {
                 .withPhone(VALID_PHONE_BOB).withEmail(VALID_EMAIL_BOB).build();
         TEAM_DESC_ALFRED = new EditTeamDescriptorBuilder().withName(VALID_NAME_ALFRED)
                 .withSubject(VALID_SUBJECT_ALFRED).withScore(VALID_SCORE_ALFRED)
-                .withProjectName(VALID_PROJECT_NAME_ALFRED).withProjectType(VALID_PROJECT_TYPE_ALFRED)
-                .withLocation(VALID_LOCATION_ALFRED).build();
+                .withProjectName(VALID_PROJECT_NAME_ALFRED).withLocation(VALID_LOCATION_ALFRED).build();
         TEAM_DESC_BRUCE = new EditTeamDescriptorBuilder().withName(VALID_NAME_BRUCE)
                 .withSubject(VALID_SUBJECT_BRUCE).withScore(VALID_SCORE_BRUCE)
-                .withProjectName(VALID_PROJECT_NAME_BRUCE).withProjectType(VALID_PROJECT_TYPE_BRUCE)
-                .withLocation(VALID_LOCATION_BRUCE).build();
+                .withProjectName(VALID_PROJECT_NAME_BRUCE).withLocation(VALID_LOCATION_BRUCE).build();
     }
 
     // Redundant and can be deleted
@@ -116,8 +105,6 @@ public class CommandTestUtil {
     public static final String LOCATION_DESC_BRUCE = " " + PREFIX_LOCATION + VALID_LOCATION_BRUCE;
     public static final String PROJECT_NAME_DESC_ALFRED = " " + PREFIX_PROJECT_NAME + VALID_PROJECT_NAME_ALFRED;
     public static final String PROJECT_NAME_DESC_BRUCE = " " + PREFIX_PROJECT_NAME + VALID_PROJECT_NAME_BRUCE;
-    public static final String PROJECT_TYPE_DESC_ALFRED = " " + PREFIX_PROJECT_TYPE + VALID_PROJECT_TYPE_ALFRED;
-    public static final String PROJECT_TYPE_DESC_BRUCE = " " + PREFIX_PROJECT_TYPE + VALID_PROJECT_TYPE_BRUCE;
     public static final String SUBJECT_DESC_ALFRED = " " + PREFIX_SUBJECT_NAME + VALID_SUBJECT_ALFRED;
     public static final String SUBJECT_DESC_BRUCE = " " + PREFIX_SUBJECT_NAME + VALID_SUBJECT_BRUCE;
 
@@ -136,7 +123,6 @@ public class CommandTestUtil {
     public static final String INVALID_ORGANISATION_DESC = " " + PREFIX_ORGANISATION + "Y@hoo"; // invalid '@' symbol
     public static final String INVALID_SUBJECT_DESC = " " + PREFIX_SUBJECT_NAME + "Dance"; // invalid Subject Name
     public static final String INVALID_LOCATION_DESC = " " + PREFIX_LOCATION + "room5"; // Should be a number
-    public static final String INVALID_PROJECT_TYPE_DESC = " " + PREFIX_PROJECT_TYPE + "Game"; // Invalid value
 
     // Redundant and can be deleted
     public static final String INVALID_ADDRESS_DESC = " " + PREFIX_ADDRESS; // empty string not allowed for addresses
@@ -191,19 +177,6 @@ public class CommandTestUtil {
         // assertEquals(expectedFilteredParticipantList, actualModel.getFilteredParticipantList());
         // assertEquals(expectedFilteredTeamList, actualModel.getFilteredTeamList());
         // assertEquals(expectedFilteredMentorList, actualModel.getFilteredMentorList());
-    }
-    /**
-     * Updates {@code model}'s filtered list to show only the person at the given {@code targetIndex} in the
-     * {@code model}'s address book.
-     */
-    public static void showPersonAtIndex(Model model, Index targetIndex) {
-        assertTrue(targetIndex.getZeroBased() < model.getFilteredPersonList().size());
-
-        Person person = model.getFilteredPersonList().get(targetIndex.getZeroBased());
-        final String[] splitName = person.getName().fullName.split("\\s+");
-        model.updateFilteredPersonList(new NameContainsKeywordsPredicate(Arrays.asList(splitName[0])));
-
-        assertEquals(1, model.getFilteredPersonList().size());
     }
 
 }

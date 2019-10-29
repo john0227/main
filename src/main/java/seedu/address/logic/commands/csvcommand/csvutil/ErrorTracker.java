@@ -28,7 +28,6 @@ public class ErrorTracker {
 
     /**
      * Converts {@code errors} into a {@code CSV String}.
-     * @return
      */
     public String toCsvString() {
         PriorityQueue<Error> copy = new PriorityQueue<>(this.errors);

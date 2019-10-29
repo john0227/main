@@ -16,6 +16,7 @@ import seedu.address.commons.exceptions.MissingEntityException;
 import seedu.address.commons.util.FileUtil;
 import seedu.address.logic.commands.Command;
 import seedu.address.logic.commands.CommandResult;
+import seedu.address.logic.commands.TrackableState;
 import seedu.address.logic.commands.csvcommand.csvutil.CsvUtil;
 import seedu.address.logic.commands.csvcommand.csvutil.ErrorTracker;
 import seedu.address.logic.commands.csvcommand.csvutil.ErrorTracker.Error;
@@ -31,7 +32,7 @@ import seedu.address.model.entity.Team;
  * Supports bulk registration via a CSV file.
  * This command aims to facilitate registration of entities onto Alfred.
  */
-public class ImportCommand extends Command {
+public class ImportCommand extends Command implements TrackableState {
 
     public static final String COMMAND_WORD = "import";
 
@@ -112,6 +113,7 @@ public class ImportCommand extends Command {
             );
             throw new CommandException(message);
         }
+        model.updateHistory(this);
         return new CommandResult(MESSAGE_SUCCESS);
     }
 

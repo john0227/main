@@ -16,6 +16,7 @@ public abstract class FindCommand extends Command {
     public static final String HEADER_MENTOR = "Found Mentors";
     public static final String HEADER_PARTICIPANT = "Found Participants";
     public static final String HEADER_TEAM = "Found Teams";
+
     public static final String MESSAGE_USAGE = COMMAND_WORD + ": Finds entity according to search terms.\n"
             + "Find command must specify the entity being found "
             + "and its corresponding fields "
