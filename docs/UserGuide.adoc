@@ -262,7 +262,7 @@ Shows you up to the last 50 commands that you executed.
 * This command is to facilitate the undo/redo commands, as it becomes easier for you to track what changes were made before.
 * The "History" section of Alfred displays all the previously-executed commands as panels. There are 3 main delimiters.
 * You cannot redo any command beyond the "redo" delimiter.
-* You cannot undo any command beyond the "undo delimiter".
+* You cannot undo any command beyond the "undo" delimiter.
 * The "current" delimiter tells you where you are at relative to the rest of the commands you have executed.
 * Note that only commands that change the state of the data in Alfred will be displayed in the "History" section and are undo/redo-able.
 For instance, `list participants` will not be undo/redo-able, as it simply shows you the participants in Alfred and does not change any information in Alfred.
@@ -270,21 +270,23 @@ On the other hand, invoking `add participant` with the suitable parameters will 
 ****
 
 Example:
+
 After running the following commands:
-1. list participants
-2. add participant n/Bartholomew Lim p/+6593121212 e/barrytheflash@gmail.com
-3. add participant n/Diana Prince p/+6593111111 e/singaporewonderwoman@hotmail.com
+
+1. `list participants`
+2. `add participant n/Bartholomew Lim p/+6593121212 e/barrytheflash@gmail.com`
+3. `add participant n/Diana Prince p/+6593111111 e/singaporewonderwoman@hotmail.com`
 
 Running `history` will show you the following output in the "History" section of the Graphical User Interface:
 
 image::HistoryCommandExampleOutput.png[width="790"]
 
 //Add annotations to image when the UI is finalised.
-The topmost panel shows you that you the "redo" delimiter.
-The second panel from the top shows you the "current" delimiter.
-The bottommost panel shows you the "undo" delimiter.
-This means that you can invoke the `undo` command twice, as both AddParticipantCommands can be undone.
-Notice that the `list participants` command is not shown in the "History" section as it does not change data.
+The topmost panel is the "redo" delimiter. +
+The second panel from the top is the "current" delimiter. +
+The bottommost panel shows you the "undo" delimiter. +
+This means that you can invoke the `undo` command twice, as both AddParticipantCommands can be undone. + 
+Notice that the `list participants` command is not shown in the "History" section as it does not change data. + 
 
 === Undo Previous Commands: `undo`
 Undoes the previous command you executed.
@@ -316,8 +318,9 @@ Navigate to previous commands by using the up kbd:[&uparrow;] and down kbd:[&dow
 ****
 * Every time you execute a command, the command is saved in Alfred, so you can navigate to a previous command without re-typing the whole thing.
 * Press up kbd:[&uparrow;] to navigate to the previous command.
-* Press up kbd:[&downarrow;] to navigate to the next command.
-* This is not a command you type into Alfred, and is mainly for convenience as it allows you to quickly re-use previously executed commands.
+* Press down kbd:[&downarrow;] to navigate to the next command.
+* Unlike most of the other features in Alfred, this is not a command you type into Alfred's command input box. This is a keyboard shortcut that is mainly for your convenience as it allows you to quickly re-use previously executed commands.
+* Note that Alfred's command input box must be in focus (the cursor is active in the command input box) for the keyboard shortcuts for this feature to work. 
 ****
 
 === Judging and Leaderboard Features
@@ -657,20 +660,20 @@ Go through the waitlist and list the participants in the waitlist in ascending o
 
 |Bulk registration|Adds multiple participants at once into Alfred through the specification of a .csv file | `addBulk PATH_TO_CSV_FILE`| `addBulk C:\User\Hackathon2019\participant.csv` will import data from the participant.csv file into Alfred
 
-|Add a schedule for a Team |Adds a time slot where the Team of TEAM_ID meets with Mentor of MENTOR_ID |`addSchedule TIME TEAM_ID MENTOR_ID` | `addSchedule 1/2/2019 1400 T-1 M-1` the specified Mentor will meet with Team on 1st February 2019 2pm
+|Add a schedule for a Team (Coming in v2.0)|Adds a time slot where the Team of TEAM_ID meets with Mentor of MENTOR_ID |`addSchedule TIME TEAM_ID MENTOR_ID` | `addSchedule 1/2/2019 1400 T-1 M-1` the specified Mentor will meet with Team on 1st February 2019 2pm
 
-|Update schedule of a Team |Updates the existing schedule of SCHEDULE_ID of a Team of  TEAM_ID. New schedule will be added if the Team does not have an existing schedule of SCHEDULE_ID | `updateSchedule SCHEDULE_ID TIME TEAM_ID MENTOR_ID` | `updateSchedule S01 1/2/2019 1400 T-1 M-1` Schedule S01 of T-1 will be updated to meet with Mentor M-1 at 1st February 2pm
+|Update schedule of a Team (Coming in v2.0)|Updates the existing schedule of SCHEDULE_ID of a Team of  TEAM_ID. New schedule will be added if the Team does not have an existing schedule of SCHEDULE_ID | `updateSchedule SCHEDULE_ID TIME TEAM_ID MENTOR_ID` | `updateSchedule S01 1/2/2019 1400 T-1 M-1` Schedule S01 of T-1 will be updated to meet with Mentor M-1 at 1st February 2pm
 
-|Delete a schedule for a Team |Deletes a time slot where the of SCHEDULE_ID |`deleteSchedule SCHEDULE_ID` | `deleteSchedule S-1`
+|Delete a schedule for a Team (Coming in v2.0)|Deletes a time slot where the of SCHEDULE_ID |`deleteSchedule SCHEDULE_ID` | `deleteSchedule S-1`
 
-|Add addFoodCompany and Inventory|Adds a Food with COMPANY_NAME, INVENTORY_QUANTITY and CATERING_TIME|`addFoodCompany cn/COMPANY_NAME pax/INVENTORY QUANTITY t/CATERING_TIME`| `addFood cn/Neo's Garden pax/100 t/1/2/2019 1400`
+|Add addFoodCompany and Inventory (Coming in v2.0)|Adds a Food with COMPANY_NAME, INVENTORY_QUANTITY and CATERING_TIME|`addFoodCompany cn/COMPANY_NAME pax/INVENTORY QUANTITY t/CATERING_TIME`| `addFood cn/Neo's Garden pax/100 t/1/2/2019 1400`
 
-|Marked Food as received|Marks a Food with COMPANY_NAME and CATERING_TIME as received| `receivedFood cn/COMPANY_NAME pax/INVENTORY_QUANTITY` | `receiveFood cn/Neo's Garden pax/100`
+|Marked Food as received (Coming in v2.0)|Marks a Food with COMPANY_NAME and CATERING_TIME as received| `receivedFood cn/COMPANY_NAME pax/INVENTORY_QUANTITY` | `receiveFood cn/Neo's Garden pax/100`
 
-|List all Food |Lists the inventory of Food |`list food`| `list food`
+|List all Food (Coming in v2.0)|Lists the inventory of Food |`list food`| `list food`
 
-|Add User to WaitList |Adds a prospective Participant by USER_ID to Waitlist | `addToWaitList USER_ID` | `addToWaitList U-1`
+|Add User to WaitList (Coming in v2.0)|Adds a prospective Participant by USER_ID to Waitlist | `addToWaitList USER_ID` | `addToWaitList U-1`
 
-|Remove a User from WaitList |Removes a prospective Participant by USER_ID from Waitlist | `removeFromWaitList USER_ID` | `removeFromWaitList U-1`
+|Remove a User from WaitList (Coming in v2.0)|Removes a prospective Participant by USER_ID from Waitlist | `removeFromWaitList USER_ID` | `removeFromWaitList U-1`
 
-|List all User in WaitList |Lists all prospective Participant in Waitlist | `listWaitList` | `listWaitList`
+|List all User in WaitList (Coming in v2.0)|Lists all prospective Participant in Waitlist | `listWaitList` | `listWaitList`
