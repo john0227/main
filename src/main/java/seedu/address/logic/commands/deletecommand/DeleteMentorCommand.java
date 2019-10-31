@@ -23,26 +23,13 @@ public class DeleteMentorCommand extends DeleteCommand {
             + "Format: " + COMMAND_WORD + " mentor ID\n"
             + "Example: " + COMMAND_WORD + " mentor M-1";
 
-    private Name teamName;
-
     public DeleteMentorCommand(Id id) {
         super(id);
-    }
-
-    public DeleteMentorCommand(Id id, Name teamName) {
-        super(id);
-        requireNonNull(teamName);
     }
 
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
-
-        if (this.teamName != null) {
-            // find team (or throw Exception)
-            // delete mentor from team
-            // return CommandResult
-        }
 
         Mentor mentorToBeDeleted;
         try {
