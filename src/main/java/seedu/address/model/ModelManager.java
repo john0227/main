@@ -20,6 +20,7 @@ import seedu.address.commons.core.LogsCenter;
 import seedu.address.commons.exceptions.AlfredException;
 import seedu.address.commons.exceptions.AlfredModelException;
 import seedu.address.commons.exceptions.AlfredModelHistoryException;
+import seedu.address.commons.exceptions.AlfredRuntimeException;
 import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.commons.exceptions.MissingEntityException;
 import seedu.address.commons.exceptions.ModelValidationException;
@@ -577,7 +578,7 @@ public class ModelManager implements Model {
         this.saveList(PrefixType.P);
 
         if (!allParticipantsDeleted) {
-            throw new AlfredModelException("Duplicate assigning of teams for certain participants.");
+            throw new AlfredRuntimeException("Duplicate assigning of teams for certain participants.");
         }
 
         return teamToDelete;
