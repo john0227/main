@@ -53,7 +53,7 @@ public class DeleteMentorCommandTest {
     @Test
     public void execute_mentorWithNoTeam_success() throws AlfredException {
         Model modelWithMentor = new ModelManagerStub();
-        Mentor mentorToDelete = TypicalMentors.A;
+        Mentor mentorToDelete = TypicalMentors.A.copy();
         modelWithMentor.addMentor(mentorToDelete);
 
         Model expectedModel = new ModelManagerStub();
@@ -69,8 +69,8 @@ public class DeleteMentorCommandTest {
     @Test
     public void execute_mentorWithTeam_mentorInTeamAlsoDeleted() throws AlfredException {
         Model actualModel = new ModelManagerStub();
-        Mentor mentorToDelete = TypicalMentors.A;
-        Team teamWithMentorA = TypicalTeams.A;
+        Mentor mentorToDelete = TypicalMentors.A.copy();
+        Team teamWithMentorA = TypicalTeams.A.copy();
         actualModel.addMentor(mentorToDelete);
         actualModel.addTeam(teamWithMentorA);
 
