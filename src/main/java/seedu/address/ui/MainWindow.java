@@ -82,6 +82,7 @@ public class MainWindow extends UiPart<Stage> {
         // Set dependencies
         this.primaryStage = primaryStage;
         this.logic = logic;
+        this.lastFired = teamsButton; // Just in case we need to use lastFired button first
 
         // Configure the UI
         setWindowDefaultSize(logic.getGuiSettings());
@@ -345,6 +346,11 @@ public class MainWindow extends UiPart<Stage> {
             handleHistory(); //DEBUG
 
             CommandType commandType = commandResult.getCommandType();
+            if (commandType == null) {
+                this.fireButton(lastFired);
+                return commandResult;
+            }
+
             logger.info("CommandResult has the prefix: " + commandType);
             //TODO: if the current panel is the one being changed, do not change the entityListPlaceholder
             switch (commandType) {
@@ -354,18 +360,19 @@ public class MainWindow extends UiPart<Stage> {
                 break;
             case T:
                 this.fireButton(teamsButton);
-                lastFired = mentorsButton;
+                lastFired = teamsButton;
                 break;
             case P:
                 this.fireButton(participantsButton);
-                lastFired = mentorsButton;
+                lastFired = participantsButton;
                 break;
             case H:
                 this.fireButton(historyButton);
-                lastFired = mentorsButton;
+                lastFired = historyButton;
                 break;
             case L:
                 this.fireButton(leaderboardButton);
+                lastFired = leaderboardButton;
                 break;
             case K:
                 displayTopK();
@@ -380,7 +387,10 @@ public class MainWindow extends UiPart<Stage> {
             this.fireButton(lastFired);
             logger.info("Invalid command: " + commandText);
             resultDisplay.setFeedbackToUser(e.getMessage());
-            throw e;
+            return new CommandResult(e.getMessage());
+        } catch (Exception e) {
+            resultDisplay.setFeedbackToUser("Unhandled exception: " + e.toString());
+            return new CommandResult(e.toString());
         }
     }
 }
