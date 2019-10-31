@@ -3,6 +3,7 @@ package seedu.address.logic.commands.deletecommand;
 import static java.util.Objects.requireNonNull;
 
 import seedu.address.commons.exceptions.AlfredException;
+import seedu.address.commons.exceptions.AlfredModelException;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
@@ -35,6 +36,8 @@ public class DeleteTeamCommand extends DeleteCommand {
         try {
             teamToBeDeleted = model.deleteTeam(this.id);
             model.updateHistory(this);
+        } catch (AlfredModelException ame) {
+            throw new CommandException(ame.getMessage());
         } catch (AlfredException e) {
             throw new CommandException(MESSAGE_INVALID_TEAM_DISPLAYED_INDEX);
         }
