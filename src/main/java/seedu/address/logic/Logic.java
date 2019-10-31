@@ -37,6 +37,12 @@ public interface Logic {
     /** Returns an unmodifiable view of the filtered list of Mentors */
     ObservableList<Mentor> getFilteredMentorList();
 
+    /** Returns an unmodifiable view of the sorted list of Teams */
+    ObservableList<Team> getSortedTeamList();
+
+    /** Returns an unmodifiable view of the sorted list of the top K Teams */
+    ObservableList<Team> getTopKTeams();
+
     /** Returns the Record of all Commands entered by User */
     ArrayList<CommandRecord> getCommandHistory();
 
@@ -74,4 +80,15 @@ public interface Logic {
      * Returns a List of Strings describing the commands that can be redone.
      */
     List<String> getRedoCommandHistory();
+
+    /**
+     * Gets string of previous command executed.
+     */
+    String getPrevCommandString();
+
+    /**
+     * Gets string of next command executed.
+     * @return
+     */
+    String getNextCommandString();
 }

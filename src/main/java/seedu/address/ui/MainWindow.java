@@ -10,11 +10,11 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputControl;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.LogsCenter;
 import seedu.address.commons.exceptions.AlfredModelHistoryException;
@@ -43,6 +43,8 @@ public class MainWindow extends UiPart<Stage> {
     private ResultDisplay resultDisplay;
     private HelpWindow helpWindow;
 
+    private CommandBox commandBox;
+
     @FXML
     private StackPane commandBoxPlaceholder;
 
@@ -60,6 +62,9 @@ public class MainWindow extends UiPart<Stage> {
 
     @FXML
     private JFXButton participantsButton;
+
+    @FXML
+    private JFXButton leaderboardButton;
 
     @FXML
     private JFXButton teamsButton;
@@ -139,8 +144,24 @@ public class MainWindow extends UiPart<Stage> {
         StatusBarFooter statusBarFooter = new StatusBarFooter(logic.getTeamListFilePath());
         statusbarPlaceholder.getChildren().add(statusBarFooter.getRoot());
 
-        CommandBox commandBox = new CommandBox(this::executeCommand);
+        commandBox = new CommandBox(this::executeCommand);
         commandBoxPlaceholder.getChildren().add(commandBox.getRoot());
+        setCommandNavigationHandler();
+    }
+
+    /**
+     * Sets the handlers for the events generated whenever the up and down arrow keys are pressed.
+     */
+    private void setCommandNavigationHandler() {
+        this.commandBoxPlaceholder.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.UP) {
+                commandBox.setTextField(logic.getPrevCommandString());
+            }
+
+            if (event.getCode() == KeyCode.DOWN) {
+                commandBox.setTextField(logic.getNextCommandString());
+            }
+        });
     }
 
     /**
@@ -212,6 +233,30 @@ public class MainWindow extends UiPart<Stage> {
     }
 
     /**
+     * Displays the leaderboard on the Graphical User Interface.
+     */
+    @FXML
+    private void displayLeaderboard() {
+        entityListPanel = new EntityListPanel(logic.getSortedTeamList());
+
+        listPanelPlaceholder.getChildren().set(0, entityListPanel.getRoot());
+        listPanelPlaceholder.setStyle("-fx-background-color: #5d6d7e");
+        logger.info("Color of entity list placeholder is: " + listPanelPlaceholder.getStyle());
+    }
+
+    /**
+     * Displays the top K teams on the Graphical User Interface.
+     */
+    @FXML
+    private void displayTopK() {
+        entityListPanel = new EntityListPanel(logic.getTopKTeams());
+
+        listPanelPlaceholder.getChildren().set(0, entityListPanel.getRoot());
+        listPanelPlaceholder.setStyle("-fx-background-color: #5d6d7e");
+        logger.info("Color of entity list placeholder is: " + listPanelPlaceholder.getStyle());
+    }
+
+    /**
      * Displays the list of Teams in Model and Storage on Graphical User Interface.
      */
     @FXML
@@ -267,7 +312,6 @@ public class MainWindow extends UiPart<Stage> {
         if (mentorsButton.isArmed()) {
             mentorsButton.disarm();
         }
-
     }
 
     private void fireButton(Button button) throws AlfredModelHistoryException {
@@ -314,6 +358,12 @@ public class MainWindow extends UiPart<Stage> {
                 break;
             case H:
                 this.fireButton(historyButton);
+                break;
+            case L:
+                this.fireButton(leaderboardButton);
+                break;
+            case K:
+                displayTopK();
                 break;
 
             default:
