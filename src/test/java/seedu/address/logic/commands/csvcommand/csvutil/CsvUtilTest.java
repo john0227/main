@@ -308,7 +308,6 @@ public class CsvUtilTest {
         assertThrows(IllegalArgumentException.class, () -> CsvUtil.parseToTeam(invalidLocation, model));
     }
 
-    @Disabled
     @Test
     public void writeToCsv_entityListPassed_correctContentWrittenToFile() throws IOException, AlfredException {
         // Initialize EntityLists and create a temporary file (to be deleted upon exit)
