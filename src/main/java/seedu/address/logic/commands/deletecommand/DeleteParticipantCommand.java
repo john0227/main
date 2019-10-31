@@ -8,7 +8,6 @@ import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 import seedu.address.model.entity.CommandType;
 import seedu.address.model.entity.Id;
-import seedu.address.model.entity.Name;
 import seedu.address.model.entity.Participant;
 
 /**

@@ -9,7 +9,6 @@ import seedu.address.model.Model;
 import seedu.address.model.entity.CommandType;
 import seedu.address.model.entity.Id;
 import seedu.address.model.entity.Mentor;
-import seedu.address.model.entity.Name;
 
 /**
  * Deletes a {@link Mentor} in Alfred.
