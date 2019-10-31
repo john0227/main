@@ -47,6 +47,7 @@ public class AddMentorCommand extends AddCommand {
             model.addMentor(this.mentor);
             model.resetFilteredLists();
             model.updateHistory(this);
+            model.recordCommandExecution(this.getCommandInputString());
         } catch (AlfredException e) {
             throw new CommandException(MESSAGE_DUPLICATE_MENTOR);
         }
