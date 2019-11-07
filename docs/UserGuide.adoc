@@ -43,7 +43,7 @@ Interested? Well, head to <<Quick Start>> to get started. We hope Alfred serves 
 This User Guide introduces you to Alfred's features and how you can use them to enhance your productivity
 when organising a Hackathon. You can use Alfred to add and track participants in your Hackathon, assign mentors
 to participants, keep track of the scores of each team in a leaderboard, undo and redo changes you make, and a
-whole lot more.
+whole lot more. Note that Alfred was built for you to focus on and organise a single Hackathon event.
 
 Alfred was designed to be as easy to use as possible, and the only assumption we made is that users are
 comfortable typing into a keyboard to interact with Alfred. No other technical knowledge is needed! It's that simple.
@@ -61,7 +61,7 @@ text that you enter into Alfred. The command text that you should enter at the c
 .  Ensure you have Java `11` or above installed in your Computer.
 .  Download the latest `alfred.jar` link:{releaseURL}[here].
 .  Copy the file to the folder you want to use as the home folder for Alfred.
-.  Double-click the file to start the app. Alternatively, if you use a Mac, type the command `java -jar alfred.jar`
+.  Double-click the file to start the app. Alternatively, if you use a Mac, type the command `java -jar alfred.jar` or replace `alfred.jar` with the name of the jar file downloaded.
 on terminal in the jar file's directory to open and start the app. The GUI should appear in a few seconds.
 +
 image::Ui.png[width="790"]
@@ -76,6 +76,39 @@ e.g. typing *`help`* and pressing kbd:[Enter] will open the help window.
 * *`exit`* : exits the app
 
 .  Refer to <<Features>> for details of each command.
+
+== Parameters
+****
+`EntityType` - single capital letter representing the entity type
+
+* **Mentor:** M
+* **Participant:** P
+* **Team:** T
+
+`ID` - the ID of the entity (optional)
+
+* **Mentor:** M-d, where d can be any positive integer
+* **Participant:** P-d, where d can be any positive integer
+* **Team:** T-d, where d can be any positive integer
+** You can also express `ID` as only a positive integer.
+
+`Name`, `Organization`, `ProjectName` - can be any combination of spaces, letters, and these special characters (,.-')
+
+`Phone` - can be any combination of numbers, space and special characters (-), excluding bracket and country code may be included. Country code `+65` will be automatically included if it is not added.
+
+`Email` - must include an address and an email domain. It can include special characters (-,.), excluding bracket.
+
+`SubjectName` - the subject a mentor or team will be focusing on in the Hackathon +
+Must be one of the values below:
+* Environmental
+* Social
+* Health
+* Education
+
+`Score` - must be an integer ranging from 0 to 100.
+
+`Location` - must be an integer ranging from 0 to 1000. This indicates table number.
+****
 
 [[Features]]
 == Features
@@ -122,6 +155,7 @@ Use this command to add a new entity for Alfred to keep track of. +
 ****
 * Creates an Entity as specified by you. Each Entity object will have a unique ID automatically assigned to it.
 * As of version 1.1, you must provide all the fields. There are no optional fields.
+* Note that the Specialisation and Subject fields can only take on the values specified in `SubjectName` in <<Parameters>>:
 ****
 
 ==== Adding a Participant: `add participant PARAMETERS`
@@ -146,32 +180,32 @@ Use this command to add a new Mentor to Alfred to keep track of for your Hackath
 ****
 * Mentors have the fields "Name", "Phone number" and "Email address" which you must provide.
 * Mentors also have a field called "Organization", which refers to the organization for which they work.
-* Mentors also have a field called "Specialisation", which refers which is the field of work they specialise in. The Specialisation must be chosen from the predetermined list of specialisations given in Section (some number).
+* Mentors also have a field called "Specialisation", which refers to the field of work they specialise in. The Specialisation can only take on the values specified in `SubjectName` in <<Parameters>>.
 ****
 
 Format: `add mentor  n/NAME p/PHONE_NUMBER e/EMAIL_ADDRESS o/ORGANIZATION s/SPECIALISATION`
 
 Examples:
 
-* `add mentor n/Professor Superman p/91236549 e/clarkkent@gmail.com o/Daily Planet s/Artificial Intelligence`
+* `add mentor n/Professor Superman p/91236549 e/clarkkent@gmail.com o/Daily Planet s/Social`
 
-* `add mentor n/Doctor Batman p/91236549 e/bruce@gmail.com o/Google s/Augmented Reality`
+* `add mentor n/Doctor Batman p/91236549 e/bruce@gmail.com o/Google s/Environmental`
 
 ==== Adding a Team: `add team PARAMETERS`
 
 Use this command to add a new Team to Alfred to keep track of for your Hackathon.
 ****
 * Teams have the fields "Name", "Project name" and "Table Number" which you must provide.
-* Teams also have a field called "Subject", which refers the area the team's project focuses on, and must be chosen from the predetermined list of subjects given in Section (some number).
+* Teams also have a field called "Subject", which refers the area the team's project focuses on, and must be chosen from the predetermined list of subjects described in `SubjectName` in <<Parameters>>.
 ****
 
-Format: `add team n/NAME s/SUBJECT pn/PROJECT_NAME pt/PROJECT_TYPE l/TABLE_NUMBER`
+Format: `add team n/NAME s/SUBJECT pn/PROJECT_NAME l/TABLE_NUMBER`
 
 Examples:
 
-* `add team n/Team01 s/Artificial Intelligence pn/EmotionTrain pt/Public Welfare l/12`
+* `add team n/Team01 s/Social pn/EmotionTrain l/12`
 
-* `add team n/HackathonWinners4Sure s/Augmented Reality pn/Path-ify pt/Navigation l/23`
+* `add team n/HackathonWinners4Sure s/Environmental pn/Path-ify l/3`
 
 === Updating an Entity: `edit {mentor/participant/team} ENTITIY_ID [PARAMETERS]`
 
@@ -186,7 +220,7 @@ Edits an entity based on the parameter values you supply. Use this command in ca
 
 Examples:
 
-* `edit mentor M-1 n/NewMentorName `
+* `edit mentor M-1 n/NewMentorName`
 
 * `edit team T-1 n/NewTeamName pn/New Project Name`
 
@@ -213,6 +247,7 @@ Deletes an Entity, so that Alfred will no longer keep track of that Entity.
 
 ****
 * Deletes the Entity with the ID that you specify.
+* Note that when you delete a Team, all the participants that are part of that team will also be deleted as well.
 ****
 
 Examples:
@@ -254,6 +289,51 @@ Example for multiple fields:
 
 * `find participant n/Damith e/damith.com` finds all participants whose name contains the string "Damith" (this is case
 sensitive) and whose emails contain "damith.com"
+
+=== Assigning a Entity to a Team: `assign {mentor/participant} ID TEAM_ID ...`
+
+Assigns Mentor or Participant Entity by their ID to a team identified by TEAM_ID. +
+
+****
+* Take note that the `assign` command can only be used to assign Participants and Mentors to a Team.
+* An error will be shown is the Team already has a Mentor.
+* An error will be shown if the Team already has said Participant.
+****
+
+Examples:
+
+* `assign mentor M-18 T-8` will assign Mentor with ID M-18 to Team with ID T-8. The mentor will be shown under the list of teams, under 'Team' section of GUI.
+
+Running the command will show you the following output in the 'Team' section of the Graphical User Interface:
+
+image::AssignCommandOutputExample1.png[width="790"]
+
+* `assign participant P-91 T-8` will assign Participant with ID P-91 to Team with ID T-8. The participant will be shown under the list of teams, , under 'Team' section of GUI.
+
+Running the command will show you the following output in the 'Team' section of the Graphical User Interface:
+
+image::AssignCommandOutputExample2.png[width="790"]
+
+=== Removing an Entity from a Team: `remove {mentor/participant} ID TEAM_ID ...`
+
+Removes Mentor or Participant Entity by their ID from a team identified by TEAM_ID. +
+
+****
+* Take note that the `remove` command can only be used to remove Participant or Mentor from a Team.
+* An error will be shown if the Participant or Mentor is not in the specific Team.
+* Deleting a Participant or Mentor will also delete all their connections with a team or teams.
+****
+
+Examples:
+
+* `remove mentor M-18 T-8` will remove Mentor with ID M-18 to Team with ID T-8. The text 'Mentor not assigned' will be shown under the list of teams, under 'Team' section of GUI.
+
+image::RemoveCommandOutputExample2.png[width="790"]
+
+* `remove participant P-91 T-8` will remove Participant with ID P-91 from Team with ID T-8. The updated list of members will be shown under the specific team panel in the list of teams, under 'Team' section of GUI.
+Running the command will show you the following output in the 'Team' section of the Graphical User Interface:
+
+image::RemoveCommandOutputExample1.png[width="790"]
 
 === Show Command History: `history`
 Shows you up to the last 50 commands that you executed.
@@ -312,19 +392,6 @@ Redoes the previous command you executed.
 
 Format: `redo`
 
-=== Command Navigation
-Navigate to previous commands by using the up kbd:[&uparrow;] and down kbd:[&downarrow;] arrow keys
-
-****
-* Every time you execute a command, the command is saved in Alfred, so you can navigate to a previous command without re-typing the whole thing.
-* Press up kbd:[&uparrow;] to navigate to the previous command.
-* Press down kbd:[&downarrow;] to navigate to the next command.
-* Unlike most of the other features in Alfred, this is not a command you type into Alfred's command input box. This is a keyboard shortcut that is mainly for your convenience as it allows you to quickly re-use previously executed commands.
-* Note that Alfred's command input box must be in focus (the cursor is active in the command input box) for the keyboard shortcuts for this feature to work
-****
-
-=== Judging and Leaderboard Features
-
 ==== List Team Ranking: `leaderboard`
 Use this command to display the ranking of the teams in the hackathon in descending order of their points.
 
@@ -366,8 +433,8 @@ where `METHOD_N` is one of the following currently available tie-break methods:
 
 * `moreParticipants`: teams with more participants are win the tie.
 * `lessParticipants`: teams with lesser participants are win the tie.
-* `higherID`: teams registered more recently (hence the highest ID) win the tie.
-* `lowerID`: teams registered earlier (hence the lowest ID) win the tie.
+* `higherId`: teams registered more recently (hence the highest ID) win the tie.
+* `lowerId`: teams registered earlier (hence the lowest ID) win the tie.
 * `random`: in case all methods used yield no distinct winner, `random` can be used as a method of last resort to break a tie in favour of a randomly chosen team.
 
 ****
@@ -452,16 +519,16 @@ In order for the contents of the CSV file to be correctly loaded into Alfred, th
 
 `ID` - the ID of the entity (optional)
 
-* **Mentor:** M-`d`, where `d` can be any positive integer
-* **Participant:** P-`d`, where `d` can be any positive integer
-* **Team:** T-`d`, where `d` can be any positive integer
+* **Mentor:** M-d, where d can be any positive integer
+* **Participant:** P-d, where d can be any positive integer
+* **Team:** T-d, where d can be any positive integer
 ** You can also express `ID` as only a positive integer.
 
 `Name`, `Organization`, `ProjectName` - can be any combination of spaces, letters, and these special characters (,.-')
 
-`Phone` - can be any combination of numbers and country code may be included
+`Phone` - can be any combination of numbers, space and special characters (-), excluding bracket and country code may be included. Country code `+65` will be automatically included if it is not added.
 
-`Email` - must include an address and an email domain
+`Email` - must include an address and an email domain. It can include special characters (-,.), excluding bracket.
 
 `SubjectName` - the subject a mentor or team will be focusing on in the Hackathon +
 Must be one of the values below:
@@ -471,9 +538,9 @@ Must be one of the values below:
 * Health
 * Education
 
-`Score` - must be an integer ranging from 0 to 100
+`Score` - must be an integer ranging from 0 to 100.
 
-`Location` - must be an integer ranging from 0 to 1000
+`Location` - must be an integer ranging from 0 to 1000. This indicates table number.
 ****
 
 ===== Mentor Data
@@ -655,9 +722,14 @@ Go through the waitlist and list the participants in the waitlist in ascending o
 |Undo Previous Command | Undoes the previously executed command. Look at output of `history` to see which command can be re-done. | `undo` | `undo`
 
 |Redo Next Command | Redoes the next command. Look at output of `history` to see which command can be re-done. | `redo` | `redo`
-|List Team rankings|Displays the ranking of the teams in the Hackathon in descending order of their points |`leaderboard`| *Team:* `leaderboard`
+
+|List Team Rankings|Displays the ranking of the teams in the Hackathon in descending order of their points |`leaderboard`| *Team:* `leaderboard`
+
+|List Team Rankings with Tie Break | Displays the ranking of the teams in the Hackathon in descending order of their points with specified tiebreak methods used to break ties |`leaderboard tb/METHOD_1 METHOD_2...`| *Team:* `leaderboard tb/moreParticipants random`
 
 |Get the top k teams |List the top k teams in the leaderboard, where k is a number (NUMBER) which you specify |`getTop NUMBER` | *Team:* `getTop 5`
+
+|Get the top k teams with Tie Break |List the top k teams in the leaderboard with specified tiebreak methods used to break ties, where k is a number (NUMBER) which you specify |`getTop NUMBER tb/METHOD_1 METHOD_2...` | *Team:* `getTop 5 tb/moreParticipants random`
 
 |Add points to a Team |Adds the value of POINTS to the current score of the team with TEAM_ID|`score add TEAM_ID POINTS` | *Team:* `score add T-1 20`
 

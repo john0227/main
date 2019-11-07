@@ -2,7 +2,7 @@ package seedu.address.logic.commands.scorecommand;
 
 import static java.util.Objects.requireNonNull;
 
-import static seedu.address.commons.core.Messages.MESSAGE_INVALID_TEAM_DISPLAYED_INDEX;
+import static seedu.address.commons.core.Messages.MESSAGE_NON_EXISTENT_TEAM;
 
 import java.util.logging.Logger;
 
@@ -42,7 +42,7 @@ public class SetScoreCommand extends ScoreCommand {
         try {
             teamToScore = model.getTeam(id);
         } catch (AlfredException ae) {
-            throw new CommandException(MESSAGE_INVALID_TEAM_DISPLAYED_INDEX);
+            throw new CommandException(MESSAGE_NON_EXISTENT_TEAM);
         }
 
         try {
@@ -51,6 +51,8 @@ public class SetScoreCommand extends ScoreCommand {
             throw new CommandException(e.getMessage());
         }
         logger.info("Setting " + this.score + " as Score of Team " + this.id);
+        model.updateHistory(this);
+        model.recordCommandExecution(this.getCommandInputString());
         return new CommandResult(String.format(MESSAGE_SCORE_TEAM_SUCCESS,
                 teamToScore.getName().toString(), score.toString()), CommandType.T);
     }
