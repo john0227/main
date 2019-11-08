@@ -32,12 +32,18 @@ public class AutoCompleteTextField extends JFXTextField {
      * Represent the list of possible commands users can enter.
      */
     private final SortedSet<String> commandSuggestionSet = new TreeSet<String>();
-    private final List<String> commandSuggestionList = Arrays.asList("add participant", "add mentor", "add team",
-            "list participants", "list mentors", "list teams", "edit participant", "edit mentor", "edit team",
-            "delete participant", "delete mentor", "delete team", "find participant", "find mentor", "find team",
-            "leaderboard", "getTop", "score add", "score sub", "score set", "history", "undo", "redo", "import",
-            "export", "help");
-
+    private final List<String> commandSuggestionList = Arrays.asList(
+            "exit", "assign participant", "assign mentor",
+            "remove participant", "remove mentor", "add participant",
+            "add mentor", "add team", "list participants",
+            "list mentors", "list teams", "edit participant",
+            "edit mentor", "edit team", "delete participant",
+            "delete mentor", "delete team", "find participant",
+            "find mentor", "find team", "leaderboard",
+            "getTop", "score add", "score sub",
+            "score set", "history", "undo",
+            "redo", "import", "export", "help"
+    );
     /**
      * Represents a popup for user to select a command that is suggested.
      */
@@ -79,7 +85,11 @@ public class AutoCompleteTextField extends JFXTextField {
                 populatePopup(finalSuggestionResults);
                 if (!commandsPopup.isShowing()) {
                     commandsPopup.show(AutoCompleteTextField.this, Side.BOTTOM, 0, 0);
+
                 }
+
+                // Request focus on first item
+                commandsPopup.getSkin().getNode().requestFocus();
             }
         });
 
@@ -147,6 +157,12 @@ public class AutoCompleteTextField extends JFXTextField {
         }
         if (suggestion.contains("find")) {
             return getFindTemplate(suggestion);
+        }
+        if (suggestion.contains("assign")) {
+            return getAssignTemplate(suggestion);
+        }
+        if (suggestion.contains("remove")) {
+            return getRemoveTemplate(suggestion);
         }
 
         return getOtherTemplate(suggestion);
@@ -262,6 +278,37 @@ public class AutoCompleteTextField extends JFXTextField {
         }
     }
 
+    private TextFlow getAssignTemplate(String suggestion) {
+        switch (suggestion) {
+
+        case "assign participant":
+            return suggestionTemplates.ASSIGN_PARTICIPANT_TEMPLATE;
+
+        case "assign mentor":
+            return suggestionTemplates.ASSIGN_MENTOR_TEMPLATE;
+
+        default:
+            logger.info("ASSIGN Command Template is null");
+            return null;
+        }
+    }
+
+    private TextFlow getRemoveTemplate(String suggestion) {
+        switch (suggestion) {
+
+        case "remove participant":
+            return suggestionTemplates.REMOVE_PARTICIPANT_TEMPLATE;
+
+        case "remove mentor":
+            return suggestionTemplates.REMOVE_MENTOR_TEMPLATE;
+
+        default:
+            logger.info("REMOVE Command Template is null");
+            return null;
+        }
+    }
+
+
     private TextFlow getOtherTemplate(String suggestion) {
         switch (suggestion) {
         case "undo":
@@ -287,6 +334,9 @@ public class AutoCompleteTextField extends JFXTextField {
 
         case "help":
             return suggestionTemplates.HELP_TEMPLATE;
+
+        case "exit":
+            return suggestionTemplates.EXIT_TEMPLATE;
 
         default:
             logger.info("Other Template is null");

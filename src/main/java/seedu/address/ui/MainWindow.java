@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 
 import com.jfoenix.controls.JFXButton;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -137,6 +138,7 @@ public class MainWindow extends UiPart<Stage> {
         });
     }
 
+
     /**
      * Fills up all the placeholders of this window.
      */
@@ -153,8 +155,17 @@ public class MainWindow extends UiPart<Stage> {
         statusbarPlaceholder.getChildren().add(statusBarFooter.getRoot());
 
         commandBox = new CommandBox(this::executeCommand);
+
+        commandBox.getRoot().requestFocus();
         commandBoxPlaceholder.getChildren().add(commandBox.getRoot());
         setCommandNavigationHandler();
+
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                commandBox.setFocusTextField();
+            }
+        });
     }
 
     /**
@@ -215,6 +226,7 @@ public class MainWindow extends UiPart<Stage> {
         helpWindow.hide();
         primaryStage.hide();
     }
+
     /**
      * Displays the list of Participants in Model and Storage on Graphical User
      * Interface.
@@ -377,6 +389,10 @@ public class MainWindow extends UiPart<Stage> {
             case L:
                 this.fireButton(leaderboardButton);
                 lastFired = leaderboardButton;
+                break;
+            case HM:
+                this.fireButton(homeButton);
+                lastFired = homeButton;
                 break;
             default:
                 logger.info("The command does not edit any of the list of Entity");
