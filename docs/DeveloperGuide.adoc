@@ -337,7 +337,7 @@ So as `ImportCommand` accesses the CSV file line by line, the line representing 
 
 ==== Implementation: Parsing of Entities by `CsvUtil`
 
-As mentioned before, the `CsvUtil` class is used to aid in parsing of CSV lines into entities. The process in which `CsvUtil` parses each entity is heavily dependent on the different fields each entity has. If you are not familiar with this yet, please check out our <<UserGuide#Parameter Constraints and Additional Information, user guide>>.
+As mentioned before, the `CsvUtil` class is used to aid in parsing of CSV lines into entities. The process in which `CsvUtil` parses each entity is heavily dependent on the different fields each entity has. If you are not familiar with this yet, please check out our <<UserGuide.adoc#Parameter-Constraints-and-Additional-Information, user guide>>.
 
 The process of parsing a line into a mentor or a participant is very similar, so two entities - participant and team - will be explained.
 
@@ -352,6 +352,8 @@ Next is a sequence diagram for parsing a CSV line into a team. The line to be pa
 
 .`CsvUtil`: Parsing to Team Sequence Diagram
 image::CsvUtilParseTeamSequenceDiagram.png[]
+
+Also for teams, each corresponding `String` is converted to its field counterpart just like participants and mentors. Hence, `isValidField()` method was omitted from the diagram. The difference lies in the fact that for teams, Alfred must check if any participants or mentors it makes a reference to actually exists in `Model`. Thus, `CsvUtil` calls `getParticipant()` and `getMentor()` methods exposed by the `Model` class. If there are any exceptions raised while retrieving the participants and mentors, that line in CSV will not be loaded onto Alfred.
 
 ==== Implementation: Outputting Error File
 
