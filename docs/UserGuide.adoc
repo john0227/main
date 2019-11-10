@@ -314,7 +314,7 @@ sensitive) and whose emails contain "damith.com"
 //tag::assign[]
 === Assigning a Entity to a Team: `assign {mentor/participant} ID TEAM_ID ...`
 
-Assigns Mentor or Participant Entity by their ID to a team identified by TEAM_ID. +
+Assigns Mentor or Participant Entity by their ID to a team identified by TEAM_ID. It is possible to assign a participant or mentor to multiple teams.
 
 ****
 * Take note that the `assign` command can only be used to assign Participants and Mentors to a Team.
@@ -610,7 +610,8 @@ Example:
 Example usage of error file is shown at the end of <<CSV File Formatting>>.
 
 ==== CSV File Formatting
-In order for the contents of the CSV file to be correctly loaded into Alfred, the file has to be in the correct format.
+
+In order for the contents of the CSV file to be correctly loaded into Alfred, the file has to be in the correct format, which will be discussed below. For most platforms, there will be a default editor for a CSV file. If the editor is anything other than text editor, please ensure that the default separator is set as one comma (,). There may be whitespaces surrounding a comma if it is easier for you to edit.
 
 ****
 `EntityType` - single capital letter representing the entity type
@@ -699,7 +700,7 @@ Assuming Alfred has no data, we can see that lines 3, 6, and 11 will fail.
 
 If you give the following command to Alfred,
 
-`import fp/Alfred.csv fp/Alfred_Errors.csv`
+    import fp/Alfred.csv fp/Alfred_Errors.csv
 
 then the following CSV file will be created where Alfred.csv is located at.
 
