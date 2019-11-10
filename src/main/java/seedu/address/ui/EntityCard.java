@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -99,7 +100,6 @@ public class EntityCard extends UiPart<Region> {
      */
     private void generateParticipantCard(Entity entity) {
         this.idIcon.setImage(getImage(STUDENT_ICON));
-        logger.info("The participant icon has been changed to: " + idIcon);
         Participant participant = (Participant) entity;
         labels.getChildren().add(new Label(participant.getPhone().value));
         labels.getChildren().add(new Label(participant.getEmail().value));
@@ -115,6 +115,8 @@ public class EntityCard extends UiPart<Region> {
         this.idIcon.setImage(getImage(MENTOR_ICON));
         Mentor mentor = (Mentor) entity;
         labels.getChildren().add(new Label(mentor.getOrganization().toString()));
+        labels.getChildren().add(new Label(mentor.getPhone().value));
+        labels.getChildren().add(new Label(mentor.getEmail().value));
         Label subjectLabel = new Label("Subject: " + mentor.getSubject().toString());
         subjectLabel.setStyle("-fx-background-color: #58427c");
         labels.getChildren().add(subjectLabel);
@@ -152,11 +154,10 @@ public class EntityCard extends UiPart<Region> {
         locationLabel.setStyle("-fx-background-color: #26428b");
         labels.getChildren().add(locationLabel);
         List<Participant> participants = team.getParticipants();
-        logger.info("Number of Members in team: " + participants.size());
         membersPane.getChildren().add(new Label("Members: "));
 
-        logger.info("Size of membersPane before adding Participants: " + membersPane.getChildren().size());
-        participants.stream().forEach(p -> membersPane.getChildren().add(new Label(p.getName().toString() + " | ")));
+        String members = participants.stream().map(p -> p.getName().toString()).collect(Collectors.joining(" | "));
+        membersPane.getChildren().add(new Label(members));
         this.type = PrefixType.T;
         addScoreIcon(team);
     }
@@ -193,8 +194,6 @@ public class EntityCard extends UiPart<Region> {
     }
 
     private Image getImage(String imagePath) {
-        logger.info("File path of image is: " + imagePath);
-        logger.info(this.getClass().getResourceAsStream(imagePath).toString());
         return new Image(Objects.requireNonNull(this.getClass().getResourceAsStream(imagePath)));
     }
 

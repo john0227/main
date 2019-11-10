@@ -1,6 +1,7 @@
 package seedu.address.logic.parser;
 
 import static seedu.address.commons.core.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_SUBJECT_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TIE_BREAK;
 
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import seedu.address.logic.commands.topteamscommand.SimpleTopTeamsCommand;
 import seedu.address.logic.commands.topteamscommand.TopTeamsCommand;
 import seedu.address.logic.commands.topteamscommand.TopTeamsRandomCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
+import seedu.address.model.entity.SubjectName;
 import seedu.address.model.entity.Team;
 
 /**
@@ -24,14 +26,13 @@ public class TopTeamsCommandParser implements Parser<TopTeamsCommand> {
     private final Logger logger = LogsCenter.getLogger(getClass());
 
     /**
-     * Parses the {@code userInput} and determines whether a new {@link SimpleTopTeamsCommand} or
-     * {@link TopTeamsRandomCommand} needs to be created and returned. If no tie-break methods are specified
-     * then a {@link SimpleTopTeamsCommand} object without any comparators is
-     * created and returned. However, if there are tie-break methods
-     * present, denoted by the prefix "tb" then the {@code parse} method will parse the tie-break methods specified
-     * and return a {@link SimpleTopTeamsCommand} with the appropriate comparators as arguments. If "random" is
-     * selected as a method of tie-break as well then a {@link TopTeamsRandomCommand} with the appropriate comparators
-     * will be created and returned.
+     * Parses the {@code userInput} and returns a new {@link SimpleTopTeamsCommand} or
+     * {@link TopTeamsRandomCommand} depending on the situation. If no tie-break methods are specified
+     * then a {@link SimpleTopTeamsCommand} object without any comparators is created and returned. If there
+     * are tie-break methods present, denoted by the prefix "tb" then the {@code parse} method will parse the tie-break
+     * methods specified and return a {@link SimpleTopTeamsCommand} with the appropriate comparators as arguments. If
+     * "random" is selected as a method of tie-break as well then a {@link TopTeamsRandomCommand} with the appropriate
+     * comparators will be created and returned.
      *
      * @return a new TopTeamCommands object.
      * @throws ParseException if there user input is invalid.
@@ -39,22 +40,32 @@ public class TopTeamsCommandParser implements Parser<TopTeamsCommand> {
     @Override
     public TopTeamsCommand parse(String userInput) throws ParseException {
         userInput = userInput.trim();
-        ArgumentMultimap argumentMultimap = ArgumentTokenizer.tokenize(userInput, PREFIX_TIE_BREAK);
+        SubjectName subjectName = null;
         ArrayList<Comparator<Team>> comparators = new ArrayList<>();
-        String numberOfTeams = argumentMultimap.getPreamble();
 
+        ArgumentMultimap argumentMultimap = ArgumentTokenizer
+                .tokenize(userInput, PREFIX_TIE_BREAK, PREFIX_SUBJECT_NAME);
+
+        String numberOfTeams = argumentMultimap.getPreamble();
         validateValueOfUserInput(numberOfTeams);
         int topK = Integer.parseInt(numberOfTeams);
 
-        if (!argumentMultimap.getValue(PREFIX_TIE_BREAK).isPresent()) {
-            return new SimpleTopTeamsCommand(topK, comparators);
+        if (argumentMultimap.getValue(PREFIX_SUBJECT_NAME).isPresent()) {
+            logger.info("Subject name specified for Top Teams Command.");
+            subjectName = AlfredParserUtil.parseSubject(argumentMultimap.getValue(PREFIX_SUBJECT_NAME).get());
+        }
+
+        if (argumentMultimap.getValue(PREFIX_TIE_BREAK).isEmpty()) {
+            logger.info("No Tiebreak Methods specified for Top Teams Command.");
+            return new SimpleTopTeamsCommand(topK, comparators, subjectName);
         }
 
         String[] tieBreakMethods = argumentMultimap.getValue(PREFIX_TIE_BREAK).get().split(METHOD_SPLIT_REGEX);
         comparators = AlfredParserUtil.processedComparators(tieBreakMethods);
 
-        return AlfredParserUtil.isRandomPresent(tieBreakMethods) ? new TopTeamsRandomCommand(topK, comparators)
-                : new SimpleTopTeamsCommand(topK, comparators);
+        return AlfredParserUtil.isRandomPresent(tieBreakMethods)
+                ? new TopTeamsRandomCommand(topK, comparators, subjectName)
+                : new SimpleTopTeamsCommand(topK, comparators, subjectName);
     }
 
     /**
@@ -69,5 +80,4 @@ public class TopTeamsCommandParser implements Parser<TopTeamsCommand> {
                     TopTeamsCommand.INVALID_VALUE_WARNING));
         }
     }
-
 }

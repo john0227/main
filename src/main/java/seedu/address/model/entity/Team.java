@@ -17,6 +17,8 @@ import seedu.address.commons.core.LogsCenter;
 public class Team extends Entity {
     //dummy logger, to be deleted
     private final Logger logger = LogsCenter.getLogger(Team.class);
+
+    private final int maxSize = 5;
     private List<Participant> participants;
     private Optional<Mentor> mentor;
     private SubjectName subject;
@@ -95,21 +97,6 @@ public class Team extends Entity {
         this.location = location;
     }
 
-    /*
-    @Override
-    public HashMap<String, String> viewMinimal() {
-        HashMap<String, String> result = new HashMap<>();
-        Stream<String> participantStream = participants.stream()
-                .map(participant -> participant.toString());
-        String participantsString = Arrays.toString(participantStream.toArray());
-        result.put("name", getName().toString());
-        result.put("id", getId().toString());
-        result.put("participants", participantsString);
-        return result;
-    }
-
-     */
-
     /**
      * Updates the participant in the team.
      *
@@ -134,8 +121,11 @@ public class Team extends Entity {
      * @param participant
      * @return boolean
      */
-    public boolean addParticipant(Participant participant) {
+    public boolean addParticipant(Participant participant) throws Exception {
         List<Participant> list = this.getParticipants();
+        if (list.size() >= maxSize) {
+            throw new Exception("Team has already reach maximum capacity of 5.");
+        }
         if (list.contains(participant)) {
             return false;
         }
@@ -322,11 +312,12 @@ public class Team extends Entity {
 
     /**
      * Returns a deep copy of the Team object
+     *
      * @return Deep copy of the Team object
      */
     public Team copy() {
         List<Participant> pListCopy = new ArrayList<>();
-        for (Participant p: this.participants) {
+        for (Participant p : this.participants) {
             pListCopy.add(p.copy());
         }
 

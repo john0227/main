@@ -2,8 +2,6 @@ package seedu.address.logic.commands.scorecommand;
 
 import static java.util.Objects.requireNonNull;
 
-import static seedu.address.commons.core.Messages.MESSAGE_NON_EXISTENT_TEAM;
-
 import java.util.logging.Logger;
 
 import seedu.address.commons.core.LogsCenter;
@@ -39,22 +37,32 @@ public class SetScoreCommand extends ScoreCommand {
         requireNonNull(model);
         Team teamToScore;
 
-        try {
-            teamToScore = model.getTeam(id);
-        } catch (AlfredException ae) {
-            throw new CommandException(MESSAGE_NON_EXISTENT_TEAM);
-        }
+        teamToScore = getTeamFromModel(model, id);
+        setScoreForTeam(model, teamToScore, score);
 
-        try {
-            model.updateTeamScore(teamToScore, score);
-        } catch (AlfredException e) {
-            throw new CommandException(e.getMessage());
-        }
         logger.info("Setting " + this.score + " as Score of Team " + this.id);
         model.updateHistory(this);
         model.recordCommandExecution(this.getCommandInputString());
         return new CommandResult(String.format(MESSAGE_SCORE_TEAM_SUCCESS,
                 teamToScore.getName().toString(), score.toString()), CommandType.T);
+    }
+
+    /**
+     * Fetches the team {@code team} from {@code model} and sets the score {@code}
+     * as their current score.
+     *
+     * @param model the {@code Model} object from which the team is supposed to be fetched and updated.
+     * @param team the Team from model whose score is to be updated.
+     * @param score the score to subtract from the team's current score.
+     * @throws CommandException if an exceptional case arises when setting the team's score.
+     */
+    private void setScoreForTeam(Model model, Team team, Score score) throws CommandException {
+        try {
+            model.setTeamScore(team, score);
+        } catch (AlfredException ae) {
+            logger.severe("Error while setting score for team.");
+            throw new CommandException(ae.getMessage());
+        }
     }
 
     @Override

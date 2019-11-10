@@ -1,7 +1,6 @@
 package seedu.address.model;
 
 import static java.util.Objects.requireNonNull;
-import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -25,7 +24,6 @@ import seedu.address.commons.core.LogsCenter;
 import seedu.address.commons.exceptions.AlfredException;
 import seedu.address.commons.exceptions.AlfredModelException;
 import seedu.address.commons.exceptions.AlfredModelHistoryException;
-import seedu.address.commons.exceptions.AlfredRuntimeException;
 import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.commons.exceptions.MissingEntityException;
 import seedu.address.commons.exceptions.ModelValidationException;
@@ -37,12 +35,12 @@ import seedu.address.model.entity.Mentor;
 import seedu.address.model.entity.Participant;
 import seedu.address.model.entity.PrefixType;
 import seedu.address.model.entity.Score;
+import seedu.address.model.entity.SubjectName;
 import seedu.address.model.entity.Team;
 import seedu.address.model.entitylist.MentorList;
 import seedu.address.model.entitylist.ParticipantList;
 import seedu.address.model.entitylist.ReadOnlyEntityList;
 import seedu.address.model.entitylist.TeamList;
-import seedu.address.model.person.Person;
 import seedu.address.storage.AlfredStorage;
 
 /**
@@ -53,9 +51,9 @@ public class ModelManager implements Model {
     private static final Logger logger = LogsCenter.getLogger(ModelManager.class);
 
     // EntityLists
-    protected ParticipantList participantList = new ParticipantList();
-    protected TeamList teamList = new TeamList();
-    protected MentorList mentorList = new MentorList();
+    protected ParticipantList participantList;
+    protected TeamList teamList;
+    protected MentorList mentorList;
 
     protected FilteredList<Participant> filteredParticipantList;
     protected FilteredList<Team> filteredTeamList;
@@ -64,42 +62,30 @@ public class ModelManager implements Model {
     protected SortedList<Team> sortedTeam;
     protected SortedList<Team> topKTeams;
 
-    // TODO: Remove the null values which are a placeholder due to the multiple
-    // constructors.
-    // Also will have to change the relevant attributes to final.
-    private AlfredStorage storage = null;
-    private ModelHistory history = null;
-    private CommandHistory commandHistory = null;
-    private AddressBook addressBook = null;
+    private AlfredStorage storage;
+    private ModelHistory history;
+    private CommandHistory commandHistory;
     private final UserPrefs userPrefs;
-    private FilteredList<Person> filteredPersons = null;
 
-    /**
-     * Initializes a ModelManager with the given addressBook and userPrefs.
-     */
-    public ModelManager(ReadOnlyAddressBook addressBook, ReadOnlyUserPrefs userPrefs) {
+    // This constructor is only used for ModelManagerStub
+    protected ModelManager() {
         super();
-        requireAllNonNull(addressBook, userPrefs);
-
-        logger.fine("Initializing with address book: " + addressBook + " and user prefs " + userPrefs);
-
-        this.addressBook = new AddressBook(addressBook);
-        this.userPrefs = new UserPrefs(userPrefs);
-        filteredPersons = new FilteredList<>(this.addressBook.getPersonList());
-    }
-
-    public ModelManager() {
-        this(new AddressBook(), new UserPrefs());
+        this.userPrefs = null;
+        this.storage = null;
+        this.participantList = new ParticipantList();
+        this.mentorList = new MentorList();
+        this.teamList = new TeamList();
+        this.filteredParticipantList = new FilteredList<>(this.participantList.getSpecificTypedList());
+        this.filteredMentorList = new FilteredList<>(this.mentorList.getSpecificTypedList());
+        this.filteredTeamList = new FilteredList<>(this.teamList.getSpecificTypedList());
     }
 
     public ModelManager(AlfredStorage storage, ReadOnlyUserPrefs userPrefs) {
         super();
         this.userPrefs = new UserPrefs(userPrefs);
         this.storage = storage;
-        // TODO: Remove: Currently it is here to make tests pass.
-        this.addressBook = new AddressBook();
-        filteredPersons = new FilteredList<>(this.addressBook.getPersonList());
         this.commandHistory = new CommandHistoryManager();
+        this.initialize();
     }
 
     /**
@@ -107,6 +93,23 @@ public class ModelManager implements Model {
      * are initialized.
      */
     public void initialize() {
+        this.loadListsFromStorage();
+        this.validateTeamList();
+        this.initializeModelHistoryManager();
+
+        this.filteredParticipantList =
+                new FilteredList<>(this.participantList.getSpecificTypedList());
+        this.filteredMentorList =
+                new FilteredList<>(this.mentorList.getSpecificTypedList());
+        this.filteredTeamList =
+                new FilteredList<>(this.teamList.getSpecificTypedList());
+        this.sortedTeam = new SortedList<>(this.teamList.getSpecificTypedList());
+    }
+
+    /**
+     * Load the lists from storage.
+     */
+    private void loadListsFromStorage() {
         // Try loading the 3 lists into memory.
         try {
             Optional<ParticipantList> storageParticipantList = this.storage.readParticipantList();
@@ -135,8 +138,8 @@ public class ModelManager implements Model {
                 MentorList.setLastUsedId(largestIdUsed);
             }
         } catch (AlfredException e) {
-            logger.warning("Initialising new MentorList. " + "Problem encountered reading MentorList from storage: "
-                    + e.getMessage());
+            logger.warning("Initialising new MentorList. "
+                    + "Problem encountered reading MentorList from storage: " + e.getMessage());
             this.mentorList = new MentorList();
         }
 
@@ -151,14 +154,16 @@ public class ModelManager implements Model {
                 TeamList.setLastUsedId(largestIdUsed);
             }
         } catch (AlfredException e) {
-            logger.warning("Initialising new TeamList. " + "Problem encountered reading TeamList from storage: "
-                    + e.getMessage());
+            logger.warning("Initialising new TeamList. "
+                    + "Problem encountered reading TeamList from storage: " + e.getMessage());
             this.teamList = new TeamList();
         }
+    }
 
-        // The following try-catch block is necessary to ensure that the teamList loaded
-        // is valid
-        // and the data has not been tampered with.
+    /**
+     * Validates the team list to ensure that the data has not been tampered with.
+     */
+    private void validateTeamList() {
         try {
             for (Team t : this.teamList.getSpecificTypedList()) {
                 validateNewTeamObject(t);
@@ -169,39 +174,18 @@ public class ModelManager implements Model {
             this.mentorList = new MentorList();
             this.teamList = new TeamList();
         }
+    }
 
+    /**
+     * Initializes the modelHistoryManager.
+     */
+    private void initializeModelHistoryManager() {
         try {
             this.history = new ModelHistoryManager(this.participantList, ParticipantList.getLastUsedId(),
                     this.mentorList, MentorList.getLastUsedId(), this.teamList, TeamList.getLastUsedId());
         } catch (AlfredModelHistoryException e) {
             logger.severe("Unable to initialise ModelHistoryManager.");
         }
-
-        this.filteredParticipantList = new FilteredList<>(this.participantList.getSpecificTypedList());
-        this.filteredMentorList = new FilteredList<>(this.mentorList.getSpecificTypedList());
-        this.filteredTeamList = new FilteredList<>(this.teamList.getSpecificTypedList());
-        this.sortedTeam = new SortedList<>(this.teamList.getSpecificTypedList());
-
-        // Optional TODO: reimplement this logic here.
-        // Optional<ReadOnlyAddressBook> addressBookOptional;
-        // ReadOnlyAddressBook initialData;
-        // try {
-        // addressBookOptional = storage.readAddressBook();
-        // if (!addressBookOptional.isPresent()) {
-        // logger.info("Data file not found. Will be starting with a sample
-        // AddressBook");
-        // }
-        // initialData =
-        // addressBookOptional.orElseGet(SampleDataUtil::getSampleAddressBook);
-        // } catch (DataConversionException e) {
-        // logger.warning("Data file not in the correct format. Will be starting with an
-        // empty AddressBook");
-        // initialData = new AddressBook();
-        // } catch (IOException e) {
-        // logger.warning("Problem while reading from the file. Will be starting with an
-        // empty AddressBook");
-        // initialData = new AddressBook();
-        // }
     }
 
     // =========== UserPrefs
@@ -280,6 +264,8 @@ public class ModelManager implements Model {
         return this.mentorList;
     }
 
+    /* Getters for Filtered and Sorted Lists */
+
     public FilteredList<Participant> getFilteredParticipantList() {
         return this.filteredParticipantList;
     }
@@ -338,9 +324,9 @@ public class ModelManager implements Model {
      * @param participant
      */
     public void updateParticipant(Id id, Participant participant) throws AlfredException {
-        Team targetTeam;
+        List<Team> targetTeams;
         try {
-            targetTeam = this.getTeamByParticipantId(id);
+            targetTeams = this.getTeamByParticipantId(id);
         } catch (MissingEntityException e) {
             this.participantList.update(id, participant);
             this.saveList(PrefixType.P);
@@ -348,9 +334,12 @@ public class ModelManager implements Model {
         }
         this.participantList.update(id, participant);
 
-        boolean isSuccessful = targetTeam.updateParticipant(participant);
+        boolean isSuccessful = targetTeams.stream()
+                .map(team -> team.updateParticipant(participant))
+                .allMatch(result -> result == true);
+
         if (!isSuccessful) {
-            logger.warning("The participant is not in the team provided");
+            logger.warning("The participant is not in the teams provided");
             throw new ModelValidationException("Participant is not in the team provided");
         }
 
@@ -368,14 +357,17 @@ public class ModelManager implements Model {
         Participant participantToDelete = this.participantList.delete(id); // May throw MissingEntityException here
         this.saveList(PrefixType.P);
 
-        Team targetTeam;
+        List<Team> targetTeams;
         try {
-            targetTeam = this.getTeamByParticipantId(id);
+            targetTeams = this.getTeamByParticipantId(id);
         } catch (MissingEntityException e) {
             return participantToDelete;
         }
 
-        boolean isSuccessful = targetTeam.deleteParticipant(participantToDelete);
+        boolean isSuccessful = targetTeams.stream()
+                .map(team -> team.updateParticipant(participantToDelete))
+                .allMatch(result -> result == true);
+
         if (!isSuccessful) {
             logger.warning("Participant does not exist");
             throw new ModelValidationException("Participant does not exist");
@@ -402,39 +394,47 @@ public class ModelManager implements Model {
      * Gets the team by participant id.
      *
      * @param participantId
-     * @return Team
+     * @return {@code List<Team>} which is the list of teams that contain the participant.
      * @throws MissingEntityException if the team to get does not exist.
      */
-    public Team getTeamByParticipantId(Id participantId) throws MissingEntityException {
+    public List<Team> getTeamByParticipantId(Id participantId) throws MissingEntityException {
         List<Team> teams = this.teamList.getSpecificTypedList();
+        List<Team> results = new ArrayList<>();
         for (Team t : teams) {
             for (Participant p : t.getParticipants()) {
                 if (p.getId().equals(participantId)) {
-                    return t;
+                    results.add(t);
                 }
             }
         }
-        throw new MissingEntityException("Team with said participant cannot be found.");
+        if (results.size() == 0) {
+            throw new MissingEntityException("Team with said participant cannot be found.");
+        }
+        return results;
     }
 
     /**
      * Gets the team by mentor id.
      *
      * @param mentorId
-     * @return Team
+     * @return {@code List<Team>} which is of the list of teams that contain the mentor
      * @throws MissingEntityException if the team to get does not exist.
      */
-    public Team getTeamByMentorId(Id mentorId) throws MissingEntityException {
+    public List<Team> getTeamByMentorId(Id mentorId) throws MissingEntityException {
         List<Team> teams = this.teamList.getSpecificTypedList();
+        List<Team> results = new ArrayList<>();
         for (Team t : teams) {
             Optional<Mentor> mentor = t.getMentor();
             if (mentor.isPresent()) {
                 if (mentor.get().getId().equals(mentorId)) {
-                    return t;
+                    results.add(t);
                 }
             }
         }
-        throw new MissingEntityException("Team with said mentor cannot be found.");
+        if (results.size() == 0) {
+            throw new MissingEntityException("Team with said participant cannot be found.");
+        }
+        return results;
     }
 
     /**
@@ -448,64 +448,6 @@ public class ModelManager implements Model {
         this.validateNewTeamObject(updatedTeam);
         this.teamList.update(teamId, updatedTeam);
         this.saveList(PrefixType.T);
-    }
-
-    /**
-     * Updates the given team's score with the given score.
-     *
-     * @param team  the team who's score is to be updated.
-     * @param score the score to which the team's score will be updated.
-     * @throws AlfredException if the update fails.
-     */
-    public void updateTeamScore(Team team, Score score) throws AlfredException {
-        team.setScore(score);
-        updateTeam(team.getId(), team);
-    }
-
-    /**
-     * Adds to the given team's score the given score.
-     *
-     * @param team  the team who's score is to be added to.
-     * @param score the score by which the team's score will be increased.
-     * @throws AlfredException if the update fails.
-     */
-    public void addTeamScore(Team team, Score score) throws AlfredException {
-        int currentScore = Integer.parseInt(team.getScore().toString());
-        int scoreToAdd = Integer.parseInt(score.toString());
-
-        if (currentScore == Score.MAX_SCORE) {
-            throw new IllegalValueException(Score.MAX_SCORE_MESSAGE);
-        } else if (currentScore + scoreToAdd > 100) {
-            team.setScore(new Score(100));
-        } else {
-            Score newScore = new Score(currentScore + scoreToAdd);
-            team.setScore(newScore);
-        }
-        updateTeam(team.getId(), team);
-    }
-
-    /**
-     * Subtracts the given score from the given team's current score.
-     *
-     * @param team  the team who's score is to be subtracted from.
-     * @param score the score which will be subtracted from the team's current
-     *              score.
-     * @throws AlfredException if the update fails.
-     */
-    @Override
-    public void subtractTeamScore(Team team, Score score) throws AlfredException {
-        int currentScore = Integer.parseInt(team.getScore().toString());
-        int scoreToSub = Integer.parseInt(score.toString());
-
-        if (currentScore == Score.MIN_SCORE) {
-            throw new IllegalValueException(Score.MIN_SCORE_MESSAGE);
-        } else if (currentScore - scoreToSub < 0) {
-            team.setScore(new Score(0));
-        } else {
-            Score newScore = new Score(currentScore - scoreToSub);
-            team.setScore(newScore);
-        }
-        updateTeam(team.getId(), team);
     }
 
     /**
@@ -538,12 +480,16 @@ public class ModelManager implements Model {
         } catch (MissingEntityException e) {
             throw e;
         }
-        boolean isSuccessful = targetTeam.addParticipant(participant);
-        if (!isSuccessful) {
-            logger.severe("Participant is already present in team");
-            throw new AlfredModelException("Participant is already present in team");
+        try {
+            boolean isSuccessful = targetTeam.addParticipant(participant);
+            if (!isSuccessful) {
+                logger.severe("Participant is already present in team");
+                throw new AlfredModelException("Participant is already present in team");
+            }
+            this.saveList(PrefixType.T);
+        } catch (Exception e) {
+            throw new AlfredModelException(e.getMessage());
         }
-        this.saveList(PrefixType.T);
     }
 
     /**
@@ -636,20 +582,8 @@ public class ModelManager implements Model {
         // First delete the Participant objects
         Team teamToDelete = this.teamList.delete(id);
 
-        boolean allParticipantsDeleted = true;
-        for (Participant p : teamToDelete.getParticipants()) {
-            try {
-                this.participantList.delete(p.getId());
-            } catch (MissingEntityException e) {
-                allParticipantsDeleted = false;
-            }
-        }
         this.saveList(PrefixType.T);
         this.saveList(PrefixType.P);
-
-        if (!allParticipantsDeleted) {
-            throw new AlfredRuntimeException("Duplicate assigning of teams for certain participants.");
-        }
 
         return teamToDelete;
     }
@@ -685,9 +619,9 @@ public class ModelManager implements Model {
      * @param updatedMentor
      */
     public void updateMentor(Id id, Mentor updatedMentor) throws AlfredException {
-        Team targetTeam;
+        List<Team> targetTeams;
         try {
-            targetTeam = this.getTeamByMentorId(id);
+            targetTeams = this.getTeamByMentorId(id);
         } catch (MissingEntityException e) {
             this.mentorList.update(id, updatedMentor);
             this.saveList(PrefixType.M);
@@ -695,7 +629,9 @@ public class ModelManager implements Model {
         }
 
         this.mentorList.update(id, updatedMentor);
-        boolean isSuccessful = targetTeam.updateMentor(updatedMentor);
+        boolean isSuccessful = targetTeams.stream()
+                .map(team -> team.updateMentor(updatedMentor))
+                .allMatch(result -> result == true);
         if (!isSuccessful) {
             logger.severe("Unable to update the mentor in team as it is not the " + "same id");
             throw new ModelValidationException("Unable to update the mentor in team as it is not the " + "same id");
@@ -716,14 +652,16 @@ public class ModelManager implements Model {
         Mentor mentorToDelete = this.mentorList.delete(id); // May throw MissingEntityException here
         this.saveList(PrefixType.M);
 
-        Team targetTeam;
+        List<Team> targetTeams;
         try {
-            targetTeam = this.getTeamByMentorId(id);
+            targetTeams = this.getTeamByMentorId(id);
         } catch (MissingEntityException e) {
             return mentorToDelete;
         }
 
-        boolean isSuccessful = targetTeam.deleteMentor(mentorToDelete);
+        boolean isSuccessful = targetTeams.stream()
+                .map(team -> team.deleteMentor(mentorToDelete))
+                .allMatch(result -> result == true);
         if (!isSuccessful) {
             logger.severe("Unable to delete the mentor from the team");
             throw new AlfredModelException("Update to delete the mentor from the team");
@@ -784,25 +722,99 @@ public class ModelManager implements Model {
         }
     }
 
-    // =========== Leader Board methods
-    // ==================================================================
+
+    // ==================== Score methods ====================
 
     /**
-     * Resets the {@code sortedTeam} list to its original order without any sorting,
-     * then arranges it to sort the current teams stored in Alfred in descending
-     * order of their score. Implements additional Comparators {@code comparators}
-     * for tie-breaking if specified by the user.
+     * Updates the given team's score with the given score.
+     *
+     * @param team  the team who's score is to be updated.
+     * @param score the score to which the team's score will be updated.
+     * @throws AlfredException if the update fails.
      */
-    public final void setSimpleLeaderboard(ArrayList<Comparator<Team>> comparators) {
-        this.sortedTeam = new SortedList<>(this.teamList.getSpecificTypedList());
+    public void setTeamScore(Team team, Score score) throws AlfredException {
+        team.setScore(score);
+        updateTeam(team.getId(), team);
+    }
+
+    /**
+     * Adds to the given team's score the given score.
+     *
+     * @param team  the team who's score is to be added to.
+     * @param score the score by which the team's score will be increased.
+     * @throws AlfredException if the update fails.
+     */
+    public void addTeamScore(Team team, Score score) throws AlfredException {
+        int currentScore = Integer.parseInt(team.getScore().toString());
+        int scoreToAdd = Integer.parseInt(score.toString());
+
+        if (currentScore == Score.MAX_SCORE) {
+            throw new IllegalValueException(Score.MAX_SCORE_MESSAGE);
+        } else if (currentScore + scoreToAdd > 100) {
+            team.setScore(new Score(100));
+        } else {
+            Score newScore = new Score(currentScore + scoreToAdd);
+            team.setScore(newScore);
+        }
+        updateTeam(team.getId(), team);
+    }
+
+    /**
+     * Subtracts the given score from the given team's current score.
+     *
+     * @param team  the team who's score is to be subtracted from.
+     * @param score the score which will be subtracted from the team's current
+     *              score.
+     * @throws AlfredException if the update fails.
+     */
+    @Override
+    public void subtractTeamScore(Team team, Score score) throws AlfredException {
+        int currentScore = Integer.parseInt(team.getScore().toString());
+        int scoreToSub = Integer.parseInt(score.toString());
+
+        if (currentScore == Score.MIN_SCORE) {
+            throw new IllegalValueException(Score.MIN_SCORE_MESSAGE);
+        } else if (currentScore - scoreToSub < 0) {
+            team.setScore(new Score(0));
+        } else {
+            Score newScore = new Score(currentScore - scoreToSub);
+            team.setScore(newScore);
+        }
+        updateTeam(team.getId(), team);
+    }
+
+    // ==================== Leader Board methods ====================
+
+    /**
+     * Filters out the {@code sortedTeam} list so that it only contains teams with a specific
+     * subject {@code subject} if the {@code subject} is specified - therefore is not null.
+     *
+     */
+    private void filterSortedList(SubjectName subject) {
+        ObservableList<Team> teams = FXCollections.observableArrayList(this.teamList.getSpecificTypedList());
+        if (subject != null) {
+            teams.removeIf(Predicates.getPredicateFilterTeamBySubject(subject));
+            this.sortedTeam = new SortedList<>(teams);
+        } else {
+            this.sortedTeam = new SortedList<>(teams);
+        }
+    }
+
+    /**
+     * Resets the {@code sortedTeam} list to its original order without any sorting and applies necessary filtering,
+     * then arranges it to sort the current teams stored in Alfred in descending order of their score. Implements
+     * additional Comparators {@code comparators} for tie-breaking if specified by the user. Additionally this also
+     * filters out teams working on a specific subject if specified by the user.
+     *
+     */
+    public final void setSimpleLeaderboard(ArrayList<Comparator<Team>> comparators, SubjectName subject) {
+        filterSortedList(subject);
         for (Comparator<Team> comparator : comparators) {
             this.sortedTeam.setComparator(comparator);
         }
         // Set the comparator to rank by score last as in-place sorting is taking place,
-        // so ranking by score
-        // in the end will rank teams by their score and retain the tie-breaks obtained
-        // from the previously applied
-        // comparators.
+        // so ranking by score in the end will rank teams by their score and retain the tie-breaks obtained
+        // from the previously applied comparators.
         this.sortedTeam.setComparator(Comparators.rankByScore());
     }
 
@@ -811,11 +823,10 @@ public class ModelManager implements Model {
      * Comparators {@code comparators} if specified by the user, and filters the top
      * {@code k} teams, inclusive of ties, into {@code topKTeams} list.
      */
-    public final void setTopK(int k, ArrayList<Comparator<Team>> comparators) {
-        setSimpleLeaderboard(comparators);
-
-        // Create a copy of the sorted teams from which teams can be removed without
-        // damaging the original sorted teams list.
+    public final void setTopK(int k, ArrayList<Comparator<Team>> comparators, SubjectName subject) {
+        setSimpleLeaderboard(comparators, subject);
+        // Create a copy of the sorted teams from which teams can be removed without causing errors as
+        // removing from SortedList leads to exceptions.
         ObservableList<Team> teams = FXCollections.observableArrayList(sortedTeam);
         teams = LeaderboardUtil.topKWithTie(teams, k, comparators);
         this.sortedTeam = new SortedList<>(teams);
@@ -827,8 +838,8 @@ public class ModelManager implements Model {
      * {@code k} teams into {@code topKTeams} list, resolving ties on a random
      * basis.
      */
-    public final void setTopKRandom(int k, ArrayList<Comparator<Team>> comparators) {
-        setSimpleLeaderboard(comparators);
+    public final void setTopKRandom(int k, ArrayList<Comparator<Team>> comparators, SubjectName subject) {
+        setSimpleLeaderboard(comparators, subject);
         ObservableList<Team> teams = FXCollections.observableArrayList(sortedTeam);
         teams = LeaderboardUtil.randomWinnersGenerator(teams, k, comparators);
         this.sortedTeam = new SortedList<>(teams);
@@ -895,7 +906,6 @@ public class ModelManager implements Model {
     }
 
     // ========== ModelHistory Methods ===============
-
     /**
      * This method will update the ModelHistoryManager object with the current state
      * of the model. This method is expected to be called during the `execute()`
@@ -982,28 +992,6 @@ public class ModelManager implements Model {
     }
 
     /**
-     * Gets a String detailing the previously executed commands that can be undone
-     * by the user.
-     */
-    public String getCommandHistoryString() {
-        return this.history.getCommandHistoryString();
-    }
-
-    /**
-     * Returns a List of Strings describing the commands that can be undone.
-     */
-    public List<String> getUndoCommandHistory() {
-        return this.history.getUndoCommandHistory();
-    }
-
-    /**
-     * Returns a List of Strings describing the commands that can be redone.
-     */
-    public List<String> getRedoCommandHistory() {
-        return this.history.getRedoCommandHistory();
-    }
-
-    /**
      * Returns a List of CommandRecords describing the commands that can be
      * undone/redone
      */
@@ -1011,14 +999,25 @@ public class ModelManager implements Model {
         return this.history.getCommandHistory();
     }
 
+    // ========== CommandHistory Methods ===============
+    /**
+     * Records the command string of a successfully executed commands.
+     * @param commandInputString text input into Alfred for command execution.
+     */
     public void recordCommandExecution(String commandInputString) {
         this.commandHistory.saveCommandExecutionString(commandInputString);
     }
 
+    /**
+     * Gets the command string of a previous successfully executed command.
+     */
     public String getPrevCommandString() {
         return this.commandHistory.getPrevCommandString();
     }
 
+    /**
+     * Gets the command string of the next successfully executed command.
+     */
     public String getNextCommandString() {
         return this.commandHistory.getNextCommandString();
     }

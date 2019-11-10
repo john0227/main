@@ -41,7 +41,7 @@ import seedu.address.logic.parser.historycommandparser.RedoCommandParser;
 import seedu.address.logic.parser.historycommandparser.UndoCommandParser;
 import seedu.address.logic.parser.listcommandparser.ListCommandParser;
 import seedu.address.logic.parser.removecommandparser.RemoveCommandAllocator;
-import seedu.address.logic.parser.scorecommandparser.ScoreCommandAllocator;
+import seedu.address.logic.parser.scorecommandparser.ScoreCommandParser;
 import seedu.address.logic.parser.viewcommandparser.ViewCommandAllocator;
 
 /**
@@ -90,16 +90,14 @@ public class AlfredParser {
             break;
 
         case ScoreCommand.COMMAND_WORD:
-            c = new ScoreCommandAllocator().allocate(arguments);
+            c = new ScoreCommandParser().parse(arguments);
             break;
 
         case ListCommand.COMMAND_WORD:
-            logger.info("Showing list of a particular entity...");
             c = new ListCommandParser().parse(arguments);
             break;
 
         case SimpleLeaderboardCommand.COMMAND_WORD:
-            logger.info("Executing leaderboard command...");
             c = new LeaderboardCommandParser().parse(arguments);
             break;
 
@@ -145,19 +143,16 @@ public class AlfredParser {
             break;
 
         case AssignCommand.COMMAND_WORD:
-            logger.info("Assigning Entity(Mentor/Participant) to a Team");
             c = new AssignCommandAllocator().allocate(arguments);
             break;
 
         case RemoveCommand.COMMAND_WORD:
-            logger.info("Removing Entity(Mentor/Participant) from a Team");
             c = new RemoveCommandAllocator().allocate(arguments);
             break;
 
         case HomeCommand.COMMAND_WORD:
             return new HomeCommand();
         default:
-            logger.info("Unknown command type: " + commandWord);
             throw new ParseException(MESSAGE_UNKNOWN_COMMAND);
         }
         c.setCommandInputString(userInput);

@@ -4,16 +4,13 @@ import java.util.logging.Logger;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-
 import seedu.address.commons.core.LogsCenter;
-
 import seedu.address.commons.exceptions.AlfredModelException;
 import seedu.address.commons.exceptions.MissingEntityException;
 import seedu.address.commons.exceptions.ModelValidationException;
 import seedu.address.model.entity.Entity;
 import seedu.address.model.entity.Id;
 import seedu.address.model.entity.PrefixType;
-import seedu.address.model.entity.SubjectName;
 import seedu.address.model.entity.Team;
 
 /**
@@ -63,12 +60,19 @@ public class TeamList extends EntityList {
      * @throws MissingEntityException   if the team to update does not exist.
      * @throws ModelValidationException if a similar participant already exists.
      */
-    public void update(Id id, Team updatedTeam)
-            throws MissingEntityException, ModelValidationException {
+    public void update(Id id, Team updatedTeam) throws AlfredModelException {
         // First check if the updated team already exists
         for (Team t : this.teams) {
-            if (t.isSameTeam(updatedTeam) && !t.getId().equals(updatedTeam.getId())) {
+            if (t.getId().equals(updatedTeam.getId())) {
+                continue;
+            }
+            if (t.isSameTeam(updatedTeam)) {
                 throw new ModelValidationException(SIMILAR_TEAM_MSG);
+            }
+            if (t.getLocation().equals(updatedTeam.getLocation())) {
+                logger.severe("Trying to assign a team to a table that is already designated to another team.");
+                throw new AlfredModelException("Location (table number) is already assigned to team " + t.getId()
+                        + ". Please try another location.");
             }
         }
 
@@ -91,7 +95,12 @@ public class TeamList extends EntityList {
         for (Team t : this.teams) {
             if (t.isSameTeam(team)) {
                 logger.severe("The same team already exist in TeamList of Model." + this.teams);
-                throw new AlfredModelException("Team to add already exists.");
+                throw new AlfredModelException("This team already exists in this Hackathon");
+            }
+            if (t.getLocation().equals(team.getLocation())) {
+                logger.severe("Trying to assign a team to a table that is already designated to another team.");
+                throw new AlfredModelException("Location (table number) is already assigned to team " + t.getId()
+                        + ". Please try another location.");
             }
         }
         this.teams.add(team);
@@ -222,22 +231,6 @@ public class TeamList extends EntityList {
             newTList.add(t.copy());
         }
         return newTList;
-    }
-
-    public long getEduTeam() {
-        return teams.stream().filter(m -> m.getSubject().equals(SubjectName.EDUCATION)).count();
-    }
-
-    public long getEnvTeam() {
-        return teams.stream().filter(m -> m.getSubject().equals(SubjectName.ENVIRONMENTAL)).count();
-    }
-
-    public long getSocialTeam() {
-        return teams.stream().filter(m -> m.getSubject().equals(SubjectName.SOCIAL)).count();
-    }
-
-    public long getHealthTeam() {
-        return teams.stream().filter(m -> m.getSubject().equals(SubjectName.HEALTH)).count();
     }
 
     @Override

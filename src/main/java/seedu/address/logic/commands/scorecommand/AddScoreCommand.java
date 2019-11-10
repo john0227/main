@@ -2,15 +2,12 @@ package seedu.address.logic.commands.scorecommand;
 
 import static java.util.Objects.requireNonNull;
 
-import static seedu.address.commons.core.Messages.MESSAGE_NON_EXISTENT_TEAM;
-
 import java.util.logging.Logger;
 
 import seedu.address.commons.core.LogsCenter;
 import seedu.address.commons.exceptions.AlfredException;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.exceptions.CommandException;
-import seedu.address.logic.parser.AlfredParser;
 import seedu.address.model.Model;
 import seedu.address.model.entity.CommandType;
 import seedu.address.model.entity.Id;
@@ -30,7 +27,7 @@ public class AddScoreCommand extends ScoreCommand {
             + "If the team's new score exceeds " + Score.MAX_SCORE + " it will be set to " + Score.MAX_SCORE + "\n"
             + "Format: " + COMMAND_WORD + " [teamID] score \n"
             + "For example: " + COMMAND_WORD + " T-5 25";
-    private final Logger logger = LogsCenter.getLogger(AlfredParser.class);
+    private final Logger logger = LogsCenter.getLogger(AddScoreCommand.class);
 
     public AddScoreCommand(Id teamId, Score score) {
         super(teamId, score);
@@ -39,25 +36,33 @@ public class AddScoreCommand extends ScoreCommand {
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
-        Team teamToScore;
 
-        try {
-            teamToScore = model.getTeam(id);
-        } catch (AlfredException ae) {
-            throw new CommandException(MESSAGE_NON_EXISTENT_TEAM);
-        }
-
-        try {
-            model.addTeamScore(teamToScore, score);
-        } catch (AlfredException ae) {
-            throw new CommandException(ae.getMessage());
-        }
+        Team teamToScore = getTeamFromModel(model, id);
+        addScoreToTeam(model, teamToScore, score);
 
         logger.info("Adding " + this.score + " to Score of Team " + this.id);
         model.updateHistory(this);
         model.recordCommandExecution(this.getCommandInputString());
         return new CommandResult(String.format(MESSAGE_SCORE_TEAM_SUCCESS,
                 score, teamToScore.getName().toString(), teamToScore.getScore()), CommandType.T);
+    }
+
+    /**
+     * Fetches the team {@code team} from {@code model} and adds the score {@code}
+     * to their current score.
+     *
+     * @param model the {@code Model} object from which the team is supposed to be fetched and updated.
+     * @param team the Team from model whose score is to be updated.
+     * @param score the score to added to the team's current score.
+     * @throws CommandException if any exceptional case is encountered while adding the score.
+     */
+    private void addScoreToTeam(Model model, Team team, Score score) throws CommandException {
+        try {
+            model.addTeamScore(team, score);
+        } catch (AlfredException ae) {
+            logger.severe("Error while adding score to team.");
+            throw new CommandException(ae.getMessage());
+        }
     }
 
     @Override
