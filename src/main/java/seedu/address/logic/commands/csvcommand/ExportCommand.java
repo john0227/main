@@ -63,7 +63,6 @@ public class ExportCommand extends Command {
             File csvFile = this.csvFilePath.toFile();
             FileUtil.createIfMissing(this.csvFilePath);
             CsvUtil.writeToCsv(csvFile, model);
-            model.updateHistory(this);
             model.recordCommandExecution(this.getCommandInputString());
         } catch (IOException ioe) {
             throw new CommandException(MESSAGE_IO_EXCEPTION);
