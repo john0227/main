@@ -24,13 +24,13 @@ Note the following format used in this document:
 
 [cols=2, grid=none, frame=none, cols="25%,75%"]
 |===
-| `Words` in red# | Indicates that this word is either associated with written code, parameters for commands, or Java classes.
-| Words in `UPPER_CASE`# | Indicates a parameter that you need to supply for a command.
-| Words in `{braces}`# | Indicates parameters for a command that you can select from. +
+| `Words` in red | Indicates that this word is either associated with written code, parameters for commands, or Java classes.
+| Words in `UPPER_CASE` | Indicates a parameter that you need to supply for a command.
+| Words in `{braces}` | Indicates parameters for a command that you can select from. +
 i.e. {A/B/C} indicates that you may either choose A, B, or C.
-| Words in `[brackets]`# | Indicate parameters that are optional for the command. +
+| Words in `[brackets]` | Indicate parameters that are optional for the command. +
 i.e. `add [param]` indicates that both `add` and `add param` commands will work.
-| `Entity`# | Refers to a collective set of Participants, Mentors, and Teams.
+| `Entity` | Refers to a collective set of Participants, Mentors, and Teams.
 |===
 
 ==== Summary of contributions
