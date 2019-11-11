@@ -33,12 +33,10 @@ public class FindMentorCommandParser implements Parser<FindMentorCommand> {
 
         ArgumentMultimap argumentMultimapNorm =
                 ArgumentTokenizer.tokenize(
-                        andOrString.toLowerCase(),
-                        PREFIX_NAME, PREFIX_EMAIL, PREFIX_PHONE, PREFIX_ORGANISATION);
+                        andOrString, PREFIX_NAME, PREFIX_EMAIL, PREFIX_PHONE, PREFIX_ORGANISATION);
         ArgumentMultimap argumentMultimapExclude =
                 ArgumentTokenizer.tokenize(
-                        excludeString.toLowerCase(),
-                        PREFIX_NAME, PREFIX_EMAIL, PREFIX_PHONE, PREFIX_ORGANISATION);
+                        excludeString, PREFIX_NAME, PREFIX_EMAIL, PREFIX_PHONE, PREFIX_ORGANISATION);
 
         Optional<String> nameNorm = argumentMultimapNorm.getValue(PREFIX_NAME);
         Optional<String> emailNorm = argumentMultimapNorm.getValue(PREFIX_EMAIL);
@@ -62,7 +60,7 @@ public class FindMentorCommandParser implements Parser<FindMentorCommand> {
         }
 
         // Checks the position of the AND/OR
-        AlfredParserUtil.isFindTypeAtStart(args.trim().substring("mentor".length()));
+        AlfredParserUtil.isFindTypeAtStart(args.trim());
 
         return new FindMentorCommand(type, nameNorm, emailNorm, phoneNorm, organizationNorm,
                 nameExclude, emailExclude, phoneExclude, organizationExclude);

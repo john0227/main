@@ -25,7 +25,7 @@ across different stakeholders and managing different sources of data (such as pa
 Instead of managing this process across different media such as Excel spreadsheets and emails, Alfred allows
 you to coordinate everything in a single, convenient-to-use platform.
 
-Alfred is a Command Line Interface (CLI) application packaged with a Graphical User Interface (GUI). This means that users are expected
+In particular, Alfred is a Command Line Interface (CLI) application packaged with a Graphical User Interface (GUI). This means that users are expected
 to interact with Alfred mainly through the Command Line, but each command executed will invoke a visual response
 in Alfred.
 
@@ -69,7 +69,7 @@ The *_Architecture Diagram_* given above explains the high-level design of the A
 <<Design-Commons,*`Commons`*>> represents a collection of classes used by multiple other components.
 The following class plays an important role at the architecture level:
 
-* `LogsCenter` : Used by many classes to write log messages to the App's log file.
+`LogsCenter` : Used by many classes to write log messages to the App's log file.
 
 The rest of the App consists of four components.
 
@@ -177,24 +177,29 @@ NOTE: The lifeline for `DeleteParticipantCommandParser` and `DeleteCommandAlloca
 [[Design-Model]]
 === Model component
 
+==== High Level Design Overview
+
 .Structure of the Model Component
-image::BetterModelClassDiagram.png[]
+image::ModelClassDiagram.png[]
 
 *API* : link:{repoURL}/src/main/java/seedu/address/model/Model.java[`Model.java`]
 
 The `Model`,
 
 * stores a `UserPref` object that represents the user's preferences.
+* stores other things like `Storage`, `CommandHistory` that also depend on Model
 * stores the lists of our various entities.
 * Model is the bridge between Logic and Storage and provides an abstraction of how the data is stored in memory.
-* It exposes a `ReadableEntityList` which only has the list method to remind Logic that the data given should not be modified.
+* It exposes multiple `ReadableEntityList` which only has the list method to remind Logic that the data given should not be modified.
 * The UI can be bound to these lists so that it automatically updates when the contents of the list change.
 * At the heart of the model are observable lists which allow for the dynamic updating of the UI.
 * The `Model` interface also serves as an API through which controller can edit the data stored in memory.
 
 `ModelManager`
-* ModelManager implements all the methods exposed by the Model Interface. At its heart, it only contains 3 `EntityLists`
-, 3 `FilteredLists` and a `UserPrefs` Object and does all the validation logic needed for the application
+
+* ModelManager implements all the methods exposed by the Model Interface. The 3 most important aspects for its in-memory
+storage and UI are the `FilteredList`, `EntityList` and `UserPrefs` objects. As mentioned above, `ModelManager` also
+consists of other components, but these are not reflected in the diagrams for brevity and clarity.
 
 .Simple Illustration of ModelManager
 image::ModelManagerClassDiagram.png[]
@@ -202,6 +207,86 @@ image::ModelManagerClassDiagram.png[]
 .EntityList simplified structure
 image::EntityListClassDiagram.png[]
 
+Each `EntityList` is also further subclassed into `ParticipantList`, `MentorList`, `TeamList`. Each of
+these lists can be seen as an individual address book from the original AB3 project. The following diagrams show
+the structure of these `Entity` objects within each list. These `Entity` objects are the building blocks of Alfred.
+
+.Participant
+image::ParticipantClassDiagram.png[]
+
+.Team
+image::TeamClassDiagram.png[]
+
+.Mentor
+image::MentorClassDiagram.png[]
+
+==== Usage
+
+When the ModelManager object is first created upon starting the application, the existing data is loaded from
+the disc via methods on the `Storage` object. However, if there are any bugs in the process, perhaps due
+corrupted data, a new `EntityList` is instantiated rather than run the risk of working with outdated data.
+
+Due to its role as the API of the application, all calls which require access to the `Entity` objects will be done
+through `Model` and not via the lists directly. These operations are listed as public methods on the `Model` interface.
+
+For operations which would entail mutating the data within the
+`EntityList` objects in any form, `Model` automatically communicates with the `Storage` object to save the data.
+The saving logic can be found within the `Storage` object and thus `Model` only needs to pass it `EntityList` objects
+on its end. The same applies for the other attributes in `Model`, such as `CommandHistory`; `Model` will
+automatically communicate with it for you.
+
+If there are any errors along the way, it will be logged but the error would be handled within `Model` itself.
+Moreover, if there is an during a model operation, it will not be saved.
+
+==== Design Considerations
+1. Synchronization of data
+    * The role of `ModelManager` is to ensure that the data is in sync with each other across all 3 `EntityList`
+objects. The reason behind this is because for example, the `Participant` object in `ParticipantList` is a separate
+object from the one inside `Team`. It was not possible due to make the `Participant` object hold a reference
+to team due to serialization issues on `Storage`.
+    * As such, for each CRUD operation, `ModelManager` has to perform validation to ensure that the data modified/added
+is sync across all 3 `EntityList` objects.
+    * This was also the reason why `Storage` was moved into the `Model` object, as in the current implementation of
+Alfred, only `ModelManager` needs to be aware of `Storage` to ensure that only it can save/read data. This would
+hence help to synchronize data better.
+
+2. Single Responsibility Principle and Inheritance
+    * Each class in `Model` is only responsible for a single task. For example, `TeamList` is only concerned
+with managing the `Team` entities stored in it. This would help to improve testability and code quality, especially
+since the size of the `Model` codebase is substantial
+    * Inheritance was used to show links between related objects. For `Model`, the two related objects are
+`EntityList` and `Entity`. Inheritance was used to show this relationship and to reduce the need for code
+duplication.
+
+3. Open Closed Principle
+    * `Model` exposes many functions. However, in line with the Open Closed Principle, modifications to `Model`
+come in the form of exposing new methods on it and creating new attributes on the `ModelManager` object. The methods
+on `ModelManager` were also implemented as simply as possible so that future methods can build on them. This way,
+future modifications do not need to edit existing code, reducing the likelihood of regression bugs.
+
+4. Design of the `Entity` objects
+* *Alternative 1*: Make the `Team` object the single source of truth (only `Team` has references to `Participant`
+and `Mentor`)
+    - Pros: This would facilitate the serialization on `Storage`
+    - Cons: As `Participant` and `Mentor` objects no longer hold a reference to the `Team` object,
+it is now possible for their fields to be different from their counterparts stored in `Team`, requiring
+Alfred to do significant validation
+* *Alternative 2*: Make `Participant`, `Mentor` and `Team` objects store a bidirectional reference to each other
+    - Pros: The `Participant` objects in the `Team` 's participants field are exactly the same objects stored in the
+`ParticipantList`, reducing the need for validation code as they will never be out of sync
+    - Cons: `Storage` serialization cannot handle bidirectional associations
+
+We decided to opt for Alternative 1 as there was no easy solution to solve the issues `Storage` had with
+bidirectional associations. Also, the validation code for Alternative 1 was implemented early and employed
+many defensive programming practices, reducing the likelihood of bugs occurring due to similar objects having
+data that is out of sync.
+
+==== Future Extensions
+1. As the single source of truth for the application in runtime, there are many small functions on `ModelManager` now.
+These functions are implemented directly in the file itself. In the future, it may be better to abstract these
+functions out into smaller modules as per the Dependency Inversion Principle. It was not done for v1 of Alfred
+as refactoring these methods would block developers and slow down feature development velocity. However,
+as Alfred scales, it is recommended that this refactoring be done.
 
 [[Design-Storage]]
 === Storage component
@@ -216,13 +301,14 @@ The Food- and Swag-related features scheduled for release in v2.0, will require 
 To be more specific, Storage would need to be updated to support the storage of these other essential data, above and beyond the
 current support for the storage of the EntityLists.
 
+//tag::storageDG[]
 ==== Purpose and Usage of Storage Component
 .Structure of the Storage Component
 image::AlfredStorageClassDiagram.png[]
 
 *API* : link:{repoURL}/src/main/java/seedu/address/storage/AlfredStorage.java[`AlfredStorage.java`]
 
-The `Storage` component saves and reads 4 different data types:
+The `Storage` component saves and reads 4 different *_data types_*:
 
 1. `UserPrefs`: User Preferences for Alfred (such as the last used Window Size of the application)
 2. `ParticipantList`: Information of all the Participants in Alfred
@@ -231,8 +317,8 @@ The `Storage` component saves and reads 4 different data types:
 
 All 4 data types are stored to disc in JSON files. The data is read from the JSON files when Alfred is first
 start up. It is also important to note that saving is automatic in Alfred. This means that after the execution of each
-command, the data in Alfred will automatically be saved to disk. This frees the user from constantly calling
-some form of saving functionality, and ensures that the information is storage is as up-to-date as possible.
+command, the data in Alfred will automatically be saved to disk. This frees the user from the hassle of constantly calling
+some form of saving functionality, and ensures that the information in storage is as up-to-date as possible.
 
 [NOTE]
 When reading the JSON files from memory at application start-up, any kind of data corruption in the JSON files
@@ -251,14 +337,13 @@ simple, allowing the following methods for each of the 4 data types:
     2. `save()`: saves the data to the JSON file
     3. `read()`: reads the data from the JSON file
 
-*  The Storage component handles the complexities of actually storing to and reading from disc the different data types.
-
+The Storage component handles the complexities of actually storing to and reading from disc the 4 different data types.
 As can be seen in the figure at the start of this section, underlying AlfredStorage's simple interface are several classes
 that ensure the accurate storing and retrieval of Alfred's data from disc. The following are some details of the Storage
 Component:
 
 * Each EntityList has a designated Storage class (i.e. for Participant, you have `ParticipantListStorage`, `JsonParticipantListStorage` etc.). Hence, for the rest of this explanation, Entity will be used as a generic term for Participants/Mentors/Teams.
-* The class implementing the `EntityListStorage` interface is `JsonTeamEntityStorage`. This class is responsible for providing the read/save functionality for the entire EntityList to `AlfredStorageManager`.
+* The class implementing the `EntityListStorage` interface is `JsonEntityListStorage`. This class is responsible for providing the read/save functionality for the entire EntityList to `AlfredStorageManager`.
 * In order to save the entire `EntityList` in JSON, the class `JsonSerializableEntityList` implements the logic for serialization for the collection of Entities (i.e. EntityList). This is achieved by converting the `EntityList` to a `List<JsonAdaptedEntity>`.
 * In order to save each individual Entity, the Entity is in turn converted to a `JsonAdaptedEntity` object. The `JsonAdaptedEntity` class contains the fields of each Entity that are relevant for saving to disc. Hence, this class is directly serialized into JSON, and also has methods for converting the serialized object back into an Entity object for `AlfredStorage` to return to `ModelManager`.
 * The conversion of the `JsonAdaptedEntity` object to fields in a JSON file is done by Java's Jackson library.
@@ -268,7 +353,7 @@ The following is a concrete example of the storage of a ParticipantList in JSON:
 .Structure of the JSON File for ParticipantList
 image::ParticipantListJson.png[]
 
-Figure 10 shows the contents of the JSON file storing a ParticipantList containing 2 participants. The data in the red box
+The figure above shows the contents of the JSON file storing a ParticipantList containing 2 participants. The data in the red box
 corresponds to the fields in a single Participant object. These fields are generated by the Jackson library from the serializable `JsonAdaptedParticipant`
 object, and the entire list of participants in the JSON file is in turn generated because the `JsonSerializableParticipantList` class converts
 the ParticipantList to a List of `JsonAdaptedParticipant`.
@@ -284,6 +369,27 @@ upwards to ModelManager and a new EntityList is initialised in memory, effective
 inconsistencies in Alfred.
 * In future implementations, it would be best to ensure that the JSON file is encrypted and secured to minimise
 opportunities for tampering with the data.
+
+2. Single Responsibility Principle
+
+* Each class exists for a very specific purpose. A class is provided for each Entity.
+* Purpose (From Top-Down):
+** Exposing read/save functionality for EntityList: `JsonEntityListStorage`
+** Serializing EntityList: `JsonSerializableEntityList`
+** Serializing one Entity: `JsonAdaptedEntity`
+
+3. Interface Segregation
+
+* Each interface is kept as minimal as possible and targets a specific Entity type.
+* AlfredStorage is an interface that extends multiple interfaces to expose the read/save functionality
+required by Model.
+
+4. Dependency Inversion
+
+* Alfred's Model is dependent on the interface AlfredStorage, and the implementation is provided through AlfredStorageManager.
+Hence, all functionality provided are first stipulated in the AlfredStorage interface.
+
+//end::storageDG[]
 
 
 [[Design-Commons]]
@@ -517,6 +623,7 @@ For now, we have chosen *Alternative 2*. We thought allowing the user to choose 
 
 For now, data can only be exported to CSV files. This aspect can also be under the <<ImportCommandDesignConsiderations, design considerations>> of `ImportCommand`. In the future, we can increase the number of file extensions supported.
 
+// tag::undoredoDG1[]
 === Undo/Redo feature
 
 The Undo/Redo feature, as the name suggests, allows you to undo and redo commands. Only commands that alter the state of the data
@@ -530,16 +637,17 @@ is an integer, allows you to undo/redo `N` commands at one go.
 To undo/redo to next immediate command, simply invoking `undo`/`redo` on Alfred would suffice, as it implicitly calls `undo 1`/`redo 1`
 in the code.
 
-This feature is a convenient feature as it allows users of Alfred to quickly correct and recover
+This feature is a convenience feature as it allows users of Alfred to quickly correct and recover
 from mistakes, greatly increasing the utility of the application.
 
 [NOTE]
-Only the 50 data states is stored in `ModelHistoryManager` at any one point in time. The addition of any more data states will
+Only a maximum of 50 data states is stored in `ModelHistoryManager` at any one point in time. The addition of any more data states will
 result in the discarding of the oldest data state.
 
 ==== Implementation
 
-The general idea is as follows: The undo/redo mechanism is mainly facilitated by `ModelHistoryManager`. Alfred's data is held in memory within the `ModelManager` object. After the execution of commands that mutate the data in Alfred, a deep copy
+The general idea is as follows: The undo/redo mechanism is mainly facilitated by the interface `ModelHistory` and its implementation `ModelHistoryManager`.
+Alfred's data is held in memory within the `ModelManager` object. After the execution of commands that mutate the data in Alfred, a deep copy
 of all 3 EntityLists is made and saved as a `ModelHistoryRecord` in `ModelHistoryManager`. A deep copy is necessary to ensure that
 any subsequent changes to data will not alter the data in the `ModelHistoryRecord`, allowing each `ModelHistoryRecord` to serve as
 a pristine record of the state of the data in Alfred at the end of the execution of each command.
@@ -562,11 +670,15 @@ image::UndoSequenceDiagramUpdateHistory.png[]
 
 The top half of the diagram covers the creation of the DeleteParticipantCommand object, and the bottom half covers
 what happens when the `execute()` method of the DeleteParticipantCommand object is called. The important thing to note is the fact
-that a deep copy of the 3 EntityLists is created and stored in ModelHistoryRecord.
+that a deep copy of the 3 EntityLists is created and stored as a `ModelHistoryRecord` in `ModelHistoryManager`.
 
 An important issue to take note of is that only commands that implement the TrackableState interface will cause a new `ModelHistoryRecord`
 to be created and stored in `ModelHistoryManager`. The TrackableState interface is a marker interface, and is used to mark
-the commands that mutate data in Alfred.
+the commands that mutate data in Alfred. All command types except the following implement the TrackableState interface (and
+will therefore have the state of the data recorded in `ModelHistoryManager` after command execution):
+`help`, `list`, `find`, `history`, `leaderboard`, `getTop`, `export`, `help`, `home`, `undo`, `redo`.
+
+// end::undoredoDG1[]
 
 ==== Implementation: How `ModelManager` is Updated When the Undo Command is Executed
 The following sequence diagram shows what happens when the UndoCommand is executed.
@@ -581,16 +693,22 @@ if there are sufficient states to undo to, otherwise an exception is thrown.
 [NOTE]
 A analogous process is executed for the Redo Command.
 
+// tag::undoredoDG2[]
 ==== Behaviour of Undo/Redo Mechanism
 `ModelHistoryMangager` contains a List of `ModelHistoryRecord`, and a pointer pointing to the `ModelHistoryRecord` that
 reflects the current state of the data in Alfred.
 
 In order to better illustrate how the state of the data is tracked and stored in `ModelHistoryManager`, consider the following example.
 The following commands are executed:
+
 1. AddParticipantCommand: `add participant n/Clark Kent p/+6598321212 e/clark.kent@supermail.com`
+
 2. AddMentorCommand: `add mentor n/Lex Luthor o/LexCorp p/+6598321010 e/lex.not.evil@gmail.com s/Social`
+
 3. ListParticipantCommand: `list participants`
+
 4. UndoCommand: `undo 2`
+
 5. AddTeamCommand: `add team n/Justice League s/Social pn/BetterThanAvengers l/12`
 
 This is the state of `ModelHistoryManager` when Alfred is first started.
@@ -603,21 +721,21 @@ This is what happens after each step:
 
 __ Step 1. AddParticipantCommand: `add participant n/Clark Kent p/+6598321212 e/clark.kent@supermail.com` __
 
-.Initial State of `ModelHistoryManager`
+.State of `ModelHistoryManager` after Step 1
 image::UndoRedoState1.png[]
 
 A new `ModelHistoryRecord` is created to reflect the state of the data in Alfred after the execution of the AddParticipantCommand.
 
 __ Step 2. AddMentorCommand: `add mentor n/Lex Luthor o/LexCorp p/+6598321010 e/lex.not.evil@gmail.com s/Social` __
 
-.Initial State of `ModelHistoryManager`
+.State of `ModelHistoryManager` after Step 2
 image::UndoRedoState2.png[]
 
 A new `ModelHistoryRecord` is created to reflect the state of the data in Alfred after the execution of the AddMentorCommand.
 
 __ Step 3. ListParticipantCommand: `list participants` __
 
-.Initial State of `ModelHistoryManager`
+.State of `ModelHistoryManager` after Step 3
 image::UndoRedoState3.png[]
 
 Note that no new `ModelHistoryRecord` is created because the ListParticipantCommand does not alter the state of the data in Alfred.
@@ -625,17 +743,17 @@ Hence, it does not implement the TrackableState interface.
 
 __ Step 4. UndoCommand: `undo 2` __
 
-.Initial State of `ModelHistoryManager`
+.State of `ModelHistoryManager` after Step 4
 image::UndoRedoState4.png[]
 
-After executing the `undo 2` command, the pointer in `ModelHistoryManager` shifts backwards by 2 to point tp the `ModelHistoryRecord`
+After executing the `undo 2` command, the pointer in `ModelHistoryManager` shifts backwards by 2 to point to the `ModelHistoryRecord`
 at the zero-th index.
 
 Note that this means that `undo 3` would throw an error, as you cannot move beyond the very first `ModelHistoryRecord` in `ModelHistoryManager`.
 
 __ Step 5. AddTeamCommand: `add team n/Justice League s/Social pn/BetterThanAvengers l/12` __
 
-.Initial State of `ModelHistoryManager`
+.State of `ModelHistoryManager` after Step 5
 image::UndoRedoState5.png[]
 
 Note that the execution of a new command will invalidate the `ModelHistoryRecord` after the pointer. This is because all subsequent
@@ -650,7 +768,10 @@ When designing the undo/redo feature, there were some design considerations to t
 ** Cons: May have performance issues in terms of memory usage.
 * **Alternative 2:** Individual command knows how to undo/redo by itself.
 ** Pros: Will use less memory (e.g. for `delete`, just save the person being deleted).
-** Cons: We must ensure that the implementation of each individual command are correct.
+** Cons: We must ensure that the implementation of each individual command are correct, which is not trivial for
+certain commands, such as `import`, which provides a best-effort implementation and tries to import as many valid data entries
+as possible. In order to implement an `undo` method for this, we would have to keep track of the new Entities that got created
+due to the command execution and then invoke deletion of these Entities.
 
 Given the large number of commands that are available in Alfred, it is not very scalable to implement
 an undo/redo method for each of the commands. It is also more extensible to use Alternative 1 as it allows
@@ -671,24 +792,67 @@ In order to accommodate this design for the Undo/Redo feature, we decided to lim
 `ModelHistoryManager` to 50. It is unlikely that a user would want to undo more than 50 commands at a go, as that would indicate
 a very significant error in the workflow, and recovering from that should not have a reliance on the Undo/Redo feature.
 
+// end::undoredoDG2[]
+
+=== History feature
+
+Closely related to the undo/redo feature, the `history` feature allows you to examine up to 50 previously executed commands
+in order to provide you with a visual understanding of the history of commands executed. Specifically, it provides you information
+on how many commands are undo-able/redo-able, and which commands are undo-able/redo-able. Otherwise, it can be difficult to
+know which commands you are undo/redo-ing, especially when many commands have been executed.
+
+Simply execute `history` in Alfred to navigate to the "History" section of the Graphical User Interface and examine what commands
+are undo-able/redo-able.
+
+."History" section of the Graphical User Interface after invoking the `history` command
+image::UndoRedoExplanation.png[]
+
+Note that there are 3 types of delimiters:
+
+1. Redo Delimiter: No redos are possible beyond this point
+2. Current Delimiter: This is the current state of the data relative to all the commands previously executed.
+3. Undo Delimiter: No undos are possible beyond this point
+
+==== Implementation
+Most of the functionality required for the `history` feature is similar to that of the `undo`/`redo` feature. Specifically,
+there is a similar reliance on the `ModelHistory` interface and its implementation `ModelHistoryManager` to provide the information
+on which commands are undo-able and redo-able, along with their respective command input strings. See the sequence diagram below
+for more information.
+
+.Sequence diagram for the execution of the History command
+image::HistoryCommandRendering.png[]
+
+Since `ModelHistoryManager` keeps a linear history of Alfred's data state after commands are executed, and it has a pointer
+to the current data state, the redo-able commands are simply the ones after the pointer, and the undo-able commands are the one before
+the pointer. The panels displayed in the "History" section of the Graphical User Interface is simply a visual representation of
+this sequential ordering of datas states. The call to `getCommandHistory()` in Model will return an ArrayList of CommandRecords, where each CommandRecord
+specifies the command input string as well as whether the CommandRecord is a delimiter. This ArrayList is then provided back to
+the UI for rendering in the "History" section of the Graphical User Interface.
+
+==== Design Considerations
+Given the close relationship between this feature and the `undo`/`redo` feature, the design considerations are very similar as well.
+See <<Undo/Redo feature>> for more information.
+
 === Command History Navigation
 Since Alfred is ultimately a Command-Line Interface (CLI) application, it would be good to integrate some of the more useful features
 of CLI applications into Alfred. This feature allows users to go through previously executed commands by pressing the ALT+UP/DOWN
 arrow keys. Although it would be more convenient to use the UP/DOWN arrow keys to navigate the command history, the UP/DOWN arrow
-keys have been mapped to other uses in Alfred.
+keys have been mapped to the Command Suggestions feature in Alfred.
 
 This feature allows users to quickly re-use previously exeuted commands without having to go through the hassle of re-typing
 everything. This is particularly useful when the commands are long, and only small modifications are necessary to the command.
 
 [NOTE]
 Only successfully executed commands can be navigated to using the ALT+UP/DOWN keys. Invalid comands will not be stored, and hence
-cannot be accessed using this feature.
+cannot be accessed using this feature. The only exception to this is the `import` command, as it is a 'best-effort' command that raises exceptions for certain entries
+in the csv file, but seeks to import as many valid data entries as possible. Hence, the `import` command can be navigated to using
+the ALT+UP/DOWN arrow keys even when it does not completely succeed during execution.
 
 ==== Implementation
 Every time a valid new command is executed, the string used to generate the command (i.e. the text that the user types into
 Alfred's Command Input Box) is stored in the `Command` object.
 
-The main class resposible for remembering and providing the previously used command input strings is the `CommandHistoryManager` class,
+The main class responsible for remembering and providing the previously used command input strings is the `CommandHistoryManager` class,
 which implements the `CommandHistory` interface. The `CommandHistory` interface only exposes 3 methods: `saveCommandExecutionString`,
 `getPrevCommandString` and `getNextCommandString`. The latter 2 methods directly map to the 2 situations of pressing the ALT+UP and
 pressing the ALT+DOWN keys respectively.
@@ -719,15 +883,29 @@ An analogous process is executed when the ALT+DOWN arrow keys are pressed.
 ==== Design Considerations
 The following are some design considerations for the Command History Navigation feature.
 
+===== Aspect: Use of CommandHistoryManager
+A separate class was created for managing the command history. Although this meant that Model would have a further
+dependency on another class and hence cause an increase in the coupling between objects, this implementation adheres
+to the Single Responsibility Principle and abstracts away the details of handling the command history to a purpose-built class.
+This adheres better to the OOP-style of programming and results in conceptually cleaner code.
+
 ===== Aspect: Limitation of Command History Size
 In order to ensure that `CommandHistoryManager` does not occupy an increasingly large portion of memory as more and more
 commands are executed, it is necessary to limit the number of commands that are stored. Otherwise, Alfred's performance
 will suffer as more commands are executed.
 
+Furthermore, it is very unlikely for user to want to navigate more than 50 commands into history, as it would likely be
+more convenient to re-type the command if that is the case.
+
 ==== Aspect: Usage of Arrow Keys
 Most CLI applications with such a Command History Navigation feature would use the UP/DOWN arrow keys directly, but the UP/DOWN
-arrow keys have been mapped for a different use in Alfred. Hence, we decided to use the ALT modifier key for the feature. It is
+arrow keys have been mapped for a different use (Command Suggestion Feature) in Alfred. Hence, we decided to use the ALT modifier key for the feature. It is
 an inconvenience, but likely a minor one.
+
+==== Aspect: Navigation to Successfully-Executed Commands
+As mentioned above, only successfully executed commands can be navigated to using this feature. This is because unsuccessful
+commands will still remain within the Command Input Box in Alfred, which the user can readily edit. Only upon successful command
+execution will the text in the Command input Box disappear, so this feature is necessary to retrieve the Command's input text.
 
 === `home` feature
 
@@ -790,8 +968,77 @@ image::RemoveParticipantCommandSequenceDiagram.png[]
 
 
 
+=== Scoring
 
-// tag::dataencryption[]
+As its name suggests, this feature's intended purpose is to aid users in the process of giving scores to the teams participating the hackathon. The `score` command is a crucial feature of Alfred as judging and scoring are core activities within every hackathon. Alfred provides the following implementations of the `score` command:
+
+1. `score add`: allows users to add a certain number of points to a team's score
+2. `score sub`: allows users to subtract a certain number of points from a team's score
+3. `score set`: allows users to set a team's score to a certain number of points
+4. `score reset`: allows users reset a team's score to 0
+
+==== Implementation Overview
+
+This feature and its varieties have been implemented in a relatively straightforward manner, as the Class Diagram below showing the high level representation of the Object Oriented solution devised to implement this feature highlights.
+
+.Scoring Feature Class Diagram
+image::ScoringClassDiagram.png[]
+
+From the above diagram it can be seen that each different implementation of the `score` command inherits from the same `ScoreCommand` abstract class. The `ScoreCommand` abstract class provides a base for the implementation of the current specific `score` commands and in the future any further additions made to the `score` command functionality must also follow this same convention.
+
+Secondly, there is no `ResetScoreCommand` class. This is done intentionally as the `SetScoreCommand` can be reused to reset a particular team's score, thereby making better use of abstraction.
+
+A representation of how the above classes interact to provide execute a user's command is highlighted in the sequence diagram below. This sequence diagram illustrates the object interactions when a user types the command `score add T-1 40`. For context, this command adds 40 points to the team with ID "T-1".
+
+.Add Score Command Sequence Diagram
+image::ScoringSequenceDiagram.png[]
+
+As seen from the above diagram, the execution of the `score add` command can be put in simple words as per the following steps:
+
+* Step 1: `LogicManager` starts executing the user's command and calls the `AlfredParser` to parse it.
+* Step 2: `AlfredParser` find the appropriate `Parser` to parse the command and creates a new `ScoreCommandParser` to parse the arguments of the score command, essentially "add T-1 40".
+* Step 3: The `ScoreCommandParser` then parses the arguments and is responsible for:
+
+    ** Checking which specific implementation of the `score` command is being called (in this case "add") and ensuring it is a valid method.
+    ** Parsing the Team ID specified by the user and ensuring it is of a correct format.
+    ** Parsing the Score specified by the user and ensuring it is a valid score.
+
+* Step 4: `ScoreCommandParser` then creates a new `AddScoreCommand` object with the above parsed Team ID and Score, which is then returned all the way to `LogicManager`
+* Step 5: `LogicManager` then executes the `AddScoreCommand` object upon which the `AddScoreCommand` object calls `Model` 's `addTeamScore()` method which updates the specific team's score within `Model`. The updating is done by the `updateTeam(teamID, updatedTeam)` method of `Model` which updates the Team object with ID "teamID" within `Model` to match the "updatedTeam" team object.
+* Step 6: Upon updating the team's score in `Model`, the `AddScoreCommand` object creates a new `CommandResult` object which is returned to the UI component (not shown in the diagram) to display a feedback message to the user.
+
+Though the above diagram and steps are designed in the context of a `score add` command, the logic applies to every other type of `score` command as well. The only difference is that the `ScoreCommandParser` creates the appropriate command object for the command and each command object calls a different method from `Model`, as per the following:
+
+1. `score subtract`: `ScoreCommandParser` creates a new `SubtractScoreCommand` instead of an `AddScoreCommand` and this `SubtractScoreCommand` object calls the `subtractTeamScore()` method of `Model`.
+2. `score set` and `score reset`: `ScoreCommandParser` creates a new `SetScoreCommand` instead of an `AddScoreCommand` and this `SetScoreCommand` object calls the `setTeamScore()` of method `Model`.
+
+==== Design Considerations
+
+To develop the `score` feature a few considerations and decisions had to be made with regards to how to implement the feature at various steps. This section focuses on some of the aspects wherein we faced dilemmas and how we addressed them.
+
+
+*Aspect:* How to implement the Score Commands
+
+Currently, Alfred's score commands all inherit from a single `ScoreCommand` abstract class rather than each command class inheriting directly from the command class. This was done in order to provide a concrete base for the score commands, but more importantly also to make better use of polymorphism within our codebase. This use of polymorphism allows the Alfred codebase to avoid several code repetitions, for example by facilitating the use of a single parser class to parse the `score` commands as it can then simply return a `ScoreCommand` object regardless of which specific `score` command is called. Thanks to this, we avoid having to make a parser for every single `score` command.
+
+*Aspect:* How to implement `score sub` (Subtract Score Command)
+
+While traditionally a subtract command would be implemented using an add command only with negated values, this is not quite possible in Alfred's case. Within Alfred `Score` objects have a strict restriction that they cannot be created with negative values as a team's score can never be negative. This restriction cannot be relaxed as it ensures that any data being imported into Alfred does not violate this property either. Due to this the `score sub` command could be implemented by reusing the `AddScoreCommand` and hence why it has its own command class `SubtractScoreCommand`.
+
+*Aspect:* Implementation of `score reset` command
+
+* *Alternative 1:* Create a `ResetScoreCommand` class
+
+** Pros: Lowers confusion as all the relevant code is in its own class rather than mixed with other code.
+** Cons: Leads to duplication of code as the command is very similar to the `score set` command, making it poor software engineering practice.
+
+* *Alternative 2 (Current Choice):* Reuse the `SetScoreCommand` class
+
+** Pros: Better use of abstraction and reduces the amount of duplicate code written.
+** Cons: Overcrowds a single class as feedback messages and other properties of the `score reset` command also need to be written within it.
+
+Upon close inspection it was observed that the removal of duplicate code would far outweigh the convenience and orderliness of having a separate class for the command, especially considering that a `ResetScoreCommand` would have far more duplicate code than unique code as compared to the `SetScoreCommand`. Bearing this in mind, we ultimately decided to choose "Alternative 2" as it would allow for better reuse of existing code and follow better software engineering practices.
+
 
 === Leaderboard and Get Top Teams
 
@@ -801,18 +1048,18 @@ The `leaderboard` and `getTop K` commands are two very important features of Alf
 
 The implementation of these two commands is very similar in nature. They both:
 
-* rely on updating a `SortedList` of teams present within the `ModelManager` class, which will be referred to as `sortedTeamList` in subsequent sections. This list is used to display the command results on the UI.
+* rely on updating a `SortedList` of teams present within the `ModelManager` class, which will be referred to as `sortedTeamList` in subsequent sections. This list is used to display the command's results on the UI.
 * use an ArrayList of `Comparator<Team>` objects to contain additional comparators. These are used to break ties between teams on a basis other than score.
 
 The class diagram below provides a high level representation of the Object-Oriented solution devised to implement the aforementioned features.
 
 .Leaderboard and Get Top Teams Implementation Overview
-image::LeaderboardClassDiagram.png[]
+image::LeaderBoardClassDiagram.png[]
 
 From the above class diagram, there are two important matters to note regarding the implementation of these features:
 
 [none]
-* 1. The `LeaderboardCommand` and `GetTopTeamsCommand` are implemented as abstract classes which extend the `Command` abstract class. Any command to do with leaderboards or getting the top teams implements either one of these interfaces depending on which command it is.
+* 1. The `LeaderboardCommand` and `GetTopTeamsCommand` are implemented as abstract classes which extend the `Command` abstract class. Any command to do with leaderboards or getting the top teams extends either one of these abstract classes depending on which command it is.
 * 2. The `ModelManager` class uses another class `LeaderboardUtil` which provides utility methods for the Leaderboard and Get Top Teams commands, such as fetching an appropriate number of teams for the `getTop K` command and breaking ties between teams for both commands.
 
 With the class structure covered, the following sub-sections seek to explain how the different classes in Alfred interact to produce a result for the user, and finally the design considerations that were made for each command.
@@ -835,7 +1082,9 @@ In the above, the `LeaderboardCommandParser` class parses the tie-break part of 
 
 When the `SimpleLeaderboardCommand` is then executed, it calls `Model` 's `setSimpleLeaderboard(comparators)` method with the input parameter being the `ArrayList<Comparator<Team>>` passed as parameter for the former's creation.
 
-`Model` 's `setSimpleLeaderboard(comparators)` method updates the `SortedList` of teams within `Model` itself, which is then displayed on the UI when the new `CommandResult` object is created and returned. This flow of events, albeit a few differences, is the same for every variation of the `leaderboard` and `getTop K` commands explored subsequently.
+`Model` 's `setSimpleLeaderboard(comparators)` method updates the `SortedList` of teams within `Model` itself, which is then displayed on the UI when the new `CommandResult` object is created and returned.
+
+This flow of events, albeit a few differences, is the same for every variation of the `leaderboard` and `getTop K` commands explored subsequently.
 
 Do note that if the user's input did not specify any tie-break methods, hence just being `leaderboard` then the `SimpleLeaderboardCommand` object would be created with an empty ArrayList of comparators. The flow of events for this particular scenario would be unchanged from the above illustration.
 
@@ -973,18 +1222,18 @@ We decided to prioritise user convenience in this situation and rather than disp
 
 The reason "Alternative 2" was selected was because `ModelManager` 's `setSimpleLeaderboard(ArrayList<Comparator<Team>> comparators)` method resets the `SortedList` of teams within `ModelManager` and applies the relevant comparators to it to sort it as desired. Hence, it is abstracting away this process into a single method so a better re-usage of code can take place in other methods. This method is reused by `ModelManager` 's `setTopK()` method when using the `getTop K` command, whereas the `setSimpleLeaderboard(ArrayList<Comparator<Team>> comparators)` method is sufficient to sort *all* the teams in the desired order. So instead of calling it again within another method, the `setSimpleLeaderboard(ArrayList<Comparator<Team>> comparators)` method which was meant to abstract away some processes is itself used to handle the `leaderboard` command. So indeed in the end, "Alternative 2" does not introduce duplication of code, but rather introduces better use of abstraction.
 
-==== Tiebreaking
+==== Tiebreaking and Filtering by Subject
 
-In the above sections, the UML diagrams gloss over how tiebreaking is really parsed and understood by Alfred. The basic of tie-breaking revolves around using `Comparator` s to sort the teams in a particular order. Each tiebreak method available in Alfred has a `Comparator` associated to it and all these can be found in the `Comparators` class.
+In the above sections, the UML diagrams gloss over how tiebreaking and filtering by subjects is parsed and understood by Alfred. The basic of tie-breaking revolves around using `Comparator` s to sort the teams in a particular order. Each tiebreak method available in Alfred has a `Comparator` associated to it and all these can be found in the `Comparators` class.
 
-The activity diagram below illustrates the internal workings within the `LeaderboardCommandParser" and `TopTeamsCommandParser` when parsing tiebreak methods. Do note that in the below diagram the term `parser` encapsulates both of these `Parser` s as they operate in almost identical ways.
+The activity diagram below illustrates the internal workings within the `LeaderboardCommandParser` and `TopTeamsCommandParser` when parsing tiebreak methods. Do note that in the below diagram the term `Parser` encapsulates both of these `Parser` s as they operate in almost identical ways.
 
 .Handling of Tiebreak Methods
 image::TieBreakActivityDiagram.png[]
 
 From the above there is one important aspect to note: the `ArrayList` of `Comparator<Team>` objects created in the second step. This is the `ArrayList` referred to in the previous sections which is tasked with containing and transferring the comparators which will be used to sort the teams in their appropriate order to form the leaderboard or top teams. This `ArrayList` is used as an input parameter for both `leaderboard` and `getTop K` command related classes, as explored in previous sections.
 
-Additionally, before `comparators` can be passed as an argument to the commands, it is reversed. This is done intently so the comparators related to each tiebreak method are applied in an order such that they preserve the oder the user wants the tiebreak methods to be applied.
+Additionally, before `comparators` can be passed as an argument to the commands, it is reversed. This is done intentionally so the comparators related to each tiebreak method are applied in an order such that they preserve the oder the user wants the tiebreak methods to be applied.
 
 Secondly, do note that the diagram above assumes there are no syntax errors made by the user when typing out the command. In case of any errors in the command, a `ParseException` would be thrown warning the user of such a situation. These have been excluded from the above diagram to prevent overcrowding and a deviation from the basic logic.
 
@@ -1016,6 +1265,125 @@ To better consider the user's needs and convenience, "Alternative 2" was selecte
 ** Pros: Better use of abstraction and maintains Single Responsibility Principle as the parser class can focus on solely parsing the user commands.
 
 In the end, "Alternative 2" was selected as it follows better software engineering practices by making better use of abstraction. Despite requiring slightly more code and classes, it would still be better than "Alternative 1" which breaks the Single Responsibility Principle as the parser class would have to be changed for changes in tiebreak methods in addition to changes in methods of parsing.
+
+=== Find Command
+Currently, Alfred allows users to view specific entities by their `ID` using the `view ENTITY ID`.
+However, it may not be convenient for users to remember the `ID` of specific users, especially since
+`ID` objects are randomly generated.
+
+To help Alfred become a viable alternative to Excel, Alfred also offers an improved `find` function
+that has been inspired by the power of Excel Macros.
+`find` offers a search by a single field and multiple fields. The list of fields that can be searched for
+for each entity can be found in the
+<<UserGuide.adoc#finding-a-specific-entity-code-find-mentor-team-participant-n-name-code, user guide>>, or by
+simply typing in an incorrect command in the application.
+
+The find command also offers an option to do a negative search of the fields in the list. This can be
+done via the `EXCLUDE` keyword. All the parameters that come after the keyword will undergo a negative
+search. Figure 41 shows an example of this. `find participant EXCLUDE n/uc` will look for all participants
+whose name that does not contain "uc".
+
+.Find Command User Interface
+image::FindScreenshot.png[]
+
+By default, Alfred does a search by intersection for the given entity. However, Alfred also allows
+the user to do a search by union. This can be done by inserting an `OR` keyword before all the parameters.
+Further examples on the usage of `find` can be found in the
+<<UserGuide.adoc#advanced-finding-of-a-specific-entity-by-union-or-negative-code-find-and-or-mentor-team-participant-n-name-exclude-code, user guide>>
+.
+
+==== Find Command Implementation Overview
+
+The following sequence diagram shows the sequence of method calls used to display the filtered list
+on the application, from `Logic` to `ModelManager` upon the execution of a `FindParticipantCommand`.
+An analogous sequence diagram also applies for the `Team` and `Mentor` objects as well.
+
+.Find Participant Command Sequence Diagram
+image::FindCommandSequenceDiagram.png[]
+
+The left half of the diagram covers creation of the `FindParticipantCommand` while the right half
+details the interaction with the `Model`. There are 5 main steps in the execution of the command.
+
+1. `FindCommandAllocator` allocates the correct parser for the find command based on the entity name
+provided. If the entity name is incorrect, then an error will be thrown and execution will terminate.
+
+2. The `FindParticipantCommandParser` will then parse the String provided to it. If the string provided
+is invalid and does not follow the specified format, an error will be thrown. Likewise, if the find command
+is called and no parameters are provided, an error will also be thrown. During the parsing, the parser splits
+the input string given into two separate strings, one for normal parameters and the other for parameters
+that will undergo negated search. Two separate `ArgumentMultimap` objects are generated using the two
+strings. These `ArgumentMultimap` objects are the same as the ones found in AB3 and thus behave in a similar manner
+and have the same constraints.
+
+3. If there are no errors, the `FindParticipantCommandParser` then creates
+a `FindParticipantCommand` which in turn generates the predicate it would use
+to filter the relevant `EntityList` by. These predicates are stored as static variables in a central `Predicates`
+file. `FindParticipantCommand` selects the predicates based on which fields are provided in the original
+input string.
+
+4. With these predicates, it then calls the `findParticipant` method on the model with the generated predicate.
+
+5. A list of `Participant` objects is then returned, and is also printed onto the console for the user's
+reference. Then, at `FindParticipantCommand`, a `CommandResult` is returned after the smooth execution
+of this `find` operation.
+
+[NOTE]xw
+The find command does not mutate the list in any way. It only changes the `Entity` objects displayed using
+the generated predicate.
+
+==== Design Considerations
+
+The following are some design considerations for the Find Command Feature
+
+===== Aspect: Format of the input string
+
+* *Alternative 1*: Use a SQL style query string
+    - Pros: SQL syntax is universally used to communicate with databases and is clean
+    - Cons: Users may not be familiar with SQL
+
+* *Alternative 2*: Use the current format of `n/NAME e/EMAIL ...` (current)
+    -  Pros: Maintains consistency within the application
+    -  Cons: It is not as clear as SQL style syntax.
+
+
+Alternative 1 would take the form
+    of `find where name="John" and phone like "123" and not email="gmail.com"`. This would also have the added
+benefit of better on-boarding SQL users. However,
+while SQL-style syntax  is relatively clean and understandable, we decided not to implement this
+for the following reasons.
+The first reason was that SQL queries are meant to be used for large databases with thousands of columns,
+hence, the structure of the query must be clean to reduce the number of bugs made in the query. On the
+other hand, each `Entity` in Alfred only has a small number of fields (less than 6) and thus the current
+query format would still be understandable. Secondly, as mentioned above, users may not be familiar with SQL.
+
+Hence, Alternative 2 was chosen as it would be more
+user friendly for users to the existing command format instead of memorizing a new format.
+Furthermore, implementing a new format would take more time as
+the new query format would have to be written and tested thoroughly, thus negatively impacting development
+velocity.
+
+===== Aspect: Storing of the predicates
+* *Alternative 1*: Store the Predicates in a central file (current)
+    - Pros: Makes the predicates accessible to the whole application
+hence reducing code duplication
+    - Cons: A large conditional statement would be needed in each Command class.
+
+* *Alternative 2*: Store the Predicates within each `FindCommand` class
+    - Pros: Each predicate is only used by one class, so this would have resulted in a better separation
+of concerns
+    - Cons: A large conditional statement or hash map would still be needed to decide which predicates to
+use
+
+Ultimately, we decided to use Alternative 1. Although most of the predicates are only used once, they are
+all unmodifiable functions that return a predicate in the form of a closure. Thus, the risks associated
+with unrestricted access and modification of an object are greatly reduced. Furthermore, predicates are
+also used in other parts of the codebase. Hence, it is a good idea to consolidate them in a single location.
+Thus, if another class in the codebase needed to implement another predicate, all it had to do would be to check
+this central file to see if a similar one was already written, as opposed to trawling though the entire codebase.
+
+The large conditional statement was also not a major issue. This is because although it is large, the
+code within was understandable and this would have facilitated its extension, as compared to prematurely
+refactoring out into smaller submodules.
 
 === Logging
 

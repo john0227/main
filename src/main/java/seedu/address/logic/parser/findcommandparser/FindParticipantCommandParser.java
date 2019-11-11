@@ -32,9 +32,9 @@ public class FindParticipantCommandParser implements Parser<FindParticipantComma
         String excludeString = " " + AlfredParserUtil.getExcludeString(args);
 
         ArgumentMultimap argumentMultimapNorm =
-                ArgumentTokenizer.tokenize(andOrString.toLowerCase(), PREFIX_NAME, PREFIX_EMAIL, PREFIX_PHONE);
+                ArgumentTokenizer.tokenize(andOrString, PREFIX_NAME, PREFIX_EMAIL, PREFIX_PHONE);
         ArgumentMultimap argumentMultimapExclude =
-                ArgumentTokenizer.tokenize(excludeString.toLowerCase(), PREFIX_NAME, PREFIX_EMAIL, PREFIX_PHONE);
+                ArgumentTokenizer.tokenize(excludeString, PREFIX_NAME, PREFIX_EMAIL, PREFIX_PHONE);
 
         Optional<String> nameNorm = argumentMultimapNorm.getValue(PREFIX_NAME);
         Optional<String> emailNorm = argumentMultimapNorm.getValue(PREFIX_EMAIL);
@@ -56,7 +56,7 @@ public class FindParticipantCommandParser implements Parser<FindParticipantComma
         }
 
         // Checks the position of the AND/OR
-        AlfredParserUtil.isFindTypeAtStart(args.trim().substring("participant".length()));
+        AlfredParserUtil.isFindTypeAtStart(args.trim());
 
         return new FindParticipantCommand(type, nameNorm, emailNorm, phoneNorm,
             nameExclude, emailExclude, phoneExclude);
